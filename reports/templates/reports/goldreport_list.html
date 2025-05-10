@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load jformat %}
+{% load humanize %}
+
+{% block css %}
+<link type="text/css" rel="stylesheet" href="{% static 'assets/css/jalalidatepicker.min.css' %}" />
+<link rel="stylesheet" href="{% static 'reports/css/goldreport_list.css' %}">
+<link rel="stylesheet" href="{% static 'assets/css/fonts.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+{% endblock %}
+
+{% block body %}
+<div class="container">
+
+    <h2>گزارش فروش طلا</h2>
+
+    <!-- فرم فیلتر تاریخ -->
+    <form method="GET" class="filter-form">
+        <div class="form-group">
+            <input type="text" data-jdp name="end_date" placeholder="تاریخ پایان" autocomplete="off" value="{{ request.GET.end_date|default_if_none:'' }}" style="font-family: Vazirmatn, sans-serif; font-size: 12px;">
+        </div>
+        <div class="form-group">
+            <input type="text" data-jdp name="start_date" placeholder="تاریخ شروع" autocomplete="off" value="{{ request.GET.start_date|default_if_none:'' }}" style="font-family: Vazirmatn, sans-serif; font-size: 12px;">
+        </div>
+        <div class="form-group">
+            <input type="text" name="goldcode" placeholder="کد" value="{{ request.GET.goldcode|default_if_none:'' }}" style="font-family: Vazirmatn, sans-serif; font-size: 11px;">
+        </div>
+        <div class="form-group">
+            <input type="text" name="seller" placeholder="فروشنده" value="{{ request.GET.seller|default_if_none:'' }}" style="font-family: Vazirmatn, sans-serif; font-size: 11px;">
+        </div>
+        <a href="{% url 'reports:goldreport_list' %}" class="reset-button">
+            <i class="fas fa-trash"></i>
+        </a>
+        <button type="submit" class="filter-button">اعمال فیلتر</button>
+    </form>
+
+    <!-- جدول گزارش فروش طلا -->
+    <div class="table-container">
+        <table>
+            <caption><h4>گزارش طلا</h4></caption>
+            <thead>
+                <tr>
+                    <th style="width: 70px">نام مشتری</th>
+                    <th style="width: 70px">تاریخ فروش</th>
+                    <th style="width: 80px">کد کالا</th>
+                    <th style="width: 190px">نام کالا</th>
+                    <th style="width: 60px">وزن(گرم)</th>
+                    <th style="width: 60px">اجرت فروش</th>
+                    <th style="width: 60px">اجرت خرید</th>
+                    <th style="width: 70px">سود فروشنده</th>
+                    <th style="width: 60px">سود(درصد)</th>
+                    <th style="width: 60px">سود(گرم)</th>
+                    <th style="width: 70px">قیمت روز طلا</th>
+                    <th style="width: 60px">فروشنده</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for data in product_data %}
+                    <tr>
+                        <td style="width: 70px">{{ data.product.goldinvoice.customersale.last_name }}</td>
+                        <td style="width: 70px">{{ data.product.goldinvoice.date }}</td>
+                        <td style="width: 80px">{{ data.product.goldcode }}</td>
+                        <td style="width: 190px">{{ data.product.goldname }}</td>
+                        <td style="width: 60px">{{ data.product.weight }}</td>
+                        <td style="width: 60px">{{ data.product.sale_ojrat }}</td>
+                        <td style="width: 60px">{{ data.product.buy_ojrat }}</td>
+                        <td style="width: 70px">{{ data.product.seller_benefit }}</td>
+                        <td style="width: 60px">{{ data.product.sele_benefit }}</td>
+                        <td style="width: 60px">{{ data.weighted_benefit|floatformat:3 }}</td>
+                        <td style="width: 70px">{{ data.product.daily_price|intcomma:False }}</td>
+                        <td style="width: 60px">{{ data.product.goldinvoice.seller }}</td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="12">هیچ کالایی مطابق فیلترها یافت نشد.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr class="total-row">
+                    <td style="width: 70px"></td>
+                    <td style="width: 70px"> تعداد</td>
+                    <td style="width: 80px"></td>
+                    <td style="width: 190px"></td>
+                    <td style="width: 60px">جمع</td>
+                    <td style="width: 60px"></td>
+                    <td style="width: 60px"></td>
+                    <td style="width: 70px"></td>
+                    <td style="width: 60px">درصد کلی سود</td>
+                    <td style="width: 60px">جمع</td>
+                    <td style="width: 70px">میانگین وزنی</td>
+                    <td style="width: 60px"></td>
+                </tr>
+                <tr class="total-row">
+                    <td style="width: 70px"></td>
+                    <td style="width: 70px">{{ invoice_count }}</td>
+                    <td style="width: 80px"></td>
+                    <td style="width: 190px"></td>
+                    <td style="width: 60px">{{ all_weight }}</td>
+                    <td style="width: 60px"></td>
+                    <td style="width: 60px"></td>
+                    <td style="width: 70px"></td>
+                    <td style="width: 60px">{{ total_profit_percentage|floatformat:1 }}</td>
+                    <td style="width: 60px">{{ total_weighted_benefit|floatformat:3 }}</td>
+                    <td style="width: 70px">{{ average_daily_price|intcomma:False }}</td>
+                    <td style="width: 60px"></td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript" src="{% static 'assets/js/jalalidatepicker.min.js' %}"></script>
+<script>
+    jalaliDatepicker.startWatch({
+        minDate: "attr",
+        maxDate: "attr"
+    });
+</script>
+{% endblock %}

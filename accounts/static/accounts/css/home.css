@@ -1,0 +1,58 @@
+/* accounts/css/home.css */
+body {
+    font-size: 16px; /* اندازه فونت پیش‌فرض */
+    line-height: 1.6; /* فاصله بین خطوط */
+    color: #333; /* رنگ متن پیش‌فرض */
+    display: flex;
+    justify-content: center; /* تراز کردن به صورت افقی در وسط */
+
+}
+/* استایل برای کانتینر تصویر */
+.image-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center; /* مرکز کردن عمودی تصویر */
+    width: 100vw; /* عرض کانتینر به اندازه کل صفحه */
+    height: 100vh; /* ارتفاع کانتینر به اندازه کل صفحه */
+    padding: 0; /* حذف فضای اضافی */
+    overflow: hidden; /* جلوگیری از نمایش اسکرول در صورت بزرگتر شدن تصویر */
+}
+
+/* استایل تصاویر */
+.image-container img {
+    width: 100%; /* تصویر تمام عرض صفحه را می‌گیرد */
+    height: 100%; /* تصویر تمام ارتفاع صفحه را می‌گیرد */
+    object-fit: cover; /* اطمینان از اینکه تصویر به درستی مقیاس شود و کل فضا را پر کند */
+    border-radius: 0; /* حذف گوشه‌های گرد */
+    box-shadow: none; /* حذف سایه */
+    margin: 0; /* حذف فاصله بالا */
+    /*transition: transform 0.3s ease; !* برای انیمیشن هنگام هاور *!*/
+}
+
+/*!* بزرگ‌نمایی تصویر هنگام هاور *!*/
+/*.image-container img:hover {*/
+/*    transform: scale(1.05); !* افزایش مقیاس به هنگام هاور *!*/
+/*}*/
+
+/* استایل توضیحات */
+.image-container p {
+    position: absolute; /* قرارگیری توضیحات روی تصویر */
+    bottom: 20px; /* فاصله از پایین صفحه */
+    left: 50%; /* وسط‌چین کردن متن */
+    transform: translateX(-50%); /* تنظیم مکان به وسط صفحه */
+    font-family: 'Arial', sans-serif;
+    font-size: 24px;
+    color: white; /* رنگ متن سفید برای خوانایی بهتر */
+    background-color: rgba(0, 0, 0, 0.5); /* پس‌زمینه نیمه شفاف برای متن */
+    padding: 10px 20px;
+    border-radius: 5px;
+    text-align: center;
+    margin: 0;
+}
+
+/* تنظیمات متن برای زیبایی بیشتر */
+.image-container p::before {
+    font-size: 18px;
+    color: #3498DB;
+}

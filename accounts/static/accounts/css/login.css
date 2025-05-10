@@ -1,0 +1,85 @@
+body, html {
+    height: 100%;
+    font-family: Arial, sans-serif;
+    margin: 0; /* حذف فضای اضافی */
+    padding: 0; /* حذف فضای اضافی */
+    overflow: hidden; /* حذف اسکرول */
+}
+
+.image-container {
+    position: relative; /* موقعیت نسبی برای قرارگیری صحیح عناصر داخلی */
+    width: 100vw; /* عرض کانتینر به اندازه کل صفحه */
+    height: 100vh; /* ارتفاع کانتینر به اندازه کل صفحه */
+    overflow: hidden; /* جلوگیری از نمایش اسکرول در صورت بزرگتر شدن تصویر */
+}
+
+.image-container img {
+    width: 100%; /* تصویر تمام عرض صفحه را بگیرد */
+    height: 100%; /* تصویر تمام ارتفاع صفحه را بگیرد */
+    object-fit: cover; /* تصویر را در محدوده خود تنظیم کند */
+    position: absolute; /* موقعیت مطلق برای تصویر */
+    top: 0;
+    left: 0;
+}
+
+.login-container {
+    position: absolute; /* قرارگیری کادر روی تصویر */
+    top: 50%; /* تنظیم عمودی کادر */
+    left: 50%; /* تنظیم افقی کادر */
+    transform: translate(-50%, -50%); /* وسط‌چین کردن کادر */
+    background-color: rgba(31, 80, 134, 0.9); /* پس‌زمینه نیمه‌شفاف */
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    width: 250px; /* عرض کادر */
+    max-width: 90%; /* تطبیق عرض در صفحه‌های کوچک */
+    text-align: center;
+    color: white;
+}
+
+.form-group {
+    margin-top: 25px;
+}
+
+label {
+    display: block;
+    margin-top: 20px;
+    color: white;
+}
+
+input[type="text"],
+input[type="password"] {
+    width: 100%;
+    padding: 5px;
+    box-sizing: border-box;
+    margin-top: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    height: 40px;
+    font-size: 16px;
+}
+
+button {
+    width: 100%;
+    padding: 10px;
+    background-color: #051150;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 18px;
+    margin-top: 50px;
+    font-family: "Vazirmatn", sans-serif;
+}
+
+button:hover {
+    background-color: #064cb6;
+}
+
+.messages {
+    list-style-type: none;
+    padding: 0;
+    color: #fdf8f8;
+    margin-top: 10px;
+    font-size: 13px;
+}

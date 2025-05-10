@@ -1,0 +1,201 @@
+/* تنظیم کلی برای راست‌به‌چپ */
+.customer-container {
+    direction: rtl;
+    text-align: right;
+    font-family: "Vazirmatn", sans-serif;
+}
+
+
+
+/* استایل عنوان */
+h2 {
+    text-align: center;
+    color: #2c3e50;
+    font-size: 18px;
+    margin-bottom: 20px;
+}
+
+/* استایل فرم جستجو */
+form {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 10px auto 20px auto;
+    padding: 10px;
+    /*background-color: #f3f8f3;*/
+    /*border: 1px solid #ddd;*/
+    border-radius: 5px;
+    width: 80%;
+    max-width: 500px;
+    margin-left: 400px;
+    margin-top: 50px;
+}
+
+form label {
+    font-size: 14px;
+    color: #2c3e50;
+    margin-left: 5px;
+}
+
+form input {
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 150px;
+    font-size: 12px;
+}
+
+form button {
+    padding: 5px 15px;
+    background-color: #3498db;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: background-color 0.3s;
+}
+
+form button:hover {
+    background-color: #2472a2;
+}
+
+/* استایل کلی برای ظرف مشتریان */
+.customer-container {
+    margin: 20px auto;
+    padding: 10px 30px;
+    max-width: 800px;
+    background-color: #e1e2e7;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-left: 200px;
+}
+
+/* استایل هر ردیف مشتری */
+.customer-row {
+    margin-bottom: 20px;
+    padding: 20px ;
+    background-color: #eff1fa;
+    border: 1px solid #eaeaea;
+    border-radius: 8px;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.05);
+}
+
+/* تنظیم کلی برای موقعیت فیلدها */
+.customer-field, .customer-field1 {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    margin-bottom: 10px;
+    position: relative;
+}
+
+.customer-field .label, .customer-field1 .label {
+    color: #2c3e50;
+    font-size: 14px;
+    position: absolute;
+    right: 0;
+    width: 400px;
+    text-align: right;
+}
+
+.customer-field .value, .customer-field1 .value {
+    font-weight: bold;
+    color: #34495e;
+    font-size: 14px;
+    margin-right: 420px;
+    text-align: left;
+}
+
+.customer-field1 .label {
+    color: #b71944;
+}
+
+.customer-field1 .value {
+    color: #b71944;
+}
+
+/* پیام خالی بودن مشتریان */
+p {
+    text-align: center;
+    font-size: 14px;
+    color: #888;
+}
+
+/* استایل لیست وام‌ها */
+.loan-details ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.loan-details ul li {
+    padding: 5px 0;
+    font-size: 12px;
+    color: #7f8c8d;
+    border-bottom: 1px solid #ececec;
+}
+
+.loan-details ul li:last-child {
+    border-bottom: none;
+}
+
+.details-container ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.details-container ul li {
+    padding: 5px 0;
+    font-size: 13px;
+    color: #2d2f2f;
+    border-bottom: 1px solid #ececec;
+}
+
+.details-container ul li:last-child {
+    border-bottom: none;
+}
+
+.centered-button1 {
+    display: inline-block;
+    margin: 10px auto; /* فاصله بین دکمه‌ها */
+    padding: 8px 16px; /* اندازه دکمه */
+    font-family: Vazirmatn, sans-serif;
+    font-size: 12px;
+    text-align: center;
+    color: white;
+    background-color: #007bff; /* رنگ پس‌زمینه */
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.centered-button1:hover {
+    background-color: #0056b3; /* رنگ پس‌زمینه در حالت هاور */
+}
+
+.centered-button2 {
+    display: inline-block;
+    margin: 10px auto; /* فاصله بین دکمه‌ها */
+    padding: 8px 16px; /* اندازه دکمه */
+    font-family: Vazirmatn, sans-serif;
+    font-size: 12px;
+    text-align: center;
+    color: white;
+    background-color: #63b366; /* رنگ پس‌زمینه */
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.centered-button2:hover {
+    background-color: #4d750d; /* رنگ پس‌زمینه در حالت هاور */
+}
+.customer-row {
+    text-align: center; /* دکمه‌ها را در مرکز ردیف قرار می‌دهد */
+    margin: 20px 0; /* فاصله بین ردیف‌ها */
+}

@@ -1,0 +1,95 @@
+/* سایدبار */
+
+.sidebar {
+    width: 120px; /* عرض سایدبار */
+    height: 100vh; /* ارتفاع کل صفحه */
+    background-color: #033e6b;
+    color: #ECF0F1;
+    height: 100vh; /* ارتفاع تمام صفحه */
+    padding: 20px;
+    box-sizing: border-box;
+    position: fixed; /* ثابت در سمت راست صفحه */
+    right: 0; /* سایدبار را به سمت راست صفحه ثابت می‌کند */
+    overflow-y: auto; /* افزودن اسکرول در صورت لزوم */
+    overflow-x: hidden;
+    margin-top: 20px; /* حذف مارجین از بالای سایدبار */
+}
+
+.sidebar h2 {
+    text-align: right; /* راست‌چین کردن عنوان */
+    margin-top: 50px;
+}
+
+.sidebar ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0; /* حذف حاشیه */
+}
+
+.sidebar ul li {
+    margin: 10px 0;
+    text-align: right; /* راست‌چین کردن متن‌ها */
+    position: relative; /* برای افزودن زیرمنوها */
+}
+
+/* استایل لینک‌های اصلی */
+.sidebar ul li a {
+    color: #ECF0F1;
+    text-decoration: none;
+    font-size: 15px; /* اندازه فونت اصلی */
+    font-family: "Vazirmatn", sans-serif; /* اطمینان از استفاده از فونت */
+    font-weight: bold; /* بولد کردن فونت منوی اصلی */
+    padding: 10px; /* فاصله درون لینک */
+    display: block; /* برای پوشش دادن فضای کل آیتم */
+    transition: background-color 0.3s ease; /* انیمیشن تغییر پس‌زمینه */
+    margin-top: 10px; /* فاصله از بالای صفحه */
+}
+
+/* استایل هاور برای لینک‌های اصلی */
+.sidebar ul li a:hover {
+    background-color: #2980B9; /* رنگ پس‌زمینه هنگام هاور */
+    color: #FFFFFF; /* تغییر رنگ متن هنگام هاور */
+}
+
+/* استایل زیرمنو */
+.submenu-items {
+    list-style-type: none;
+    padding: 0;
+    height: 0; /* ارتفاع صفر برای مخفی کردن زیرمنو */
+    overflow: hidden; /* مخفی کردن محتوا */
+    transition: height 0.3s ease; /* انیمیشن باز شدن */
+}
+
+/* تغییرات برای نشان دادن زیرمنو */
+.submenu-items.open {
+    height: auto; /* باز کردن زیرمنو */
+    overflow: visible; /* نمایش محتوا */
+}
+
+/* استایل آیتم‌های زیرمنو */
+.submenu-items li {
+    margin: 2px 0;
+}
+
+/* استایل لینک‌های زیرمنو */
+.submenu-items li a {
+    color: #ECF0F1;
+    font-size: 10px!important; /* تنظیم اندازه فونت برای زیرمنو */
+    font-weight: normal!important; /* نرمال کردن فونت زیرمنو */
+    padding: 3px; /* فاصله درون لینک */
+    display: block; /* برای پوشش دادن فضای کل آیتم */
+    transition: background-color 0.3s ease; /* انیمیشن تغییر پس‌زمینه */
+}
+
+/* استایل هاور برای لینک‌های زیرمنو */
+.submenu-items li a:hover {
+    background-color: #3498DB; /* رنگ پس‌زمینه هنگام هاور */
+    color: #FFFFFF; /* تغییر رنگ متن هنگام هاور */
+}
+
+/* محتوای اصلی */
+.content {
+    margin-right: 190px; /* فاصله از سمت راست، به اندازه عرض سایدبار بعلاوه پدینگ */
+    padding: 20px;
+    flex-grow: 1; /* اجازه می‌دهد محتوا فضای باقیمانده را پر کند */
+}

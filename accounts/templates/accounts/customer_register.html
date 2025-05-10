@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load jformat %}
+{% load humanize %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'accounts/css/customer_register.css' %}">
+<link rel="stylesheet" href="{% static 'assets/css/fonts.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+{% endblock %}
+
+{% block body %}
+<div class="container">
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <!-- فرم فاکتور -->
+        <div class="form-group">
+            <label style="color: #007bff" for="form.as_p">ثبت مشتری</label>
+
+            <!-- نمایش خطا برای کد ملی -->
+            <div id="mellicode-error" style="color: red; display: none;">
+                کد ملی وارد شده معتبر نمیباشد.
+            </div>
+
+            <!-- نمایش خطا برای شماره موبایل -->
+            <div id="mobile-error" style="color: red; display: none;">
+                شماره موبایل وارد شده معتبر نمیباشد.
+            </div>
+
+            {{ form.as_p }}
+        </div>
+        <button type="submit" class="btn btn-primary">ثبت مشتری</button>
+    </form>
+</div>
+{% endblock %}
+
+{% block js %}
+<script src="{% static 'accounts/js/customer_register.js' %}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const mellicodeField = document.querySelector('input[name="mellicode"]');
+        const mobileField = document.querySelector('input[name="phone_number"]');
+        const mellicodeError = document.getElementById('mellicode-error');
+        const mobileError = document.getElementById('mobile-error');
+
+        // بخش اول: اعتبارسنجی کدملی
+        mellicodeField.addEventListener('input', function() {
+            const mellicode = mellicodeField.value;
+            if (validateMellicode(mellicode)) {
+                mellicodeError.style.display = 'none';  // پنهان کردن پیام خطا اگر معتبر باشد
+            } else {
+                mellicodeError.style.display = 'block';  // نمایش پیام خطا اگر نامعتبر باشد
+            }
+        });
+
+        // تابع اعتبارسنجی کد ملی
+        function validateMellicode(mellicode) {
+            if (mellicode.length !== 10 || isNaN(mellicode)) return false;
+
+            const digits = mellicode.split('').map(Number);
+            const checksum = digits.slice(0, 9).reduce((sum, digit, i) => sum + digit * (10 - i), 0);
+            const rem = checksum % 11;
+
+            if (rem < 2) return digits[9] === rem;
+            return digits[9] === (11 - rem);
+        }
+
+        // بخش سوم: اعتبارسنجی شماره موبایل
+        mobileField.addEventListener('input', function() {
+            const mobile = mobileField.value;
+            if (validateMobile(mobile)) {
+                mobileError.style.display = 'none';  // پنهان کردن پیام خطا اگر معتبر باشد
+            } else {
+                mobileError.style.display = 'block';  // نمایش پیام خطا اگر نامعتبر باشد
+            }
+        });
+
+        // تابع اعتبارسنجی شماره موبایل
+        function validateMobile(mobile) {
+           const mobileRegex = /^09\d{9}$/;
+            return mobileRegex.test(mobile);
+        }
+    });
+</script>
+{% endblock %}

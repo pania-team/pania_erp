@@ -1,0 +1,50 @@
+/* static/css/navbar.css */
+.navbar {
+    background-color: #033e6b;
+    overflow: hidden;
+    position: fixed;
+    top: 0;
+    width: 100%;
+}
+
+.navbar-container {
+    display: flex;
+    justify-content: space-between; /* فضای خالی بین سمت چپ و راست ایجاد می‌کند */
+    align-items: center;
+    padding: 3px 20px;
+}
+
+.navbar-brand {
+    color: white;
+    text-decoration: none;
+    font-size: 24px;
+}
+
+.navbar-left {
+    display: flex;
+    align-items: center;
+}
+
+.navbar-nav {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+}
+
+.nav-item {
+    margin-left: 20px; /* فاصله بین آیکون‌ها */
+}
+
+.nav-link {
+    color: white;
+    text-decoration: none;
+    padding: 14px;
+    display: flex;
+    align-items: center;
+}
+
+.nav-link:hover {
+    background-color: #ddd;
+    color: black;
+}

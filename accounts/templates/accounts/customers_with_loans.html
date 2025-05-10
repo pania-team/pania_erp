@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load jformat %}
+{% load humanize %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'accounts/css/customers_with_loans.css' %}">
+<link rel="stylesheet" href="{% static 'assets/css/fonts.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+{% endblock %}
+
+{% block body %}
+<div class="container">
+    <h2>پرونده مشتری</h2>
+
+    <!-- فرم جستجو -->
+    <form method="get" action=".">
+        <input type="text" id="mellicode" name="mellicode" value="{{ query_mellicode }}" placeholder="کد ملی" style="font-family: Vazirmatn, sans-serif; font-size: 13px;">
+        <input type="text" id="name" name="name" value="{{ query_name }}" placeholder="نام مشتری" style="font-family: Vazirmatn, sans-serif; font-size: 13px;">
+        <button type="submit" style="font-family: Vazirmatn, sans-serif; font-size: 12px;">جستجو</button>
+    </form>
+
+    <div class="customer-container">
+        {% if query_name or query_mellicode %}
+            {% if customers_with_loans %}
+                {% for customer in customers_with_loans %}
+                <div class="customer-row">
+                    <div class="customer-field">
+                        <span class="label">نام مشتری:</span>
+                        <span class="value">{{ customer.first_name }} {{ customer.last_name }}</span>
+                    </div>
+                    <div class="customer-field">
+                        <span class="label">کد ملی:</span>
+                        <span class="value">{{ customer.mellicode }}</span>
+                    </div>
+                    <div class="customer-field">
+                        <span class="label">تعداد وام‌:</span>
+                        <span class="value">{{ customer.loans_count }}</span>
+                    </div>
+                    <div class="customer-field">
+                        <span class="label">جمع وام های دریافتی:</span>
+                        <span class="value">{{ customer.total_loan_amount|intcomma:False }}</span>
+                    </div>
+                    <div class="customer-field1">
+                        <span class="label">بدهی مشتری:</span>
+                        <span class="value">{{ customer.total_loan_balance|intcomma:False }}</span>
+                    </div>
+                    <!-- دکمه‌های نمایش جزئیات و تضامین -->
+                    <button class="centered-button1" onclick="toggleDetails('loan-details-{{ forloop.counter }}')">جزییات وام‌ها</button>
+                    <button class="centered-button2" onclick="toggleDetails('guarantee-details-{{ forloop.counter }}')">تضامین وام‌ها</button>
+                    <!-- بخش جزئیات وام‌ها -->
+                    <div id="loan-details-{{ forloop.counter }}" class="details-container" style="display: none;">
+                        <ul>
+                            {% for loan in customer.loans %}
+                            <li>
+                                <label>تاریخ وام:</label>
+                                <span>{{ loan.loan_date }}</span>
+                            </li>
+                            <li>
+                                <label>کد وام:</label>
+                                <span>{{ loan.loan_code }}</span>
+                            </li>
+                            <li>
+                                <label>مبلغ وام:</label>
+                                <span>{{ loan.total_amount|intcomma:False }}</span>
+                            </li>
+                            <li>
+                                <label>بازپرداخت وام:</label>
+                                <span>{{ loan.final_amount|intcomma:False }}</span>
+                            </li>
+                            <li>
+                                <label>آخرین قسط:</label>
+                                <span>{{ loan.end_date }}</span>
+                            </li>
+                            <li>
+                                <label>تعداد اقساط:</label>
+                                <span>{{ loan.num_month }}</span>
+                            </li>
+                            <li style="color: #a94442">
+                                <label>مانده وام:</label>
+                                <span>{{ loan.loan_mande_bedehi|intcomma:False }}</span>
+                            </li>
+                            <hr style="margin: 10px 0; border: 1px solid #ccc;">
+                            {% endfor %}
+                        </ul>
+                    </div>
+
+                    <!-- بخش تضامین وام‌ها -->
+                    <div id="guarantee-details-{{ forloop.counter }}" class="details-container" style="display: none;">
+                        <ul>
+                            {% for loan in customer.loans %}
+                                {% for guarantee in loan.guarantees %}
+                                <li>
+                                    <label>نام ضامن:</label>
+                                    <span>{{ guarantee.guarantor_name }}</span>
+                                </li>
+                                <li>
+                                    <label>مبلغ ضمانت:</label>
+                                    <span>{{ guarantee.guarantee_amount|intcomma:False }}</span>
+                                </li>
+                                <li>
+                                    <label>نوع ضمانت:</label>
+                                    <span>{{ guarantee.guarantee_type }}</span>
+                                </li>
+                                <li>
+                                    <label>تاریخ ضمانت:</label>
+                                    <span>{{ guarantee.guarantee_date }}</span>
+                                </li>
+                                <hr style="margin: 10px 0; border: 1px solid #ccc;">
+                                {% endfor %}
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+            <p>هیچ مشتری با اطلاعات وارد شده یافت نشد.</p>
+            {% endif %}
+        {% else %}
+            <p>لطفاً نام یا کدملی مشتری را وارد نمایید.</p>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+function toggleDetails(id) {
+    const element = document.getElementById(id);
+    if (element.style.display === "none") {
+        element.style.display = "block";
+    } else {
+        element.style.display = "none";
+    }
+}
+</script>
+{% endblock %}

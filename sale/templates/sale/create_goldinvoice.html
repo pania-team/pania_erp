@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load jformat %}
+{% load humanize %}
+
+{% block css %}
+<link type="text/css" rel="stylesheet" href="{% static 'assets/css/select2.min.css' %}" />
+<link type="text/css" rel="stylesheet" href="{% static 'assets/css/jalalidatepicker.min.css' %}" />
+<link rel="stylesheet" href="{% static 'sale/css/create_goldinvoice.css' %}">
+<link rel="stylesheet" href="{% static 'assets/css/fonts.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+{% endblock %}
+
+{% block body %}
+<div class="container">
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <!-- فرم فاکتور -->
+        <div class="form-group">
+            <h2>ثبت فاکتور طلا</h2>
+            {{ invoice_form.as_p }}
+<!--            <input type="text" name="invoice_date" data-jdp placeholder="لطفا یک تاریخ وارد نمایید" />-->
+<!--            <input type="text" data-jdp data-jdp-min-date="today" placeholder="نمایش تاریخ از امروز" />-->
+<!--            <input type="text" data-jdp data-jdp-max-date="today" placeholder="نمایش تاریخ تا امروز" />-->
+<!--            <input type="text" data-jdp data-jdp-max-date="1401/10/08" placeholder="نمایش تاریخ تا 1401/10/08" />-->
+        </div>
+
+        <button type="submit" class="btn btn-primary">ثبت</button>
+    </form>
+</div>
+{% endblock %}
+
+
+{% block js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript" src="{% static 'assets/js/select2.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'assets/js/jalalidatepicker.min.js' %}"></script>
+<!--<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> &lt;!&ndash; اطمینان حاصل کنید jQuery بارگذاری شده است &ndash;&gt;-->
+<script>
+jalaliDatepicker.startWatch({
+  minDate: "attr",
+  maxDate: "attr"
+});
+</script>
+<script>
+    $(document).ready(function() {
+        $('.select2').select2({
+            placeholder: "انتخاب مشتری",
+            allowClear: true
+        });
+    });
+</script>
+
+{% endblock %}

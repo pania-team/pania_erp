@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load jformat %}
+{% load humanize %}
+
+{% block css %}
+<link type="text/css" rel="stylesheet" href="{% static 'assets/css/jalalidatepicker.min.css' %}" />
+<link rel="stylesheet" href="{% static 'demand/css/loan_list.css' %}">
+<link rel="stylesheet" href="{% static 'assets/css/fonts.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+{% endblock %}
+
+{% block body %}
+<div class="container">
+
+<h2>لیست وام</h2>
+
+<!-- فرم فیلتر تاریخ -->
+<form method="GET" class="filter-form">
+     <div class="form-group">
+        <input type="text" data-jdp placeholder="تاریخ پایان"  name="end_date" autocomplete="off" value="{{ filters.end_date|default_if_none:'' }}"  style="font-family: Vazirmatn, sans-serif; font-size: 12px;" >
+    </div>
+    <div class="form-group">
+        <input type="text" data-jdp placeholder="تاریخ شروع"  name="start_date" autocomplete="off" value="{{ filters.start_date|default_if_none:'' }}"  style="font-family: Vazirmatn, sans-serif; font-size: 12px;" >
+    </div>
+
+    <div class="form-group">
+        <input type="text" name="customer" value="{{ filters.customer|default_if_none:'' }}" placeholder="مشتری" style="font-family: Vazirmatn, sans-serif; font-size: 12px;">
+    </div>
+    <div class="form-group">
+        <input type="text" name="plan" value="{{ filters.plan|default_if_none:'' }}" placeholder="طرح وام" style="font-family: Vazirmatn, sans-serif; font-size: 12px;">
+    </div>
+
+        <a href="{% url 'demand:loan_list' %}?clear_filters=1" class="reset-button">
+        <i class="fas fa-trash"></i>
+        </a>
+        <button type="submit" class="filter-button">جستجو</button>
+
+ <a href="{% url 'demand:export_loans_excel' %}"
+   style="
+       display: flex;
+       align-items: center;
+       justify-content: center;
+       width: 30px;
+       height: 30px;
+       text-decoration: none;
+       background: none;
+       border: none;
+   ">
+    <i class="fas fa-file-excel" style="color: #0f6433; font-size: 24px; background: none;"></i>
+</a>
+
+
+
+</form>
+
+    <div class="table-container">
+        <table>
+            <caption><h4>لیست وام</h4></caption>
+            <thead>
+                <tr>
+                    <th style="width: 30px">ردیف</th>
+                    <th style="width: 70px">تاریخ وام</th>
+                    <th style="width: 170px">نام</th>
+                    <th style="width: 70px">شناسه وام</th>
+                    <th style="width: 60px">طرح وام</th>
+                    <th style="width: 100px">مبلغ وام</th>
+                    <th style="width: 100px">مبلغ نهایی</th>
+
+                    <th style="width: 50px">قسط</th>
+                    <th style="width: 60px">بازپرداخت</th>
+                    <th style="width: 80px">سود وام</th>
+                    <th style="width: 70px">سود ماهانه</th>
+                    <th style="width: 60px">ثبت ضمانت</th>
+                    <th style="width: 60px">پرونده وام</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for loan in loans %}
+                    <tr>
+                        <td style="width: 30px">{{ forloop.revcounter }}</td>
+                        <td style="width: 70px">{{ loan.loan_date|jformat:"%Y/%m/%d" }}</td>
+                        <td style="width: 170px">{{ loan.customer.first_name }} {{ loan.customer.last_name }}</td>
+                        <td style="width: 70px">{{ loan.loan_code }}</td>
+                        <td style="width: 60px">{{ loan.plan }}</td>
+                        <td style="width: 100px">{{ loan.total_amount|intcomma:False }}</td>
+                        <td style="width: 100px">{{ loan.final_amount|intcomma:False }}</td>
+
+                        <td style="width: 50px">{{ loan.num_month }}</td>
+                        <td style="width: 60px">{{ loan.num_installments }}</td>
+                        <td style="width: 80px">{{ loan.profit|floatformat:0|intcomma:False }}</td>
+                        <td style="width: 70px">{{ loan.monthly_interest_percent|floatformat:1|intcomma:False }}%</td>
+                        <td style="width: 60px">
+                            <a href="{% url 'demand:create_zemanat' loan.id %}">
+                                <i class="fas fa-check-circle" style="color: #3498DB;"></i>
+                            </a>
+                        </td>
+                        <td style="width: 60px">
+                            <a href="{% url 'demand:loan_detail' loan.id %}">
+                                <i class="fas fa-file-alt"></i>
+                            </a>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="9">No loans available.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+
+            <tfoot>
+                <tr class="total-row">
+                    <td style="width: 30px"></td>
+                    <td style="width: 70px"></td>
+                    <td style="width: 170px"></td>
+                    <td style="width: 70px">جمع</td>
+                    <td style="width: 60px"></td>
+                    <td style="width: 100px;font-size: 12px">{{ total_amount_sum|intcomma:False }}</td>
+                    <td style="width: 100px ;font-size: 12px">{{ final_amount_sum|intcomma:False }}</td>
+
+                    <td style="width: 50px"></td>
+                    <td style="width: 60px">{{total_profit_percent|floatformat:0}}%</td>
+                    <td style="width: 80px">{{ profit_sum|intcomma:False }}</td>
+                    <td style="width: 70px"></td>
+                    <td style="width: 60px"></td>
+                    <td style="width: 60px"></td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+
+{% block js %}
+<script type="text/javascript" src="{% static 'assets/js/jalalidatepicker.min.js' %}"></script>
+<script>
+jalaliDatepicker.startWatch({
+  minDate: "attr",
+  maxDate: "attr"
+});
+</script>
+{% endblock %}

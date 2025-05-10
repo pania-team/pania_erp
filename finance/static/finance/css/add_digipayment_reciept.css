@@ -1,0 +1,140 @@
+/* استایل برای بدنه صفحه */
+body {
+    font-size: 14px; /* اندازه فونت پیش‌فرض */
+    line-height: 1.6; /* فاصله بین خطوط */
+    color: #333; /* رنگ متن پیش‌فرض */
+    display: flex;
+    justify-content: center; /* تراز کردن به صورت افقی در وسط */
+    align-items: center; /* تراز کردن به صورت عمودی در وسط */
+    min-height: 100vh; /* ارتفاع حداقل صفحه به اندازه ارتفاع نمایشگر */
+    background-color: #f4f4f4; /* رنگ پس‌زمینه */
+    margin: 0; /* حذف حاشیه‌های پیش‌فرض */
+    padding: 20px;
+}
+
+/* استایل برای فرم‌ها */
+.container {
+    max-width: 700px; /* عرض حداکثر فرم */
+    width: 100%; /* عرض کامل */
+    padding: 30px; /* فاصله داخلی */
+    background-color: #d3dae8; /* رنگ پس‌زمینه فرم */
+    border-radius: 8px; /* گوشه‌های گرد فرم */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* سایه برای فرم */
+    margin-top: 20px; /* فاصله از بالای صفحه */
+}
+
+/* استایل برای کادر فرم */
+.form-group {
+    border: 1px solid #ccc; /* حاشیه کادر */
+    border-radius: 5px; /* گوشه‌های گرد */
+    padding: 20px; /* فاصله داخلی */
+    margin-bottom: 20px; /* فاصله از فرم‌های دیگر */
+    margin-top: 10px; /* فاصله از فرم‌های دیگر */
+    background-color: #fafafa; /* رنگ پس‌زمینه کادر */
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1); /* سایه‌ی سبک برای کادر */
+    text-align: center; /* تراز کردن متن به مرکز */
+}
+
+/* استایل برای عنوان فرم */
+.form-group h4 {
+    font-size: 16px; /* اندازه فونت عنوان */
+    color: #0056b3; /* رنگ عنوان */
+    margin-bottom: 15px; /* فاصله پایین عنوان */
+}
+
+.form-group h6 {
+    font-size: 14px; /* اندازه فونت زیرعنوان */
+    color: #555; /* رنگ متن زیرعنوان */
+    margin-bottom: 10px; /* فاصله پایین زیرعنوان */
+}
+
+/* استایل برای فیلدهای ورودی */
+input, textarea, select {
+    width: 100%; /* عرض 100% از والد (form-group) */
+    height: 40px; /* ارتفاع ثابت */
+    padding: 8px; /* فاصله داخلی */
+    border: 1px solid #ccc; /* حاشیه فیلدها */
+    border-radius: 5px; /* گوشه‌های گرد */
+    box-sizing: border-box; /* تنظیم باکس برای در نظر گرفتن پدینگ و حاشیه */
+    margin-bottom: 15px; /* فاصله از فیلدهای دیگر */
+    font-size: 14px; /* اندازه فونت فیلدها */
+    font-family: "Vazirmatn", sans-serif; /* فونت فارسی */
+}
+
+/* استایل برای textarea */
+textarea {
+    height: 100px; /* ارتفاع بیشتر برای text area */
+}
+
+/* استایل برای برچسب‌ها */
+.form-group label {
+    font-size: 14px; /* اندازه فونت برچسب‌ها */
+    display: block; /* نمایش برچسب‌ها به صورت بلوک */
+    margin-bottom: 10px; /* فاصله زیر برچسب */
+    font-family: "Vazirmatn", sans-serif;
+}
+
+/* استایل برای دکمه‌ها */
+.btn-primary {
+    background-color: #28a745; /* رنگ سبز برای دکمه ثبت */
+    border-color: #28a745; /* رنگ حاشیه دکمه ثبت */
+    color: #fff; /* رنگ متن دکمه */
+    border-radius: 5px; /* گوشه‌های گرد دکمه */
+    cursor: pointer; /* تغییر نشانگر ماوس */
+    text-align: center; /* تراز کردن متن به مرکز */
+    transition: background-color 0.3s ease; /* انیمیشن برای تغییر رنگ پس‌زمینه */
+    padding: 10px 20px; /* فاصله داخلی دکمه */
+}
+
+.btn-primary:hover {
+    background-color: #218838; /* رنگ سبز تیره هنگام هاور */
+    border-color: #218838; /* رنگ حاشیه دکمه ثبت هنگام هاور */
+}
+
+/* استایل برای دکمه بازگشت */
+.btn-back {
+    background-color: #0d5094; /* رنگ پس‌زمینه دکمه برگشت */
+    font-size: 14px; /* اندازه فونت دکمه برگشت */
+    font-family: "Vazirmatn", sans-serif; /* فونت فارسی */
+    text-decoration: none; /* حذف خط زیر متن */
+}
+
+.btn-back:hover {
+    background-color: #0864de; /* رنگ پس‌زمینه دکمه برگشت هنگام هاور */
+}
+
+/* استایل برای دکمه ارسال */
+.btn-submit {
+    width: 200px; /* عرض دکمه ثبت */
+    font-family: "Vazirmatn", sans-serif; /* فونت فارسی */
+}
+
+/* استایل برای دکمه‌های درون container */
+.button-container {
+    margin-top: 20px;  /* فاصله از بالای کادر */
+    display: flex;      /* استفاده از فِلِکس برای تراز کردن */
+    justify-content: space-between; /* فاصله بین دکمه‌ها */
+}
+
+/* استایل برای پیام‌های نمایش داده شده */
+.messages {
+    list-style-type: none; /* حذف علامت لیست */
+    padding: 0;
+    margin: 0;
+    margin-bottom: 20px;
+}
+
+.messages li {
+    padding: 10px;
+    background-color: #f2f2f2;
+    border-left: 5px solid #3498db;
+    margin-bottom: 10px;
+}
+
+.messages .error {
+    border-left: 5px solid #e74c3c; /* رنگ قرمز برای پیام‌های خطا */
+}
+
+.messages .success {
+    border-left: 5px solid #2ecc71; /* رنگ سبز برای پیام‌های موفقیت */
+}

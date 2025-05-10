@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load jformat %}
+{% load humanize %}
+
+{% block css %}
+<link type="text/css" rel="stylesheet" href="{% static 'assets/css/jalalidatepicker.min.css' %}" />
+<link rel="stylesheet" href="{% static 'sale/css/digisale_list.css' %}">
+<link rel="stylesheet" href="{% static 'assets/css/fonts.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+{% endblock %}
+
+{% block body %}
+<div class="container">
+
+    <h2>لیست فروش‌های دیجیتال</h2>
+
+<!-- فرم فیلتر تاریخ -->
+<form method="GET" class="filter-form">
+     <div class="form-group">
+        <input type="text" data-jdp name="end_date" placeholder="تاریخ پایان" autocomplete="off" value="{{ filters.end_date|default_if_none:'' }}" style="font-family: Vazirmatn, sans-serif; font-size: 12px;">
+    </div>
+    <div class="form-group">
+        <input type="text" data-jdp name="start_date" placeholder="تاریخ شروع" autocomplete="off" value="{{ filters.start_date|default_if_none:'' }}" style="font-family: Vazirmatn, sans-serif; font-size: 12px;">
+    </div>
+    <div class="form-group">
+        <input type="text" name="customer" placeholder="مشتری" value="{{ filters.customer|default_if_none:'' }}" style="font-family: Vazirmatn, sans-serif; font-size: 12px;">
+    </div>
+    <div class="form-group">
+        <input type="text" name="seller" placeholder="فروشنده" value="{{ filters.seller|default_if_none:'' }}" style="font-family: Vazirmatn, sans-serif; font-size: 11px;">
+    </div>
+    <a href="{% url 'sale:digisale_list' %}?clear_filters=1" class="reset-button">
+        <i class="fas fa-trash"></i>
+    </a>
+     <button type="submit" class="filter-button">جستجو</button>
+</form>
+
+
+    <!-- والد برای جدول -->
+    <div class="table-container">
+        <table>
+            <caption><h4>لیست فروش دیجیتال</h4></caption>
+            <thead>
+                <tr>
+                    <th style="width: 30px">ردیف</th>
+                    <th style="width: 150px">نام مشتری</th>
+                    <th style="width: 30px"> فاکتور</th>
+                    <th style="width: 50px">تایید مالی</th>
+                    <th style="width: 70px">تاریخ فاکتور</th>
+                    <th style="width: 40px">ثبت کالا</th>
+                    <th style="width: 80px">تخفیف</th>
+                    <th style="width: 100px">جمع فاکتور</th>
+                    <th style="width: 50px">پرداخت </th>
+                    <th style="width: 100px">جمع پرداخت</th>
+                    <th style="width: 90px">مانده مشتری</th>
+                    <th style="width: 110px">فروشنده</th>
+
+                </tr>
+            </thead>
+            <tbody>
+            {% for data in invoice_data %}
+                    <tr>
+                        <td style="width: 30px">{{ forloop.revcounter }}</td>
+                        <td style="width: 150px">{{ data.invoice.customersale.first_name }} {{ data.invoice.customersale.last_name }}</td>
+                        <td style="width: 30px">
+                            <a href="{% url 'sale:digisale_detail' data.invoice.id %}">
+                                <i class="fas fa-file-alt"></i>
+                            </a>
+                        </td>
+                        <td style="width: 50px">
+                            {% if data.invoice.status == "paid" %}
+                                <span style="color: green; font-size: 1em;">✔️</span>
+                            {% else %}
+                                <span style="color: red; font-size: 0.8em;">❌</span>
+                            {% endif %}
+                        </td>
+                        <td style="width: 70px">{{ data.invoice.date }}</td>
+                        <td style="width: 40px">
+                            <a href="{% url 'sale:add_digiinvoice_items' data.invoice.id %}">
+                                <i class="fas fa-shopping-cart" style="color: #3498DB;">{{ data.kalanum }}</i>
+                            </a>
+                        </td>
+                        <td style="width: 80px">{{ data.invoice.total_digidiscount|intcomma:False }}</td>
+                        <td style="width: 100px">{{ data.invoice.total_digiprice|intcomma:False }}</td>
+                        <td style="width: 50px">
+                            <a href="{% url 'sale:add_digipayment' data.invoice.id %}">
+                                <i class="fas fa-credit-card" style="color: #E67E22;"></i>
+                            </a>
+                        </td>
+                        <td style="width: 100px; color: {% if data.invoice.total_digiprice > data.invoice.total_digipaid %}red{% else %}inherit{% endif %}">
+                            {{ data.invoice.total_digipaid|intcomma:False }}
+                        </td>
+
+                        <td style="width: 90px">{{ data.invoice.total_digiremain_amount|intcomma:False }}</td>
+                        <td style="width:110px">{{ data.invoice.seller.name }}</td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="11">هیچ فروش دیجیتالی در این بازه زمانی ثبت نشده است.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        <!-- ردیف جمع کل -->
+            <tfoot>
+                <tr class="total-row">
+                    <td style="width: 30px"></td>
+                    <td style="width: 150px"></td>
+                    <td style="width: 30px"></td>
+                    <td style="width: 50px"></td>
+                    <td style="width: 70px"></td>
+                    <td style="width: 40px">جمع</td>
+                    <td style="width: 80px">{{ all_discount|intcomma:False }}</td>
+                    <td style="width: 100px">{{ all_amount|intcomma:False }}</td>
+                    <td style="width: 50px"></td>
+                    <td style="width: 100px">{{all_paid|intcomma:False }}</td>
+                    <td style="width: 90px">{{ all_remain_amount|intcomma:False }}</td>
+                    <td style="width: 110px"></td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+
+{% block js %}
+<script type="text/javascript" src="{% static 'assets/js/jalalidatepicker.min.js' %}"></script>
+<script>
+    jalaliDatepicker.startWatch({
+        minDate: "attr",
+        maxDate: "attr",
+        onSelect: function () {
+            this.setAttribute('value', this.value);
+        }
+    });
+</script>
+{% endblock %}
+
+
+
+

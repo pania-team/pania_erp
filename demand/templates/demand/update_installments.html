@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load jformat %}
+{% load humanize %}
+
+
+{% block css %}
+    <link rel="stylesheet" href="{% static 'demand/css/update_installments.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/fonts.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <h6>ثبت نوع اقساط وام  </h6>
+        <h4>  {{ loan.customer.first_name }} {{ loan.customer.last_name }}</h4>
+        <form method="POST">
+        {% csrf_token %}
+        {% for installment in installment_forms %}
+            <div class="installment-form">
+                <h5>قسط شماره {{ installment.ghest_count }}</h5>
+                {{ installment.form.as_p }}
+            </div>
+        {% endfor %}
+            <div class="button-container">
+            <a href="{% url 'demand:loan_detail' loan.id %}" class="btn btn-success"><i class="fas fa-arrow-left"></i> </a>
+            <button type="submit" class="btn btn-primary">ثبت تغییرات</button>
+            </div>
+    </form>
+</div>
+
+{% endblock %}

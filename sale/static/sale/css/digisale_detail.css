@@ -1,0 +1,179 @@
+
+
+.body{
+    margin-top: 200px; /* فاصله از نوار بالای صفحه */
+}
+
+/* استایل کلی برای کانتینر */
+.container {
+    padding: 40px;
+    margin-right: 100px; /* فاصله از اسلایدبار */
+    background-color: #f9f9fc;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+/*===========================================*/
+.invoice-details {
+    font-size: 16px;
+    font-weight: bold;
+    display: flex; /* استفاده از Flexbox */
+    flex-direction: column; /* چینش عمودی */
+    align-items: center; /* مرکز کردن در محور افقی */
+    justify-content: center; /* مرکز کردن در محور عمودی */
+    height: 20vh; /* ارتفاع 100 درصد از نمای عمودی */
+    text-align: center; /* راست‌چین کردن متن‌ها */
+    margin-top: 40px;
+}
+
+h2 {
+    margin-bottom: 10px; /* فاصله پایین */
+}
+
+p {
+    margin: 5px 0; /* فاصله عمودی بین پاراگراف‌ها */
+}
+
+/*======================================*/
+
+/* استایل برای جدول */
+.table-container2 {
+    margin-top: 40px;
+    border: 1px solid #aeaeb0;
+     border-radius: 5px;
+    overflow-x: auto; /* افزودن اسکرول افقی در صورت نیاز */
+}
+
+.table2 {
+    width: 100%;
+    border-collapse: collapse; /* حذف فاصله بین سلول‌ها */
+    margin-bottom: 10px;
+    border: 1px solid #aeaeb0; /* خط مرزی برای جدول */
+    border-radius: 5px; /* گوشه‌های گرد */
+    overflow: hidden; /* برای گوشه‌های گرد */
+}
+
+.table2 th,
+.table2 td {
+    border: 1px solid #aeaeb0; /* حاشیه ضخیم‌تر برای سلول‌ها */
+    padding: 10px;
+    text-align: center;
+    font-size: 12px;
+}
+
+.table2 th {
+    background-color: #7baaf5; /* رنگ پس‌زمینه برای هدر */
+    color: #fff;
+}
+
+.table2 td {
+    background-color: #fff; /* رنگ پس‌زمینه برای سلول‌های عادی */
+}
+
+.table2 tr:nth-child(even) td {
+    background-color: #efeeee; /* رنگ زمینه برای ردیف‌های زوج */
+}
+
+.table2 tr:hover {
+    background-color: #e9ecef; /* تغییر رنگ پس‌زمینه در حالت هاور */
+}
+/*====================================*/
+/* استایل برای جدول */
+.table-container3 {
+    border: 1px solid #aeaeb0;
+     border-radius: 5px;
+    margin-top: 50px;
+    overflow-x: auto; /* افزودن اسکرول افقی در صورت نیاز */
+}
+
+.table3 {
+    width: 100%;
+    border-collapse: collapse; /* حذف فاصله بین سلول‌ها */
+    margin-bottom: 10px;
+   border: 1px solid #aeaeb0; /* خط مرزی برای جدول */
+    border-radius: 5px; /* گوشه‌های گرد */
+    overflow: hidden; /* برای گوشه‌های گرد */
+}
+
+.table3 th,
+.table3 td {
+    border: 1px solid #aeaeb0; /* حاشیه ضخیم‌تر برای سلول‌ها */
+    padding: 10px;
+    text-align: center;
+    font-size: 12px;
+}
+
+.table3 th {
+    background-color: #63b366; /* رنگ پس‌زمینه برای هدر */
+    color: #fff;
+}
+
+.table3 td {
+    background-color: #fff; /* رنگ پس‌زمینه برای سلول‌های عادی */
+}
+
+.table3 tr:nth-child(even) td {
+    background-color: #efeeee; /* رنگ زمینه برای ردیف‌های زوج */
+}
+
+.table3 tr:hover {
+    background-color: #e9ecef; /* تغییر رنگ پس‌زمینه در حالت هاور */
+}
+
+
+/* استایل برای لینک‌ها */
+.a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.a:hover {
+    text-decoration: underline;
+}
+/*========================================*/
+/* Style for total-row1 */
+.total-row1 {
+    background-color: #d1e7dd; /* Light green background for total-row1 */
+    font-weight: bold;          /* Make text bold */
+    color: #0f5132;             /* Dark green text color */
+    text-align: right;          /* Right-align text for better appearance */
+    padding: 5px;              /* Add padding for better spacing */
+}
+
+/* Style for total-row2 */
+.total-row2 {
+    background-color: #fff3cd; /* Light yellow background for total-row2 */
+    font-weight: bold;          /* Make text bold */
+    color: #856404;             /* Dark yellow text color */
+    text-align: right;          /* Right-align text for better appearance */
+    padding: 5px;              /* Add padding for better spacing */
+
+}
+
+/* Optional: Add some hover effect */
+.total-row1:hover, .total-row2:hover {
+    opacity: 0.9; /* Slightly transparent on hover */
+}
+
+
+
+/*==================================*/
+.button-container {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 14px;
+    background-color: #0b3585;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.btn:hover {
+    background-color: #0864de;
+}

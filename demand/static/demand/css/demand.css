@@ -1,0 +1,109 @@
+/* استایل کلی جدول */
+.table-container {
+    margin-top: 30px;
+    margin-left: 180px;
+    white-space: nowrap;
+     padding: 3px;
+
+}
+
+table {
+    border-collapse: collapse;
+    table-layout: fixed;
+
+}
+
+/* تنظیمات ستون‌های جدول */
+thead, tfoot {
+    display: table;
+    table-layout: fixed;
+    background-color: #0b2ada; /* پس‌زمینه سبز برای هدر و فوتر */
+    color: white;
+
+}
+
+tbody {
+    display: block;
+    max-height: 250px; /* حداکثر ارتفاع برای بدنه جدول */
+    overflow-y: scroll; /* فعال‌سازی اسکرول عمودی */
+}
+
+/* اسکرول مستقل برای بدنه جدول */
+tbody tr {
+    display: table;
+    table-layout: fixed;
+}
+
+/* استایل‌های ردیف‌ها */
+thead th, tbody td{
+    padding: 7px;
+    border: 1px solid #d0cece;
+    text-align: center;
+    font-size: 11px;
+}
+
+tfoot td {
+    padding: 7px;
+    text-align: center;
+    font-size: 11px;
+}
+
+
+
+/* رنگ متناوب برای ردیف‌های بدنه */
+tbody tr:nth-child(even) {
+    background-color: #dcdcdc;
+}
+
+/* استایل برای ردیف جمع کل */
+tfoot {
+    background-color: #7d8660;
+    color: white;
+    font-weight: bold;
+    font-size: 11px;
+}
+
+/* استایل فیلتر فرم */
+.filter-form {
+    width: 50%;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 10px;
+    margin-left: 280px;
+    padding: 5px;
+    background-color: #dddde0;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 12px;
+}
+
+.filter-form .form-group {
+    margin-right: 10px;
+}
+
+.filter-form input {
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 100px;
+    height: 15px;
+    font-size: 12px;
+}
+
+.filter-button {
+    padding: 4px 10px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    font-family: "Vazirmatn", sans-serif;
+     height: 25px;
+}
+
+.filter-button:hover {
+    background-color: #2980b9;
+}

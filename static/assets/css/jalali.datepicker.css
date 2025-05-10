@@ -1,0 +1,38 @@
+/* jalali.datepicker.css */
+
+.jalali-datepicker {
+    width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 10px;
+    background-color: #fff;
+    z-index: 9999;
+}
+
+.jalali-datepicker .datepicker {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.jalali-datepicker .datepicker .day,
+.jalali-datepicker .datepicker .month,
+.jalali-datepicker .datepicker .year {
+    flex: 1;
+    padding: 5px;
+    text-align: center;
+    cursor: pointer;
+}
+
+.jalali-datepicker .datepicker .day.selected,
+.jalali-datepicker .datepicker .month.selected,
+.jalali-datepicker .datepicker .year.selected {
+    background-color: #007bff;
+    color: #fff;
+}
+
+.jalali-datepicker .datepicker .day:hover,
+.jalali-datepicker .datepicker .month:hover,
+.jalali-datepicker .datepicker .year:hover {
+    background-color: #e9ecef;
+}
+

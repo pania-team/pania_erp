@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load jformat %}
+{% load humanize %}
+
+{% block css %}
+<link type="text/css" rel="stylesheet" href="{% static 'assets/css/jalalidatepicker.min.css' %}" />
+<link rel="stylesheet" href="{% static 'demand/css/create_repayment.css' %}">
+<link rel="stylesheet" href="{% static 'assets/css/fonts.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+{% endblock %}
+
+{% block body %}
+<div class="container">
+    <h5 style="text-align: center"> پرداخت قسط</h5>
+    <h4 style="text-align: center">{{ installment.loan.customer.first_name }} {{ installment.loan.customer.last_name }} </h4>
+    <div class="info-container">
+        <p style="text-align: right"><strong>مبلغ قسط:</strong> {{ installment.amount|intcomma:False }}</p>
+        <p style="text-align: right"><strong>تاریخ قسط:</strong> {{ installment.due_date|jformat:"%Y/%m/%d" }}</p>
+        <p style="text-align: right; color: red;"><strong>مانده معوق قسط:</strong> {{ mande_moavagh_ghest|intcomma:False }}</p>
+    </div>
+    <div class="form-box">
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <div id="amount-to-words" style="font-size: 12px; color: #888; margin-top: 5px; font-family: Vazirmatn, sans-serif;"></div>
+            <div class="button-container">
+                <a href="{% url 'demand:demand' %}" class="btn btn-back">بازگشت</a>
+                <button type="submit" class="btn btn-submit">ثبت پرداخت</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script src="{% static 'demand/js/create_repayment.js' %}"></script>
+<script type="text/javascript" src="{% static 'assets/js/jalalidatepicker.min.js' %}"></script>
+<script>
+jalaliDatepicker.startWatch({
+  minDate: "attr",
+  maxDate: "attr"
+});
+</script>
+{% endblock %}

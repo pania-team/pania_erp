@@ -1,0 +1,14 @@
+
+/*لینک فونت وزیر از سایت گوگل فونت*/
+@import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Vazirmatn:wght@100..900&display=swap');
+
+
+/*استایل فونت*/
+html, body {
+    font-family: "Vazirmatn", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 300;
+    font-style: normal;
+}
+
+

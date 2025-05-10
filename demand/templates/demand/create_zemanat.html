@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load jformat %}
+{% load humanize %}
+
+
+{% block css %}
+<link type="text/css" rel="stylesheet" href="{% static 'assets/css/jalalidatepicker.min.css' %}" />
+<link rel="stylesheet" href="{% static 'demand/css/create_zemanat.css' %}">
+<link rel="stylesheet" href="{% static 'assets/css/fonts.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+{% endblock %}
+
+{% block body %}
+<div class="container">
+
+
+
+
+    <div class="form-box">
+        <form method="post" action="{% url 'demand:create_zemanat' loan.id %}">
+
+            <h4>ثبت ضمانت</h4>
+            <h3>{{ loan.customer.first_name }} {{ loan.customer.last_name }} </h3>
+            {% csrf_token %}
+            {{ zemanat_form.as_p }}
+
+             <div class="button-container">
+            <a href="{% url 'demand:loan_list' %}" class="btn btn-primary btn-back">بازگشت</a>
+            <button type="submit" class="btn btn-primary btn-submit">ثبت</button>
+         </div>
+
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+
+{% block js %}
+<script src="{% static 'demand/js/create_zemanat.js' %}"></script>
+<script type="text/javascript" src="{% static 'assets/js/jalalidatepicker.min.js' %}"></script>
+<script>
+jalaliDatepicker.startWatch({
+  minDate: "attr",
+  maxDate: "attr"
+});
+</script>
+{% endblock %}

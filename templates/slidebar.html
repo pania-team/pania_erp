@@ -1,0 +1,103 @@
+{% load static %}
+{% load jformat %}
+{% load humanize %}
+{% block css %}
+<link rel="stylesheet" href="{% static 'assets/css/slidebar.css' %}">
+<link rel="stylesheet" href="{% static 'assets/css/fonts.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+{% endblock %}
+
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>سایدبار با زیرمنو کشویی</title>
+</head>
+<body>
+    <div class="sidebar">
+        <ul>
+            <li class="submenu">
+                <a href="#" class="submenu-toggle" style="font-size: 20px"><i class="fa fa-fw fa-users"></i></a>
+                <ul class="submenu-items">
+                    <li><a href="{% url 'accounts:customer_register' %}">ثبت مشتری</a></li>
+                    <li><a href="{% url 'accounts:customers_with_loans' %}">پرونده مشتری</a></li>
+                </ul>
+            </li>
+            <li class="submenu">
+                <a href="#" class="submenu-toggle" style="font-size: 20px"><i class="fa fa-money-bill-wave"></i></a>
+                <ul class="submenu-items">
+                    <li><a href="{% url 'demand:create_loan' %}">ثبت وام</a></li>
+                    <li><a href="{% url 'demand:loan_list' %}"> وام‌ها</a></li>
+                    <li><a href="{% url 'demand:demand' %}">مطالبات</a></li>
+                    <li><a href="{% url 'demand:demand_remain' %}">معوقات</a></li>
+                    <li><a href="{% url 'demand:demand_vosoli' %}">وصولی ها</a></li>
+                </ul>
+            </li>
+            <li class="submenu">
+                <a href="#" class="submenu-toggle" style="font-size: 20px"><i class="fa fa-fw fa-gem"></i></a>
+                <ul class="submenu-items">
+                    <li><a href="{% url 'sale:goldsale_list' %}" class="small-font">لیست فروش</a></li>
+                </ul>
+            </li>
+            <li class="submenu">
+                <a href="#" class="submenu-toggle" style="font-size: 20px"><i class="fa fa-fw fa-tablet-alt"></i></a>
+                <ul class="submenu-items">
+                    <li><a href="{% url 'sale:digisale_list' %}" class="small-font">لیست فروش</a></li>
+                    <li><a href="{% url 'sale:create_digiinvoice' %}" class="small-font">ثبت فاکتور</a></li>
+                </ul>
+            </li>
+            <li class="submenu">
+                <a href="#" class="submenu-toggle" style="font-size: 20px"><i class="fas fa-chart-bar"></i></a>
+                <ul class="submenu-items">
+                    <li><a href="{% url 'reports:goldreport_list' %}" class="small-font">گزارش طلا</a></li>
+
+                </ul>
+            </li>
+            <li class="submenu">
+                <a href="#" class="submenu-toggle" style="font-size: 20px"><i class="fas fa-coins"></i></a>
+                <ul class="submenu-items">
+                    <li>
+                        <a href="{% url 'finance:list_payments' %}" class="small-font">منتظر تایید
+                            <i class="fa fa-fw fa-gem"></i>
+                        </a>
+                    </li>
+                    <li><a href="{% url 'finance:list_appro_payments' %}" class="small-font"> پرداختها
+                        <i class="fa fa-fw fa-gem"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'finance:list_digipayments' %}" class="small-font">منتظر تایید
+                            <i class="fa fa-fw fa-tablet-alt"></i>
+                        </a>
+                    </li>
+                    <li><a href="{% url 'finance:list_appro_digipayments' %}" class="small-font"> پرداختها
+                        <i class="fa fa-fw fa-tablet-alt"></i>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+
+    <script>
+        // جاوااسکریپت برای تغییر وضعیت زیرمنوها
+        document.querySelectorAll('.submenu-toggle').forEach(item => {
+            item.addEventListener('click', event => {
+                event.preventDefault();
+
+                // بستن زیرمنوهای دیگر
+                const allSubmenus = document.querySelectorAll('.submenu-items');
+                allSubmenus.forEach(submenu => {
+                    if (submenu !== item.nextElementSibling) {
+                        submenu.classList.remove('open');
+                    }
+                });
+
+                // باز و بسته کردن زیرمنو فعلی
+                let submenu = item.nextElementSibling;
+                submenu.classList.toggle('open');
+            });
+        });
+    </script>
+</body>
+</html>

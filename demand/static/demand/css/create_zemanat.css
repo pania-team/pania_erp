@@ -1,0 +1,101 @@
+/* تنظیم فونت و اندازه فونت عمومی برای تمام بخش‌ها */
+body {
+    font-size: 14px; /* اندازه فونت پیش‌فرض */
+    line-height: 1.6; /* فاصله بین خطوط */
+    color: #333; /* رنگ متن پیش‌فرض */
+    display: flex;
+    justify-content: center; /* تراز کردن به صورت افقی در وسط */
+    align-items: flex-start; /* تراز کردن به صورت عمودی از بالا */
+}
+
+/* استایل برای کانتینر فرم */
+.container {
+    margin-top: 20px; /* کاهش فاصله بالا */
+    margin-bottom: 10px; /* فاصله پایین */
+    max-width: 800px; /* عرض حداکثر */
+    padding: 10px; /* فاصله داخلی */
+    background-color: #d5d5da; /* رنگ پس‌زمینه */
+    border-radius: 8px; /* گوشه‌های گرد */
+}
+
+/* استایل برای کادرهای فرم */
+.form-box {
+    border: 1px solid #ccc; /* حاشیه کادر */
+    border-radius: 5px; /* گوشه‌های گرد */
+    padding: 20px; /* کاهش فاصله داخلی */
+    margin-bottom: 10px; /* فاصله کمتر از فرم‌های دیگر */
+    background-color: #efecec; /* رنگ پس‌زمینه کادر */
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2); /* سایه‌ی سبک برای کادرها */
+    text-align: center; /* تراز کردن متن به مرکز */
+}
+
+/* استایل برای فیلدهای ورودی */
+input, textarea, select {
+    width: 100%; /* عرض 100% از والد */
+    height: 30px; /* کاهش ارتفاع فیلدها */
+    padding: 6px; /* کاهش فاصله داخلی */
+    border: 1px solid #ccc; /* حاشیه فیلدها */
+    border-radius: 5px; /* گوشه‌های گرد */
+    box-sizing: border-box; /* در نظر گرفتن پدینگ و حاشیه */
+    margin-bottom: 10px; /* کاهش فاصله از فیلدهای دیگر */
+    font-size: 14px; /* اندازه فونت فیلدها */
+}
+
+textarea {
+    height: 80px; /* ارتفاع کمتر برای text area */
+}
+
+/* استایل برای برچسب‌ها */
+label {
+    font-size: 14px; /* اندازه فونت برچسب‌ها */
+    display: block; /* نمایش به صورت بلوک */
+    margin-bottom: 5px; /* کاهش فاصله زیر برچسب */
+}
+
+/* استایل برای دکمه ارسال */
+.btn-primary {
+    background-color: #007bff; /* رنگ پس‌زمینه دکمه */
+    border-color: #007bff; /* رنگ حاشیه دکمه */
+    color: #fff; /* رنگ متن دکمه */
+    border-radius: 5px; /* گوشه‌های گرد دکمه */
+    cursor: pointer; /* تغییر نشانگر ماوس */
+    text-align: center; /* تراز کردن متن به مرکز */
+    transition: background-color 0.3s ease; /* انیمیشن برای تغییر رنگ پس‌زمینه */
+}
+
+.btn-primary:hover {
+    background-color: #0056b3; /* رنگ پس‌زمینه دکمه هنگام هاور */
+    border-color: #0056b3; /* رنگ حاشیه دکمه هنگام هاور */
+}
+
+/* استایل برای دکمه‌ها */
+.btn {
+    display: inline-block;
+    padding: 6px 10px; /* کاهش فاصله داخلی برای دکمه‌ها */
+    font-size: 14px; /* اندازه فونت دکمه */
+    color: white; /* رنگ متن دکمه */
+    border: none; /* حذف حاشیه */
+    border-radius: 5px; /* گوشه‌های گرد */
+    text-decoration: none; /* حذف زیرخط */
+    cursor: pointer; /* تغییر نشانگر ماوس */
+    margin: 0 5px; /* فاصله بین دکمه‌ها */
+}
+
+/* دکمه برگشت */
+.btn-back {
+    background-color: #0d5094; /* رنگ پس‌زمینه دکمه برگشت */
+    width: 60px; /* عرض دکمه برگشت */
+    font-size: 14px; /* اندازه فونت دکمه برگشت */
+}
+
+.btn-back:hover {
+    background-color: #0864de; /* رنگ پس‌زمینه دکمه برگشت هنگام هاور */
+}
+
+/* برای دکمه ثبت که عرض بیشتری دارد */
+.btn-submit {
+    width: 200px; /* کاهش عرض دکمه ثبت */
+    padding: 8px; /* کاهش فاصله داخلی */
+    font-size: 14px; /* اندازه فونت */
+    font-family: "Vazirmatn", sans-serif; /* فونت */
+}

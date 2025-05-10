@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load jformat %}
+{% load humanize %}
+
+{% block css %}
+<link type="text/css" rel="stylesheet" href="{% static 'assets/css/jalalidatepicker.min.css' %}" />
+<link rel="stylesheet" href="{% static 'finance/css/list_appro_payments.css' %}">
+<link rel="stylesheet" href="{% static 'assets/css/fonts.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+{% endblock %}
+
+{% block body %}
+<div class="container">
+
+<h2>لیست پرداخت ها</h2>
+
+<!-- فرم فیلتر تاریخ -->
+<form method="GET" class="filter-form">
+     <div class="form-group">
+        <input type="text" data-jdp placeholder="تاریخ پایان"  name="end_date" autocomplete="off" value="{{ end_date|default_if_none:'' }}"  style="font-family: Vazirmatn, sans-serif; font-size: 12px;" >
+    </div>
+    <div class="form-group">
+        <input type="text" data-jdp placeholder="تاریخ شروع"  name="start_date" autocomplete="off" value="{{ start_date|default_if_none:'' }}"  style="font-family: Vazirmatn, sans-serif; font-size: 12px;" >
+    </div>
+
+    <div class="form-group">
+        <input type="text" name="customer" value="{{ customer_name|default_if_none:'' }}" placeholder="مشتری" style="font-family: Vazirmatn, sans-serif; font-size: 12px;">
+    </div>
+
+    <div class="form-group">
+        <input type="text" name="seller" placeholder="فروشنده" value="{{ seller|default_if_none:'' }}" style="font-family: Vazirmatn, sans-serif; font-size: 11px;">
+    </div>
+
+        <a href="{% url 'finance:list_appro_payments' %}" class="reset-button">
+        <i class="fas fa-trash"></i>
+        </a>
+        <button type="submit" class="filter-button">اعمال فیلتر</button>
+
+</form>
+
+    <div class="table-container">
+        <table>
+            <caption><h4>پرداختهای طلا</h4></caption>
+            <thead>
+                <tr>
+                    <th style="width: 30px">ردیف</th>
+                    <th style="width: 150px">مشتری</th>
+                    <th style="width: 70px">فروشنده</th>
+                    <th style="width: 80px">تاریخ پرداخت</th>
+                    <th style="width: 100px">مبلغ پرداخت</th>
+                    <th style="width: 80px">اعتبار</th>
+                    <th style="width: 70px">کد اعتبار</th>
+                    <th style="width: 80px">روش پرداخت</th>
+                    <th style="width: 160px">شرح پرداخت</th>
+                    <th style="width: 60px">رسید پرداخت</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for payment in payments %}
+                    <tr>
+                        <td style="width: 30px">{{ forloop.revcounter }}</td>
+                        <td style="width: 150px">{{ payment.goldinvoice.customersale.first_name }} {{  payment.goldinvoice.customersale.last_name }}</td>
+                        <td style="width: 70px">{{ payment.goldinvoice.seller  }} </td>
+                        <td style="width: 80px">{{ payment.pay_date|jformat:"%Y/%m/%d" }}</td>
+                        <td style="width: 100px">{{ payment.amount|intcomma:False }}</td>
+                        <td style="width: 80px">{{ payment.etebar|intcomma:False }}</td>
+                        <td style="width: 70px">{{ payment.etebar_code }}</td>
+                        <td style="width: 80px">{{ payment.payment_method }}</td>
+                        <td style="width: 160px">{{ payment.payment_explain }}</td>
+                        <td style="width: 60px">{{ payment.payment_receipt }}</td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="9">No loans available.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+
+            <tfoot>
+                <tr class="total-row">
+                    <td style="width: 30px"></td>
+                    <td style="width: 150px"></td>
+                    <td style="width: 70px"></td>
+                    <td style="width: 80px"></td>
+                    <td style="width: 100px"></td>
+                    <td style="width: 80px"></td>
+                    <td style="width: 70px"></td>
+                    <td style="width: 80px"></td>
+                    <td style="width: 160px"></td>
+                    <td style="width: 60px"></td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+
+{% block js %}
+<script type="text/javascript" src="{% static 'assets/js/jalalidatepicker.min.js' %}"></script>
+<script>
+jalaliDatepicker.startWatch({
+  minDate: "attr",
+  maxDate: "attr"
+});
+</script>
+{% endblock %}

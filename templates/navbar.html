@@ -1,0 +1,26 @@
+{% load static %}
+{% load jformat %}
+{% load humanize %}
+{% block css %}
+<link rel="stylesheet" href="{% static 'assets/css/navbar.css' %}">
+<link rel="stylesheet" href="{% static 'assets/css/fonts.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+{% endblock %}
+
+<nav class="navbar">
+    <div class="navbar-container">
+        <div class="navbar-left">
+            <a href="{% url 'accounts:home' %}" class="nav-link"><i class="fa fa-home"></i></a>
+
+            {% if user.is_authenticated %}
+                <a href="{% url 'accounts:logout' %}" class="nav-link">Logout</i></a>
+
+
+            {% else %}
+                <a href="{% url 'accounts:login' %}" class="nav-link">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </a>
+            {% endif %}
+        </div>
+    </div>
+</nav>

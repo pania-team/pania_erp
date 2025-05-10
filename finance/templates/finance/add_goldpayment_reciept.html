@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load jformat %}
+{% load humanize %}
+
+
+{% block css %}
+<link type="text/css" rel="stylesheet" href="{% static 'assets/css/jalalidatepicker.min.css' %}" />
+<link rel="stylesheet" href="{% static 'finance/css/add_goldpayment_reciept.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<link rel="stylesheet" href="{% static 'assets/css/fonts.css' %}">
+{% endblock %}
+
+{% block body %}
+<div class="container">
+
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <div class="form-group">
+           <h4> تایید مالی پرداخت </h4>
+            <h6>{{ payment.goldinvoice.customersale.first_name }} {{ payment.goldinvoice.customersale.last_name }}</h6>
+            <h5>تاریخ پرداخت {{ payment.pay_date|jformat:"%Y/%m/%d" }}  </h5>
+            <h5> {{ payment.amount|intcomma:False }}  تومان</h5>
+            <div id="amount-to-words" style="font-size: 12px; color: #888; margin-top: 5px; font-family: Vazirmatn, sans-serif;"></div>
+            {{ form.as_p }}
+        </div>
+
+        <div class="button-container">
+            <a href="{% url 'finance:list_payments' %}" class="btn btn-primary btn-back">بازگشت</a>
+            <button type="submit" class="btn btn-primary btn-submit">ثبت</button>
+        </div>
+
+    </form>
+</div>
+{% endblock %}
+
+{% block js %}
+<script src="{% static 'finance/js/add_goldpayment_reciept.js' %}"></script>
+<script type="text/javascript" src="{% static 'assets/js/jalalidatepicker.min.js' %}"></script>
+<script>
+jalaliDatepicker.startWatch({
+  minDate: "attr",
+  maxDate: "attr"
+});
+</script>
+{% endblock %}
+

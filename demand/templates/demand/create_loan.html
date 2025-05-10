@@ -1,0 +1,209 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load jformat %}
+{% load humanize %}
+
+
+{% block css %}
+<link type="text/css" rel="stylesheet" href="{% static 'assets/css/select2.min.css' %}" />
+
+<link type="text/css" rel="stylesheet" href="{% static 'assets/css/jalalidatepicker.min.css' %}" />
+<link rel="stylesheet" href="{% static 'demand/css/create_loan.css' %}">
+<link rel="stylesheet" href="{% static 'assets/css/fonts.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+{% endblock %}
+
+{% block body %}
+<div class="container">
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <!-- فرم فاکتور -->
+        <div class="form-group">
+            <label style="color: #007bff"  for="loan_form">ثبت وام</label>
+            {{ loan_form.as_p }}
+        </div>
+        <button type="submit" class="btn btn-primary">ثبت</button>
+    </form>
+</div>
+
+{% endblock %}
+
+{% block js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript" src="{% static 'assets/js/select2.min.js' %}"></script>
+
+<script src="{% static 'demand/js/create_loan.js' %}"></script>
+<script type="text/javascript" src="{% static 'assets/js/jalalidatepicker.min.js' %}"></script>
+<script>
+jalaliDatepicker.startWatch({
+  minDate: "attr",
+  maxDate: "attr"
+});
+</script>
+<script>
+    $(document).ready(function() {
+        $('.select2').select2({
+            placeholder: "انتخاب مشتری",
+            allowClear: true
+        });
+    });
+</script>
+
+<script>
+    const planCodeMap = {
+        'بتا': 'B',
+        'آزاد': 'A',
+        'سازمانی': 'S',
+        'نمایندگی': 'M'
+    };
+
+    function generateLoanCode() {
+        const loanDateField = document.getElementById("id_loan_date");
+        const planField = document.getElementById("id_plan");
+        const amountField = document.getElementById("id_total_amount");
+        const codeField = document.getElementById("id_loan_code");
+
+        if (!loanDateField || !planField || !amountField || !codeField) return;
+
+        const loanDate = loanDateField.value.trim();
+        const dateParts = loanDate.split('/');  // تاریخ شمسی (مثلاً "1402/01/01")
+        const month = dateParts[1];  // ماه
+        const year = dateParts[0].slice(-1);  // یک رقم آخر سال (مثلاً ۱۴۰۲ → 2)
+
+        const planText = planField.options[planField.selectedIndex]?.text?.trim();  // دریافت متن طرح وام
+
+        // اطمینان از اینکه متن طرح با یکی از مقادیر طرح‌ها در `planCodeMap` تطابق دارد
+        let planCode = planCodeMap[planText];
+
+        // اگر طرح وام پیدا نشد یا خالی است، کد وام را خالی می‌کنیم
+        if (!planCode) {
+            codeField.value = '';  // اگر طرح معتبر پیدا نشد، کد وام را پاک می‌کنیم
+            return;
+        }
+
+        let amount = amountField.value.replace(/,/g, '');  // حذف کاما
+        amount = parseInt(amount);  // تبدیل به عدد صحیح
+
+        if (isNaN(amount)) {
+            // اگر مقدار مبلغ درست نیست
+            codeField.value = ''; // اگر مبلغ نادرست باشد، کد وام را پاک کنیم
+            return;
+        }
+
+        const amountInMillions = String(Math.floor(amount / 1_000_000)).padStart(2, '0'); // تقسیم بر یک میلیون و فرمت 2 رقمی
+
+        // ساخت کد وام
+        if (month && year && planCode && amountInMillions) {
+            const generatedCode = `${year}${month}${planCode}${amountInMillions}`;
+            codeField.value = generatedCode;
+        }
+    }
+
+    $(document).ready(function () {
+        $("#id_loan_date, #id_plan, #id_total_amount").on("change keyup", function () {
+            generateLoanCode();
+        });
+    });
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // تبدیل عدد به حروف برای فیلد مبلغ اعتبار
+        const amountField = document.querySelector('#id_total_amount');
+        const amountToWordsField = document.createElement('div');
+        amountToWordsField.id = 'amount-to-words';
+        amountToWordsField.style.marginTop = '5px';
+        amountToWordsField.style.fontSize = '12px';
+        amountToWordsField.style.fontFamily = 'Vazirmatn, sans-serif';
+        amountField.parentNode.appendChild(amountToWordsField);
+
+        amountField.addEventListener('input', function () {
+            const amount = parseInt(amountField.value.replace(/,/g, ''), 10);  // حذف کاما و تبدیل به عدد
+            if (!isNaN(amount)) {
+                amountToWordsField.innerHTML = convertNumberToWords(amount);
+            } else {
+                amountToWordsField.textContent = '';  // در صورت وارد نکردن عدد
+            }
+        });
+
+        // تبدیل عدد به حروف برای فیلد مبلغ نهایی
+        const finalAmountField = document.querySelector('#id_final_amount');
+        const finalAmountToWordsField = document.createElement('div');
+        finalAmountToWordsField.id = 'final-amount-to-words';
+        finalAmountToWordsField.style.marginTop = '5px';
+        finalAmountToWordsField.style.fontSize = '12px';
+        finalAmountToWordsField.style.fontFamily = 'Vazirmatn, sans-serif';
+        finalAmountField.parentNode.appendChild(finalAmountToWordsField);
+
+        finalAmountField.addEventListener('input', function () {
+            const finalAmount = parseInt(finalAmountField.value.replace(/,/g, ''), 10);  // حذف کاما و تبدیل به عدد
+            if (!isNaN(finalAmount)) {
+                finalAmountToWordsField.innerHTML = convertNumberToWords(finalAmount);
+            } else {
+                finalAmountToWordsField.textContent = '';  // در صورت وارد نکردن عدد
+            }
+        });
+
+        // تابع برای تبدیل عدد به حروف
+        function convertNumberToWords(num) {
+            const units = [
+                '', 'یک', 'دو', 'سه', 'چهار', 'پنج', 'شش', 'هفت', 'هشت', 'نه', 'ده', 'یازده', 'دوازده', 'سیزده', 'چهارده', 'پانزده', 'شانزده', 'هفده', 'هجدده', 'نوزده'
+            ];
+            const tens = [
+                '', '', 'بیست', 'سی', 'چهل', 'پنجاه', 'شصت', 'هفتاد', 'هشتاد', 'نود'
+            ];
+            const hundreds = [
+                '', 'صد', 'دویست', 'سیصد', 'چهارصد', 'پانصد', 'ششصد', 'هفتصد', 'هشتصد', 'نهصد'
+            ];
+            const thousands = [
+                '', 'هزار', 'میلیون', 'میلیارد', 'تریلیون'
+            ];
+
+            if (num === 0) return 'صفر تومان';
+
+            let word = '';
+            let thousandCounter = 0;
+
+            // تقسیم عدد به بخش‌های هزارگان
+            while (num > 0) {
+                const chunk = num % 1000;
+                if (chunk > 0) {
+                    word = convertChunk(chunk) + (thousands[thousandCounter] ? ' ' + thousands[thousandCounter] : '') + ' ' + word;
+                }
+                num = Math.floor(num / 1000);
+                thousandCounter++;
+            }
+
+            return word.trim() + ' تومان';
+
+            // تابع برای تبدیل هر بخش کمتر از 1000
+            function convertChunk(chunk) {
+                let result = '';
+
+                // صدگان
+                if (chunk >= 100) {
+                    const hundredsPart = Math.floor(chunk / 100);
+                    result += hundreds[hundredsPart] + ' ';
+                    chunk %= 100; // حذف بخش صدگان
+                }
+
+                // دهگان و یکان
+                if (chunk >= 20) {
+                    const tensPart = Math.floor(chunk / 10);
+                    result += tens[tensPart] + ' ';
+                    chunk %= 10; // حذف بخش دهگان
+                }
+
+                if (chunk > 0) {
+                    result += units[chunk] + ' ';
+                }
+
+                return result.trim();
+            }
+        }
+    });
+</script>
+
+
+{% endblock %}

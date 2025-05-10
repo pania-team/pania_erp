@@ -1,0 +1,161 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load jformat %}
+{% load humanize %}
+
+{% block css %}
+    <link rel="stylesheet" href="{% static 'demand/css/loan_detail.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/fonts.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <h4 style="padding-top: 20px">پرونده وام</h4>
+        <h5>
+            {{ loan.customer.first_name }} {{ loan.customer.last_name }} -----   کدملی:    {{ loan.customer.mellicode }}
+        </h5>
+        <h5 >طرح وام: {{ loan.plan }}   -----  {{ loan.loan_code }} :شناسه وام</h5>
+        <div class="button-container">
+                <a href="{% url 'demand:pdf_loan_agreement' loan.id %}" style="color: #089309; display: inline-block; ">
+            <i class="fas fa-file-download"></i> قرارداد
+            </a>
+            <!-- لینک دانلود پرونده -->
+            <a href="{% url 'demand:pdf_loan_document' loan.id %}" style="color: #830dc0; display: inline-block;">
+                <i class="fas fa-file-download"></i> پرونده
+            </a>
+        </div>
+
+
+        <div class="info-container1" style="font-size: 13px">
+            <p><strong>مبلغ وام:</strong> {{ loan.total_amount|intcomma:False }}</p>
+            <p><strong>تاریخ اخذوام:</strong> {{ loan.loan_date|jformat:"%Y/%m/%d" }}</p>
+            <p><strong>تاریخ اولین قسط:</strong> {{ loan.start_date|jformat:"%Y/%m/%d" }}</p>
+            <p><strong>مدت وام(ماه):</strong> {{ loan.num_month }}</p>
+            <p><strong>تعداد بازپرداخت:</strong> {{ loan.num_installments }}</p>
+        </div>
+
+        <div class="info-container2" style="font-size: 13px">
+            <p><strong>مبلغ نهایی وام:</strong> {{ loan.final_amount|intcomma:False }}</p>
+            <p><strong>جمع بازپرداخت مشتری:</strong> {{ loan.total_received_customer|intcomma:False }}</p>
+            <p><strong>مانده بدهی وام:</strong> {{ loan.loan_mande_bedehi|intcomma:False }}</p>
+             <p><strong>قسط معوق مشتری:</strong> {{ mande_moavagh|intcomma:False }}</p>
+        </div>
+        <div class="guarantees-container" style="font-size: 13px; margin-top: 20px;">
+        <h3>ضمانت‌ها</h3>
+        {% if guarantees %}
+            {% for guarantee in guarantees %}
+            <div class="guarantee-item" style="border: 1px solid #ddd; padding: 10px; margin-bottom: 10px;">
+                <p><strong>نام ضامن:</strong> {{ guarantee.guarantor_name }}</p>
+                <p><strong>مبلغ ضمانت:</strong> {{ guarantee.guarantee_amount|intcomma:False }} تومان</p>
+                <p><strong>سریال تضامین:</strong> {{ guarantee.guarantee_serial }}</p>
+                <p><strong>نوع ضمانت:</strong> {{ guarantee.get_guarantee_type_display }}</p>
+                <p><strong>تاریخ ضمانت:</strong> {{ guarantee.guarantee_date }}</p>
+                <p><strong>آدرس ضامن:</strong> {{ guarantee.guarantor_address }}</p>
+                <p><strong>شماره تماس ضامن:</strong> {{ guarantee.guarantor_phone }}</p>
+                <p><strong>کد ملی ضامن:</strong> {{ guarantee.guarantor_mellicod }}</p>
+            </div>
+                    {% endfor %}
+                {% else %}
+                    <p>هیچ ضمانتی برای این وام ثبت نشده است.</p>
+                {% endif %}
+            </div>
+
+        <h4 style="text-align: right">جدول اقساط</h4>
+        <div class="table-container">
+            <table border="1">
+                <thead>
+                    <tr>
+                        <th>قسط</th>
+                        <th>سررسید</th>
+                        <th>مبلغ قسط</th>
+                        <th>نوع قسط</th>
+                        <th>محل وصول</th>
+                        <th>مبلغ بازپرداخت</th>
+                        <th>دیرکرد</th>
+                        <th>وضعیت بازپرداخت</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for installment in installments %}
+                    <tr>
+                        <td>{{ installment.ghest_count }}</td>
+                        <td>{{ installment.due_date|jformat:"%Y/%m/%d" }}</td>
+                        <td>{{ installment.amount|intcomma:False }}</td>
+                        <td>{{ installment.ghest_type }}</td>
+                        <td>{{ installment.ghest_place }}</td>
+                        <td>{{ installment.total_ghest_repaid|intcomma:False }}</td>
+                        <td>{{ installment.penalty_amount|intcomma:False }}</td>
+                        <td>
+                            {% if installment.paid == True %}
+                                <i class="fa fa-check-circle" style="color: blue;"></i>
+                            {% else %}
+                                <i class="fa fa-times-circle" style="color: red;"></i>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6">اقساط ایجاد نشده است</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {% if not loan.installments_created %}
+        <div class="btn-submit">
+            <a href="{% url 'demand:create_installments' loan.id %}" class="btn btn-primary btn-create">ایجاد اقساط</a>
+        </div>
+        {% endif %}
+
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <!-- جدول پرداختی‌ها -->
+        <h4 style="text-align: right">جدول پرداختی‌ها</h4>
+
+        <div class="table-container">
+            <table border="1">
+                <thead>
+                    <tr>
+                        <th>تاریخ بازپرداخت</th>
+                        <th>شماره قسط</th>
+                        <th>مبلغ بازپرداخت</th>
+                        <th>نحوه پرداخت</th>
+                        <th>رسید پرداخت</th>
+                        <th>محل پرداخت</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for repayment in repayments %}
+                    <tr>
+                        <td>{{ repayment.repayment_date|jformat:"%Y/%m/%d" }}</td>
+                        <td>{{ repayment.installment.ghest_count }}</td>
+                        <td>{{ repayment.repayment_amount|intcomma:False }}</td>
+                        <td>{{ repayment.get_payment_method_display }}</td>
+                        <td>{{ repayment.payment_voucher }}</td>
+                        <td>{{ repayment.payment_place }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4">هیچ پرداختی وجود ندارد.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="button-container">
+                <a href="{% url 'demand:loan_list' %}" class="btn btn-primary btn-back"><i class="fas fa-arrow-left"></i></a>
+                <a href="{% url 'demand:update_installments' loan.id %}" class="btn btn-success btn-update">تعیین نوع اقساط</a>
+        </div>
+    </div>
+{% endblock %}
+

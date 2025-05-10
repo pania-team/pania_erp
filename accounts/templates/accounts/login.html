@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'accounts/css/login.css' %}">
+<link rel="stylesheet" href="{% static 'assets/css/fonts.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+{% endblock %}
+
+{% block body %}
+<body>
+    <div class="image-container">
+            {% if login_image %}
+                 <img src="{{ login_image.image.url }}" alt="Login Image">
+            {% endif %}
+     </div>
+    <div class="login-background">
+        <div class="login-container">
+            <form method="POST" autocomplete="off" novalidate>
+                {% csrf_token %}
+                <div class="form-group">
+                    <label style="text-align: left" for="username">کدملی</label>
+                    <input type="text" id="username" name="user_id" autocomplete="new-password" required
+                           onkeydown="goToNextField(event, 'password')">
+                </div>
+                <div class="form-group">
+                    <label style="text-align: left" for="password">گذرواژه</label>
+                    <input type="password" id="password" name="pass_code" autocomplete="new-password" required>
+                </div>
+                <button type="submit">ورود</button>
+            </form>
+            {% if messages %}
+                <ul class="messages">
+                    {% for message in messages %}
+                        <li>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+    </div>
+    <script>
+        function goToNextField(event, nextFieldId) {
+            // Check if the Enter key was pressed
+            if (event.key === 'Enter') {
+                event.preventDefault(); // Prevent form submission
+                const nextField = document.getElementById(nextFieldId);
+                if (nextField) {
+                    nextField.focus(); // Move focus to the next field
+                }
+            }
+        }
+    </script>
+</body>
+{% endblock %}
