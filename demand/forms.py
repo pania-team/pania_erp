@@ -53,17 +53,23 @@ class GuaranteeForm(forms.ModelForm):
     class Meta:
         model =Guarantee
         fields = [
-             'guarantor_name', 'guarantee_amount', 'guarantee_serial','guarantee_type', 'guarantee_date',
-            'guarantor_phone', 'guarantor_mellicod','guarantor_address']
+             'guarantor_name','guarantor_mellicod', 'guarantee_amount', 'guarantee_serial','guarantee_type', 'guarantee_date',
+            'guarantor_phone','guarantor_phone2','guarantor_phone3', 'guarantor_address', 'guarantor_address2']
         widgets = {
             'guarantor_name': forms.TextInput(attrs={"placeholder": "نام ضامن",'required': True, "style": "font-family: Vazirmatn, sans-serif; font-size: 11px"}),
-            'guarantee_amount': forms.NumberInput(attrs={"placeholder": "مبلغ ضمانت", "style": "font-family: Vazirmatn, sans-serif; font-size: 11px"}),
-            'guarantee_serial': forms.TextInput(attrs={"placeholder": "سریال تضامین", "style": "font-family: Vazirmatn, sans-serif; font-size: 11px"}),
+            'guarantee_amount': forms.NumberInput(attrs={"placeholder": "مبلغ ضمانت",'required': True, "style": "font-family: Vazirmatn, sans-serif; font-size: 11px"}),
+            'guarantee_serial': forms.TextInput(attrs={"placeholder": "سریال تضامین",'required': True, "style": "font-family: Vazirmatn, sans-serif; font-size: 11px"}),
             'guarantee_type': forms.Select(attrs={'required': True , "style": "font-family: Vazirmatn, sans-serif; font-size: 11px"}),
             'guarantee_date': forms.TextInput(attrs={'data-jdp': 'true','class': 'form-control','required': True,"placeholder": "تاریخ ضمانت" , "style": "font-family: Vazirmatn, sans-serif; font-size: 11px", 'autocomplete': 'off'}),
-            'guarantor_phone': forms.TextInput(attrs={"placeholder": "شماره تماس ضامن" , "style": "font-family: Vazirmatn, sans-serif; font-size: 11px"}),
+            'guarantor_phone': forms.TextInput(attrs={"placeholder": "شماره تماس ضامن" ,'required': True, "style": "font-family: Vazirmatn, sans-serif; font-size: 11px"}),
+            'guarantor_phone2': forms.TextInput(attrs={"placeholder": "شماره تماس 2",
+                                                      "style": "font-family: Vazirmatn, sans-serif; font-size: 11px"}),
+            'guarantor_phone3': forms.TextInput(attrs={"placeholder": "شماره ثابت",'required': True,
+                                                      "style": "font-family: Vazirmatn, sans-serif; font-size: 11px"}),
             'guarantor_mellicod': forms.TextInput(attrs={"placeholder": "کد ملی ضامن" ,'required': True, "style": "font-family: Vazirmatn, sans-serif; font-size: 11px"}),
-            'guarantor_address': forms.Textarea(attrs={"placeholder": "آدرس ضامن" , "style": "font-family: Vazirmatn, sans-serif; font-size: 11px"}),
+            'guarantor_address': forms.Textarea(attrs={"placeholder": "آدرس ضامن" ,'required': True, "style": "font-family: Vazirmatn, sans-serif; font-size: 11px"}),
+            'guarantor_address2': forms.Textarea(attrs={"placeholder": "آدرس محل کار", 'required': True,
+                                                       "style": "font-family: Vazirmatn, sans-serif; font-size: 11px"}),
         }
         labels = {
             'guarantor_name': '',
@@ -72,8 +78,11 @@ class GuaranteeForm(forms.ModelForm):
             'guarantee_type': 'نوع ضمانت',
             'guarantee_date': '',
             'guarantor_phone': '',
+            'guarantor_phone2': '',
+            'guarantor_phone3': '',
             'guarantor_mellicod': '',
             'guarantor_address': '',
+            'guarantor_address2': '',
         }
 
 

@@ -110,7 +110,10 @@ class Guarantee(models.Model):
     guarantee_type = models.CharField(max_length=20, choices=GUARANTEE_TYPE_CHOICES, verbose_name='نوع ضمانت', null=True, blank=True)
     guarantee_date = jmodels.jDateField(verbose_name='تاریخ ضمانت', null=True, blank=True)
     guarantor_address = models.CharField(max_length=255, verbose_name='آدرس ضامن', null=True, blank=True)
+    guarantor_address2 = models.CharField(max_length=255, verbose_name='آدرس محل کار', null=True, blank=True)
     guarantor_phone = models.CharField(max_length=15, verbose_name='شماره تماس ضامن', null=True, blank=True)
+    guarantor_phone2 = models.CharField(max_length=15, verbose_name='شماره تماس 2', null=True, blank=True)
+    guarantor_phone3 = models.CharField(max_length=15, verbose_name='شماره تماس ثابت', null=True, blank=True)
     guarantor_mellicod = models.CharField(max_length=10, verbose_name='کد ملی ضامن', null=True, blank=True)
 
 

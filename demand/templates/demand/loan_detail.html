@@ -47,13 +47,17 @@
             {% for guarantee in guarantees %}
             <div class="guarantee-item" style="border: 1px solid #ddd; padding: 10px; margin-bottom: 10px;">
                 <p><strong>نام ضامن:</strong> {{ guarantee.guarantor_name }}</p>
+                <p><strong>کد ملی ضامن:</strong> {{ guarantee.guarantor_mellicod }}</p>
                 <p><strong>مبلغ ضمانت:</strong> {{ guarantee.guarantee_amount|intcomma:False }} تومان</p>
                 <p><strong>سریال تضامین:</strong> {{ guarantee.guarantee_serial }}</p>
                 <p><strong>نوع ضمانت:</strong> {{ guarantee.get_guarantee_type_display }}</p>
                 <p><strong>تاریخ ضمانت:</strong> {{ guarantee.guarantee_date }}</p>
-                <p><strong>آدرس ضامن:</strong> {{ guarantee.guarantor_address }}</p>
                 <p><strong>شماره تماس ضامن:</strong> {{ guarantee.guarantor_phone }}</p>
-                <p><strong>کد ملی ضامن:</strong> {{ guarantee.guarantor_mellicod }}</p>
+                <p><strong>شماره تماس 2:</strong> {{ guarantee.guarantor_phone2 }}</p>
+                <p><strong>شماره ثابت:</strong> {{ guarantee.guarantor_phone3 }}</p>
+                <p><strong>آدرس ضامن:</strong> {{ guarantee.guarantor_address }}</p>
+                <p><strong>آدرس محل کار:</strong> {{ guarantee.guarantor_address2 }}</p>
+
             </div>
                     {% endfor %}
                 {% else %}
