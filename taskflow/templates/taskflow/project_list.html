@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'taskflow/css/project_list.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="projects-page">
+    <div class="header">
+        <input type="text" id="project-search" placeholder="فیلتر عنوان پروژه ..." class="search-box">
+    </div>
+    <div class="projects-title-row">
+        <h2 class="projects-title">پروژه‌ها</h2>
+        <a href="#" id="open-create-project-modal" class="btn btn-primary">+ ایجاد پروژه جدید</a>
+    </div>
+    <div class="main-content">
+        <div class="projects-list">
+            <div class="project-card new-project">
+                <a href="#" id="open-create-project-modal-2">+ پروژه جدید</a>
+            </div>
+            {% for project in projects %}
+            <div class="project-card project-item">
+                <h2 class="project-title">
+                    <a href="{% url 'taskflow:project_detail' project.pk %}" style="color:inherit; text-decoration:none;">{{ project.name }}</a>
+                </h2>
+                <!-- اطلاعات پروژه -->
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- Modal for Create Project -->
+<div id="createProjectModal" class="modal" style="display:none;">
+  <div class="modal-content">
+    <span class="close-modal" style="float:left;cursor:pointer;">&times;</span>
+    <div id="modal-body-content">
+      <!-- فرم اینجا لود می‌شود -->
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function() {
+    $('#project-search').on('input', function() {
+        var value = $(this).val().toLowerCase();
+        $('.project-item').filter(function() {
+            $(this).toggle($(this).find('.project-title').text().toLowerCase().indexOf(value) > -1)
+        });
+    });
+    // باز کردن مدال با هر دو دکمه
+    $('#open-create-project-modal, #open-create-project-modal-2').click(function(e) {
+        e.preventDefault();
+        $.get("{% url 'taskflow:project_create' %}", function(data) {
+            $('#modal-body-content').html(data);
+            $('#createProjectModal').show();
+        });
+    });
+    // بستن مدال با دکمه ضربدر یا انصراف
+    $(document).on('click', '.close-modal, #cancel-create-project', function() {
+        $('#createProjectModal').hide();
+    });
+    // ارسال فرم با ajax
+    $(document).on('submit', '#project-create-form', function(e) {
+        e.preventDefault();
+        var form = $(this);
+        console.log('Submitting project create form...');
+        $.post(form.attr('action'), form.serialize(), function(data) {
+            if ($(data).find('.project-form').length) {
+                // اگر خطا داشت، فرم را دوباره نمایش بده
+                $('#modal-body-content').html(data);
+                console.log('Form errors, re-rendering form.');
+            } else {
+                // موفقیت: مدال را ببند و صفحه را رفرش کن یا لیست را آپدیت کن
+                $('#createProjectModal').hide();
+                console.log('Project created successfully, reloading page.');
+                location.reload();
+            }
+        }).fail(function(xhr, status, error) {
+            console.log('AJAX error:', status, error);
+            alert('خطا در ارسال فرم!');
+        });
+    });
+});
+</script>
+{% endblock %}

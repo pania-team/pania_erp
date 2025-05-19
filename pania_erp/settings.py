@@ -99,7 +99,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'pania_erp',
-        'USER': 'topghest_ramezani',
+        'USER': 'postgres',
         'PASSWORD': '77308914elia',
         'HOST': '127.0.0.1',
         'PORT': '5432',
@@ -144,9 +144,9 @@ STATIC_ROOT = '/home/topghest/public_html/static'
 STATIC_URL = '/static/'
 
 
-# STATICFILES_DIRS = [
-#     BASE_DIR / 'static'
-# ]
+STATICFILES_DIRS = [
+    BASE_DIR / 'static'
+]
 
 
 MEDIA_ROOT = '/home/topghest/public_html/media'
