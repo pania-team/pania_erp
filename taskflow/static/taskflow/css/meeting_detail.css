@@ -1,0 +1,34 @@
+.meeting-detail-container {
+    max-width: 800px;
+    margin: 2rem auto;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    padding: 2rem;
+}
+.meeting-header {
+    border-bottom: 1px solid #eee;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+}
+.tasks-list {
+    list-style: none;
+    padding: 0;
+}
+.task-item {
+    background: #f7fafd;
+    border-radius: 8px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+    margin-bottom: 1rem;
+    padding: 1rem 1.5rem;
+}
+.task-status {
+    font-size: 0.9rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 4px;
+    display: inline-block;
+}
+.status-todo { background: #fff3e0; color: #e65100; }
+.status-in_progress { background: #e3f2fd; color: #1976d2; }
+.status-done { background: #e8f5e9; color: #2e7d32; }
+.status-canceled { background: #fce4ec; color: #c2185b; }
