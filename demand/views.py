@@ -278,18 +278,17 @@ def loan_list(request):
 
     if not (start_date or end_date or customer_name or loan_plan):
         loans = loans[:10]
-
+        # آماده‌سازی برای میانگین وزنی تعداد اقساط
+    weighted_num_month_sum = 0
+    total_weight_sum = 0
     for loan in loans:
         total_amount = loan.total_amount or 0
         final_amount = loan.final_amount or 0
         num_month = loan.num_month or 1  # جلوگیری از تقسیم بر صفر
-
         # سود کل
         profit = final_amount - total_amount
-
         # سود ماهانه ریالی
         monthly_profit = profit / num_month if num_month else 0
-
         # درصد سود ماهانه
         monthly_interest_percent = ((profit / total_amount) / num_month * 100) if total_amount else 0
 
@@ -297,6 +296,9 @@ def loan_list(request):
         loan.profit = profit
         loan.monthly_profit = monthly_profit
         loan.monthly_interest_percent = monthly_interest_percent
+        # افزودن به مجموع برای محاسبه میانگین وزنی تعداد اقساط
+        weighted_num_month_sum += (num_month * total_amount)
+        total_weight_sum += total_amount
 
     total_amount_sum = loans.aggregate(total_amount_sum=Sum('total_amount'))['total_amount_sum'] or 0
     final_amount_sum = loans.aggregate(final_amount_sum=Sum('final_amount'))['final_amount_sum'] or 0
@@ -304,6 +306,9 @@ def loan_list(request):
 
     # درصد سود کلی (نسبت به کل اصل وام‌ها)
     total_profit_percent = (profit_sum / total_amount_sum * 100) if total_amount_sum else 0
+    # میانگین وزنی تعداد اقساط
+    weighted_avg_num_month = (weighted_num_month_sum / total_weight_sum) if total_weight_sum else 0
+
     context = {
         'loans': loans,
         'total_amount_sum': total_amount_sum,
@@ -315,6 +320,7 @@ def loan_list(request):
         'customer_name': customer_name,
         'loan_plan': loan_plan,
         'filters': filters,
+        'weighted_avg_num_month': weighted_avg_num_month,
     }
     return render(request, 'demand/loan_list.html', context)
 

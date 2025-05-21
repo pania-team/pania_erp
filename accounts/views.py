@@ -51,7 +51,6 @@ def login_view(request):
 
 
 
-
 # -----------------------------------------------
 @login_required
 def customer_register(request):

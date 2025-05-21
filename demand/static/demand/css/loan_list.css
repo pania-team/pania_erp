@@ -1,7 +1,7 @@
 /* استایل کلی جدول */
 .table-container {
     margin-top: 30px;
-    margin-left: 100px;
+    margin-left: 20px;
     white-space: nowrap;
     padding: 3px;
 }
@@ -43,7 +43,7 @@ thead th, tbody td {
     padding: 5px;
     border: 1px solid #dcdcdc;
     text-align: center;
-    font-size: 11px;
+    font-size: 10px;
 }
 
 /* استایل فوتر */

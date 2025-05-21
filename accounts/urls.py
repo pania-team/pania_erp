@@ -12,6 +12,7 @@ urlpatterns = [
     path('customer_register/', views.customer_register, name='customer_register'),
     path('customers-with-loans/', views.customers_with_loans, name='customers_with_loans'),
 
+
 ]
 
 

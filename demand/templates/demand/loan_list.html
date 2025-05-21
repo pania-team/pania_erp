@@ -59,15 +59,15 @@
             <caption><h4>لیست وام</h4></caption>
             <thead>
                 <tr>
-                    <th style="width: 30px">ردیف</th>
-                    <th style="width: 70px">تاریخ وام</th>
-                    <th style="width: 170px">نام</th>
+                    <th style="width: 40px">ردیف</th>
+                    <th style="width: 60px">تاریخ وام</th>
+                    <th style="width: 180px">نام</th>
                     <th style="width: 70px">شناسه وام</th>
-                    <th style="width: 60px">طرح وام</th>
+                    <th style="width: 50px">طرح وام</th>
                     <th style="width: 100px">مبلغ وام</th>
                     <th style="width: 100px">مبلغ نهایی</th>
 
-                    <th style="width: 50px">قسط</th>
+                    <th style="width: 60px">قسط</th>
                     <th style="width: 60px">بازپرداخت</th>
                     <th style="width: 80px">سود وام</th>
                     <th style="width: 70px">سود ماهانه</th>
@@ -78,15 +78,15 @@
             <tbody>
                 {% for loan in loans %}
                     <tr>
-                        <td style="width: 30px">{{ forloop.revcounter }}</td>
-                        <td style="width: 70px">{{ loan.loan_date|jformat:"%Y/%m/%d" }}</td>
-                        <td style="width: 170px">{{ loan.customer.first_name }} {{ loan.customer.last_name }}</td>
+                        <td style="width: 40px">{{ forloop.revcounter }}</td>
+                        <td style="width: 60px">{{ loan.loan_date|jformat:"%Y/%m/%d" }}</td>
+                        <td style="width: 180px;font-size: 9px">{{ loan.customer.first_name }} {{ loan.customer.last_name }}</td>
                         <td style="width: 70px">{{ loan.loan_code }}</td>
-                        <td style="width: 60px">{{ loan.plan }}</td>
+                        <td style="width: 50px">{{ loan.plan }}</td>
                         <td style="width: 100px">{{ loan.total_amount|intcomma:False }}</td>
                         <td style="width: 100px">{{ loan.final_amount|intcomma:False }}</td>
 
-                        <td style="width: 50px">{{ loan.num_month }}</td>
+                        <td style="width: 60px">{{ loan.num_month }}</td>
                         <td style="width: 60px">{{ loan.num_installments }}</td>
                         <td style="width: 80px">{{ loan.profit|floatformat:0|intcomma:False }}</td>
                         <td style="width: 70px">{{ loan.monthly_interest_percent|floatformat:1|intcomma:False }}%</td>
@@ -110,15 +110,15 @@
 
             <tfoot>
                 <tr class="total-row">
-                    <td style="width: 30px"></td>
-                    <td style="width: 70px"></td>
-                    <td style="width: 170px"></td>
-                    <td style="width: 70px">جمع</td>
+                    <td style="width: 40px"></td>
                     <td style="width: 60px"></td>
+                    <td style="width: 180px"></td>
+                    <td style="width: 70px">جمع</td>
+                    <td style="width: 50px"></td>
                     <td style="width: 100px;font-size: 12px">{{ total_amount_sum|intcomma:False }}</td>
                     <td style="width: 100px ;font-size: 12px">{{ final_amount_sum|intcomma:False }}</td>
 
-                    <td style="width: 50px"></td>
+                    <td style="width: 60px">w.avg {{weighted_avg_num_month|floatformat:0}}</td>
                     <td style="width: 60px">{{total_profit_percent|floatformat:0}}%</td>
                     <td style="width: 80px">{{ profit_sum|intcomma:False }}</td>
                     <td style="width: 70px"></td>
