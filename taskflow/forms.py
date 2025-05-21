@@ -29,7 +29,11 @@ class TaskForm(forms.ModelForm):
         fields = ['title', 'description', 'assigned_to', 'project', 'meeting', 'due_date', 'status', 'priority']
         widgets = {
             'description': forms.Textarea(attrs={'rows': 3}),
-            'due_date': forms.DateInput(attrs={'type': 'date'}),
+            'due_date': forms.TextInput(attrs={
+                'class': 'form-control jalali-date-datepicker',
+                'autocomplete': 'off',
+                'id': 'due_date'  # Added ID for easier selection
+            }),
             'assigned_to': forms.Select(attrs={'class': 'form-control'}),
             'project': forms.Select(attrs={'class': 'form-control'}),
             'meeting': forms.Select(attrs={'class': 'form-control'}),

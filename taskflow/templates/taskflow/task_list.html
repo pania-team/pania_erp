@@ -1,174 +1,195 @@
 {% extends "base.html" %}
 {% load static %}
 {% block css %}
+    <link rel="stylesheet" href="{% static 'assets/css/fonts.css' %}">
     <link rel="stylesheet" href="{% static 'taskflow/css/task_list.css' %}">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 {% endblock %}
 {% block content %}
-<div class="tasks-page-container">
-    <div class="tasks-header">
-        <div class="tasks-actions">
-            <button class="btn btn-light"><i class="fa fa-filter"></i> فیلتر نمایش وظایف</button>
-            <button class="btn btn-light"><i class="fa fa-sort"></i> مرتب‌سازی: پیش‌فرض</button>
-        </div>
-        <button id="open-create-task-modal" class="btn btn-success tasks-create-btn">
-            <i class="fa fa-plus"></i> ایجاد وظیفه
-        </button>
-    </div>
-
-    <!-- Modal ایجاد تسک جدید -->
-    <div id="create-task-modal" class="custom-modal-bg" style="display:none;">
-        <div class="custom-modal" dir="rtl">
-            <form id="create-task-form" method="post" action="{% url 'taskflow:task_create' %}">
-                {% csrf_token %}
-                <div class="modal-header">
-                    <span class="modal-title">ایجاد وظیفه</span>
-                    <span class="close-modal" id="close-create-task-modal">&times;</span>
-                </div>
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label>عنوان فعالیت</label>
-                        <input type="text" name="title" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <label>توضیحات</label>
-                        <textarea name="description" class="form-control"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label>پروژه</label>
-                        <select name="project" class="form-control">
-                            <option value="">انتخاب پروژه</option>
-                            {% for project in projects %}
-                            <option value="{{ project.id }}">{{ project.name }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>جلسه</label>
-                        <select name="meeting" class="form-control">
-                            <option value="">انتخاب جلسه</option>
-                            {% for project in projects %}
-                                {% for meeting in project.meetings.all %}
-                                    <option value="{{ meeting.id }}">{{ meeting.title }}</option>
-                                {% endfor %}
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>مسئول انجام</label>
-                        <select name="assigned_to" class="form-control">
-                            {% for user in users %}
-                            <option value="{{ user.id }}" {% if user.id == request.user.id %}selected{% endif %}>{{ user.f_name }} {{ user.l_name }}{% if not user.f_name and not user.l_name %}{{ user.mellicod }}{% endif %}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>تاریخ سررسید</label>
-                        <input type="text" name="due_date" class="form-control jalali-datepicker" autocomplete="off">
-                    </div>
-                    <div class="form-group">
-                        <label>وضعیت</label>
-                        <select name="status" class="form-control">
-                            <option value="todo">در انتظار انجام</option>
-                            <option value="in_progress">در حال انجام</option>
-                            <option value="done">انجام شده</option>
-                            <option value="canceled">لغو شده</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>اولویت</label>
-                        <select name="priority" class="form-control">
-                            <option value="low">کم</option>
-                            <option value="medium">متوسط</option>
-                            <option value="high">زیاد</option>
-                            <option value="critical">بحرانی</option>
-                        </select>
-                    </div>
-                    <div id="task-form-errors" class="text-danger" style="margin-top:10px;"></div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" id="close-create-task-modal-2">انصراف</button>
-                    <button type="submit" class="btn btn-success">ایجاد</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    {% if tasks|length == 0 and waiting_tasks|length == 0 %}
-        <div class="empty-tasks-center">
-            <i class="fa fa-tasks fa-4x"></i>
-            <div class="empty-tasks-title">وظیفه‌ای در این بخش وجود ندارد</div>
-        </div>
-    {% else %}
-        <div class="tasks-list-section">
-            {% for task in tasks %}
-            <div class="task-card task-detail-trigger"
-                 data-task-id="{{ task.id }}"
-                 data-title="{{ task.title|default_if_none:'-' }}"
-                 data-description="{{ task.description|default_if_none:'-' }}"
-                 data-project="{{ task.project.name|default_if_none:'-' }}"
-                 data-meeting="{{ task.meeting.title|default_if_none:'-' }}"
-                 data-assigned="{{ task.assigned_to.f_name }} {{ task.assigned_to.l_name }}"
-                 data-due="{{ task.due_date|default_if_none:'-' }}"
-                 data-status="{{ task.get_status_display }}"
-                 data-priority="{{ task.get_priority_display }}">
-                <div class="task-card-header">
-                    <span class="task-title">{{ task.title }}</span>
-                    <span class="task-status status-{{ task.status }}">{{ task.get_status_display }}</span>
-                </div>
-                <div class="task-card-body">
-                    <div class="task-desc">{{ task.description|truncatechars:80|default:'بدون توضیح' }}</div>
-                    <div class="task-meta">
-                        <span><i class="fa fa-calendar-alt"></i> {{ task.due_date|default:'-' }}</span>
-                    </div>
-                </div>
+<div class="taskflow-container">
+    <div class="tasks-page-container">
+        <div class="tasks-header">
+            <div class="tasks-actions">
+                <form method="get" id="status-filter-form" class="status-filter-form">
+                    <select name="status" class="form-control status-filter-select js-status-select" onchange="document.getElementById('status-filter-form').submit()">
+                        <option value="active" {% if selected_status == 'active' %}selected{% endif %}>فعال (در انتظار و در حال انجام)</option>
+                        <option value="all" {% if selected_status == 'all' %}selected{% endif %}>همه وضعیت‌ها</option>
+                        <option value="todo" {% if selected_status == 'todo' %}selected{% endif %}>در انتظار انجام</option>
+                        <option value="in_progress" {% if selected_status == 'in_progress' %}selected{% endif %}>در حال انجام</option>
+                        <option value="done" {% if selected_status == 'done' %}selected{% endif %}>انجام شده</option>
+                        <option value="canceled" {% if selected_status == 'canceled' %}selected{% endif %}>لغو شده</option>
+                    </select>
+                </form>
             </div>
-            {% endfor %}
+            <button id="open-create-task-modal" class="btn btn-success tasks-create-btn">
+                <i class="fa fa-plus"></i> ایجاد وظیفه
+            </button>
         </div>
-    {% endif %}
-</div>
 
-<!-- Modal نمایش جزئیات تسک -->
-<div id="task-detail-modal" class="custom-modal-bg" style="display:none;">
-    <div class="custom-modal" dir="rtl" style="max-width: 500px;">
-        <div class="modal-header">
-            <span class="modal-title" id="detail-title">جزئیات تسک</span>
-            <span class="close-modal" id="close-task-detail-modal">&times;</span>
+        <!-- Modal ایجاد تسک جدید -->
+        <div id="create-task-modal" class="custom-modal-bg" style="display:none;">
+            <div class="custom-modal" dir="rtl">
+                <form id="create-task-form" method="post" action="{% url 'taskflow:task_create' %}">
+                    {% csrf_token %}
+                    <div class="modal-header">
+                        <span class="modal-title">ایجاد وظیفه</span>
+                        <span class="close-modal" id="close-create-task-modal">&times;</span>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label>عنوان فعالیت</label>
+                            <input type="text" name="title" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label>توضیحات</label>
+                            <textarea name="description" class="form-control"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>پروژه</label>
+                            <select name="project" class="form-control">
+                                <option value="">انتخاب پروژه</option>
+                                {% for project in projects %}
+                                <option value="{{ project.id }}">{{ project.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>جلسه</label>
+                            <select name="meeting" class="form-control">
+                                <option value="">انتخاب جلسه</option>
+                                {% for project in projects %}
+                                    {% for meeting in project.meetings.all %}
+                                        <option value="{{ meeting.id }}">{{ meeting.title }}</option>
+                                    {% endfor %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>مسئول انجام</label>
+                            <select name="assigned_to" class="form-control">
+                                {% for user in users %}
+                                <option value="{{ user.id }}" {% if user.id == request.user.id %}selected{% endif %}>{{ user.f_name }} {{ user.l_name }}{% if not user.f_name and not user.l_name %}{{ user.mellicod }}{% endif %}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>تاریخ سررسید</label>
+                            <input type="text" name="due_date" class="form-control jalali-datepicker" autocomplete="off">
+                        </div>
+                        <div class="form-group">
+                            <label>وضعیت</label>
+                            <select name="status" class="form-control">
+                                <option value="todo">در انتظار انجام</option>
+                                <option value="in_progress">در حال انجام</option>
+                                <option value="done">انجام شده</option>
+                                <option value="canceled">لغو شده</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>اولویت</label>
+                            <select name="priority" class="form-control">
+                                <option value="low">کم</option>
+                                <option value="medium">متوسط</option>
+                                <option value="high">زیاد</option>
+                                <option value="critical">بحرانی</option>
+                            </select>
+                        </div>
+                        <div id="task-form-errors" class="text-danger" style="margin-top:10px;"></div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" id="close-create-task-modal-2">انصراف</button>
+                        <button type="submit" class="btn btn-success">ایجاد</button>
+                    </div>
+                </form>
+            </div>
         </div>
-        <div class="modal-body" id="task-detail-body">
-            <!-- اطلاعات تسک اینجا قرار می‌گیرد -->
+
+        {% if tasks|length == 0 and waiting_tasks|length == 0 %}
+            <div class="empty-tasks-center improved-empty">
+                <i class="fa fa-tasks fa-4x improved-empty-icon"></i>
+                {% if selected_status != 'active' and selected_status %}
+                    <div class="empty-tasks-title improved-empty-title">تسکی با این وضعیت وجود ندارد</div>
+                {% else %}
+                    <div class="empty-tasks-title improved-empty-title">هیچ وظیفه‌ای برای نمایش وجود ندارد</div>
+                {% endif %}
+                <button id="open-create-task-modal-empty" class="btn btn-success improved-empty-btn">ایجاد وظیفه جدید</button>
+            </div>
+        {% else %}
+            <div class="tasks-list-section">
+                {% for task in tasks %}
+                <div class="task-card task-detail-trigger"
+                     data-task-id="{{ task.id }}"
+                     data-title="{{ task.title|default_if_none:'-' }}"
+                     data-description="{{ task.description|default_if_none:'-' }}"
+                     data-project="{{ task.project.name|default_if_none:'-' }}"
+                     data-meeting="{{ task.meeting.title|default_if_none:'-' }}"
+                     data-assigned="{{ task.assigned_to.f_name }} {{ task.assigned_to.l_name }}"
+                     data-due="{{ task.due_date|default_if_none:'-' }}"
+                     data-status="{{ task.get_status_display }}"
+                     data-priority="{{ task.get_priority_display }}">
+                    <div class="task-card-header">
+                        <span class="task-title">{{ task.title }}</span>
+                        <span class="task-status status-{{ task.status }}">{{ task.get_status_display }}</span>
+                    </div>
+                    <div class="task-card-body">
+                        <div class="task-desc">{{ task.description|truncatechars:80|default:'بدون توضیح' }}</div>
+                        <div class="task-meta">
+                            <span><i class="fa fa-calendar-alt"></i> {{ task.due_date|default:'-' }}</span>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Modal نمایش جزئیات تسک -->
+    <div id="task-detail-modal" class="custom-modal-bg" style="display:none;">
+        <div class="custom-modal" dir="rtl" style="max-width: 500px;">
+            <div class="modal-header">
+                <span class="modal-title" id="detail-title">جزئیات تسک</span>
+                <span class="close-modal" id="close-task-detail-modal">&times;</span>
+            </div>
+            <div class="modal-body" id="task-detail-body">
+                <!-- اطلاعات تسک اینجا قرار می‌گیرد -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="delete-task-btn" style="margin-left: 0.5rem;">حذف</button>
+                <button type="button" class="btn btn-secondary" id="edit-task-btn" style="margin-left: 0.5rem;">ویرایش</button>
+                <button type="button" class="btn btn-secondary" id="close-task-detail-modal-2">بستن</button>
+            </div>
         </div>
-        <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" id="delete-task-btn" style="margin-left: 0.5rem;">حذف</button>
-            <button type="button" class="btn btn-secondary" id="edit-task-btn" style="margin-left: 0.5rem;">ویرایش</button>
-            <button type="button" class="btn btn-secondary" id="close-task-detail-modal-2">بستن</button>
+    </div>
+
+    <!-- Modal ویرایش تسک -->
+    <div id="edit-task-modal" class="custom-modal-bg" style="display:none;">
+        <div class="custom-modal" dir="rtl" style="max-width: 500px;">
+            <div class="modal-header">
+                <span class="modal-title">ویرایش تسک</span>
+                <span class="close-modal" id="close-edit-task-modal">&times;</span>
+            </div>
+            <div class="modal-body" id="edit-task-body">
+                <!-- فرم ویرایش اینجا لود می‌شود -->
+            </div>
         </div>
     </div>
 </div>
-
-<!-- Modal ویرایش تسک -->
-<div id="edit-task-modal" class="custom-modal-bg" style="display:none;">
-    <div class="custom-modal" dir="rtl" style="max-width: 500px;">
-        <div class="modal-header">
-            <span class="modal-title">ویرایش تسک</span>
-            <span class="close-modal" id="close-edit-task-modal">&times;</span>
-        </div>
-        <div class="modal-body" id="edit-task-body">
-            <!-- فرم ویرایش اینجا لود می‌شود -->
-        </div>
-    </div>
-</div>
-
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script type="text/javascript" src="{% static 'assets/js/jalalidatepicker.min.js' %}"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     var modal = document.getElementById('create-task-modal');
     var openBtn = document.getElementById('open-create-task-modal');
+    var openBtnEmpty = document.getElementById('open-create-task-modal-empty');
     var closeBtn = document.getElementById('close-create-task-modal');
     var closeBtn2 = document.getElementById('close-create-task-modal-2');
     if(openBtn && modal) {
         openBtn.onclick = function() { modal.style.display = 'flex'; }
+    }
+    if(openBtnEmpty && modal) {
+        openBtnEmpty.onclick = function() { modal.style.display = 'flex'; }
     }
     if(closeBtn && modal) {
         closeBtn.onclick = function() { modal.style.display = 'none'; }
@@ -289,6 +310,14 @@ $(document).ready(function() {
         buttonsColor: "#1976d2",
         theme: "light"
     });
+    // $('.js-status-select').select2({
+    //     theme: 'default',
+    //     dir: 'rtl',
+    //     minimumResultsForSearch: Infinity,
+    //     width: 'style',
+    //     dropdownCssClass: 'status-select2-dropdown',
+    //     containerCssClass: 'status-select2-container'
+    // });
 });
 </script>
 {% endblock %}

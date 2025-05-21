@@ -1,3 +1,5 @@
 from django.contrib import admin
-
-# Register your models here.
+from .models import Project, Meeting, Task
+admin.site.register(Project)
+admin.site.register(Meeting)
+admin.site.register(Task)
