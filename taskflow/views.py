@@ -161,7 +161,13 @@ def project_delete(request, pk):
 
 @login_required
 def task_list(request):
-    tasks = Task.objects.filter(assigned_to=request.user, status__in=['todo', 'in_progress'])
+    status = request.GET.get('status')
+    if status == 'all':
+        tasks = Task.objects.filter(assigned_to=request.user)
+    elif status in ['todo', 'in_progress', 'done', 'canceled']:
+        tasks = Task.objects.filter(assigned_to=request.user, status=status)
+    else:
+        tasks = Task.objects.filter(assigned_to=request.user, status__in=['todo', 'in_progress'])
     waiting_tasks = Task.objects.filter(assigned_to=request.user, status='waiting_approval')
     projects = Project.objects.filter(members=request.user)
     users = User.objects.all()
@@ -170,6 +176,7 @@ def task_list(request):
         'waiting_tasks': waiting_tasks,
         'projects': projects,
         'users': users,
+        'selected_status': status or 'active',
     })
 
 @login_required

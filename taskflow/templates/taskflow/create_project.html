@@ -1,8 +1,12 @@
 {% extends "base.html" %}
+{% load static %}
+{% block css %}
+    <link rel="stylesheet" href="{% static '' %}">
+{% endblock %}
 {% block content %}
     <div class="project-form" dir="rtl">
     <h2 class="text-center mb-4">{% if edit_mode %}ویرایش پروژه{% else %}ایجاد پروژه جدید{% endif %}</h2>
-    <form method="post" id="project-form" action="{% if edit_mode %}{% url 'taskflow:project_update' project.pk %}{% else %}{% url 'taskflow:project_create' %}{% endif %}">
+    <form method="post" id="project-create-form" action="{% if edit_mode %}{% url 'taskflow:project_update' project.pk %}{% else %}{% url 'taskflow:project_create' %}{% endif %}">
         {% csrf_token %}
         {% for field in form %}
         <div class="form-group">
@@ -17,7 +21,7 @@
         {% endfor %}
         <div class="text-center" style="display: flex; justify-content: center; gap: 1rem;">
             <button type="submit" class="btn-submit">{% if edit_mode %}بروزرسانی پروژه{% else %}ایجاد پروژه{% endif %}</button>
-            <button type="button" class="btn-cancel" id="cancel-project">انصراف</button>
+            <button type="button" class="btn-cancel" id="cancel-create-project">انصراف</button>
         </div>
     </form>
 </div>
@@ -51,4 +55,14 @@
 .btn-submit:hover { background: #0056b3; }
 .btn-cancel:hover { background: #bbb; }
 </style>
+<script type="text/javascript" src="{% static 'assets/js/jalalidatepicker.min.js' %}"></script>
+<script>
+    jalaliDatepicker.startWatch({
+        selector: 'input[type="date"], .jalali-datepicker',
+        time: false,
+        persianDigit: true,
+        buttonsColor: "#1976d2",
+        theme: "light"
+    });
+</script>
 {% endblock %}

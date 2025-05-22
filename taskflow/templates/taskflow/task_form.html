@@ -1,6 +1,9 @@
 {% extends 'base.html' %}
 {% load static %}
-
+{% block css %}
+   <link rel="stylesheet" href="{% static 'assets/css/fonts.css' %}">
+   <link rel="stylesheet" href="{% static 'assets/css/jalalidatepicker.min.css' %}">
+{% endblock %}
 {% block content %}
 <div class="container mt-5">
     <div class="card">
@@ -30,4 +33,30 @@
         </div>
     </div>
 </div>
-{% endblock %} 
+{% endblock %}
+
+{% block js %}
+<!-- Load jQuery first -->
+<script src="{% static 'assets/js/jquery.js' %}"></script>
+<!-- Then load the minified datepicker -->
+<script src="{% static 'assets/js/jalalidatepicker.min.js' %}"></script>
+
+<script>
+$(document).ready(function() {
+    // More reliable selector options:
+    jalaliDatepicker.startWatch({
+        selector: '#id_due_date', // Recommended
+        // OR: selector: 'input[name="due_date"]',
+        time: false,
+        persianDigit: true,
+        buttonsColor: "#1976d2",
+        theme: "light",
+        zIndex: 9999 // Ensure it appears above other elements
+    });
+
+    // Debugging check:
+    console.log('Datepicker initialized on:', $('input[name="due_date"]').length + ' elements');
+});
+</script>
+{% endblock %}
+

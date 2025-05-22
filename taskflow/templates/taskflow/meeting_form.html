@@ -1,6 +1,8 @@
 {% extends 'base.html' %}
 {% load static %}
-
+{% block css %}
+    <link rel="stylesheet" href="{% static 'assets/css/fonts.css' %}">
+{% endblock %}
 {% block content %}
 <div class="meeting-form" dir="rtl">
     <h2 class="text-center mb-4">{% if edit_mode %}ویرایش جلسه{% else %}ایجاد جلسه جدید{% endif %}</h2>

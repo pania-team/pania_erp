@@ -3,38 +3,117 @@
 
 {% block css %}
 <link rel="stylesheet" href="{% static 'taskflow/css/project_list.css' %}">
+<link rel="stylesheet" href="{% static 'assets/css/fonts.css' %}">
+<style>
+  .projects-page {
+    background: linear-gradient(135deg, #e0f7fa 0%, #fffde7 100%);
+    min-height: 100vh;
+  }
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2rem;
+  }
+  .search-box {
+    width: 250px;
+    padding: 0.5rem;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+  }
+  .main-content {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    margin-top: 2rem;
+  }
+  .projects-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .project-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    min-width: 300px;
+    text-align: center;
+  }
+  .new-project {
+    border: 2px dashed #26c6da;
+    color: #26c6da;
+    cursor: pointer;
+  }
+  .project-info {
+    margin-right: 2rem;
+    min-width: 350px;
+    background: #fff;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  }
+
+  /* Modal Fixes */
+  .custom-modal-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    z-index: 1000;
+    overflow-y: auto;
+    display: none; /* Hidden by default */
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 50px;
+  }
+  .custom-modal {
+    background: white;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 600px;
+    padding: 20px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    margin-bottom: 50px;
+    direction: rtl;
+  }
+  body.modal-open {
+    overflow: hidden;
+  }
+</style>
 {% endblock %}
 
 {% block content %}
 <div class="projects-page">
-    <div class="header">
-        <input type="text" id="project-search" placeholder="فیلتر عنوان پروژه ..." class="search-box">
+  <div class="header">
+    <input type="text" id="project-search" placeholder="فیلتر عنوان پروژه ..." class="search-box">
+  </div>
+  <div class="projects-title-row">
+    <h2 class="projects-title">پروژه‌ها</h2>
+    <a href="#" id="open-create-project-modal" class="btn btn-primary">+ ایجاد پروژه جدید</a>
+  </div>
+  <div class="main-content">
+    <div class="projects-list">
+      <div class="project-card new-project">
+        <a href="#" id="open-create-project-modal-2">+ پروژه جدید</a>
+      </div>
+      {% for project in projects %}
+      <div class="project-card project-item">
+        <h2 class="project-title">
+          <a href="{% url 'taskflow:project_detail' project.pk %}" style="color:inherit; text-decoration:none;">{{ project.name }}</a>
+        </h2>
+      </div>
+      {% endfor %}
     </div>
-    <div class="projects-title-row">
-        <h2 class="projects-title">پروژه‌ها</h2>
-        <a href="#" id="open-create-project-modal" class="btn btn-primary">+ ایجاد پروژه جدید</a>
-    </div>
-    <div class="main-content">
-        <div class="projects-list">
-            <div class="project-card new-project">
-                <a href="#" id="open-create-project-modal-2">+ پروژه جدید</a>
-            </div>
-            {% for project in projects %}
-            <div class="project-card project-item">
-                <h2 class="project-title">
-                    <a href="{% url 'taskflow:project_detail' project.pk %}" style="color:inherit; text-decoration:none;">{{ project.name }}</a>
-                </h2>
-                <!-- اطلاعات پروژه -->
-            </div>
-            {% endfor %}
-        </div>
-    </div>
+  </div>
 </div>
 
 <!-- Modal for Create Project -->
-<div id="createProjectModal" class="modal" style="display:none;">
-  <div class="modal-content">
-    <span class="close-modal" style="float:left;cursor:pointer;">&times;</span>
+<div id="create-project-modal" class="custom-modal-bg">
+  <div class="custom-modal" dir="rtl">
+    <span class="close-modal" id="close-create-project-modal" style="float:left;cursor:pointer;">&times;</span>
     <div id="modal-body-content">
       <!-- فرم اینجا لود می‌شود -->
     </div>
@@ -46,42 +125,48 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
 $(document).ready(function() {
+    // Search functionality
     $('#project-search').on('input', function() {
         var value = $(this).val().toLowerCase();
-        $('.project-item').filter(function() {
-            $(this).toggle($(this).find('.project-title').text().toLowerCase().indexOf(value) > -1)
+        $('.project-item').each(function() {
+            $(this).toggle($(this).find('.project-title').text().toLowerCase().indexOf(value) > -1);
         });
     });
-    // باز کردن مدال با هر دو دکمه
+
+    // Open modal
     $('#open-create-project-modal, #open-create-project-modal-2').click(function(e) {
         e.preventDefault();
+        $('body').addClass('modal-open');
         $.get("{% url 'taskflow:project_create' %}", function(data) {
             $('#modal-body-content').html(data);
-            $('#createProjectModal').show();
+            $('#create-project-modal').css('display', 'flex');
         });
     });
-    // بستن مدال با دکمه ضربدر یا انصراف
-    $(document).on('click', '.close-modal, #cancel-create-project', function() {
-        $('#createProjectModal').hide();
+
+    // Close modal function
+    function closeModal() {
+        $('body').removeClass('modal-open');
+        $('#create-project-modal').hide();
+    }
+
+    // Close modal handlers
+    $(document).on('click', '.close-modal, #cancel-create-project', closeModal);
+    $('#create-project-modal').click(function(e) {
+        if (e.target === this) closeModal();
     });
-    // ارسال فرم با ajax
+
+    // Form submission
     $(document).on('submit', '#project-create-form', function(e) {
         e.preventDefault();
         var form = $(this);
-        console.log('Submitting project create form...');
         $.post(form.attr('action'), form.serialize(), function(data) {
             if ($(data).find('.project-form').length) {
-                // اگر خطا داشت، فرم را دوباره نمایش بده
                 $('#modal-body-content').html(data);
-                console.log('Form errors, re-rendering form.');
             } else {
-                // موفقیت: مدال را ببند و صفحه را رفرش کن یا لیست را آپدیت کن
-                $('#createProjectModal').hide();
-                console.log('Project created successfully, reloading page.');
+                closeModal();
                 location.reload();
             }
         }).fail(function(xhr, status, error) {
-            console.log('AJAX error:', status, error);
             alert('خطا در ارسال فرم!');
         });
     });
