@@ -10,11 +10,33 @@
 {% endblock %}
 
 {% block body %}
-    <div class="image-container">
-        {% if home_image %}
-            <img src="{{ home_image.image.url }}" alt="Home Image">
-        {% endif %}
+
+<h2>صفحه خانه</h2>
+<div class="image-container">
+    {% if home_image %}
+        <img src="{{ home_image.image.url }}" alt="Home Image">
+    {% endif %}
+</div>
+<div class="grid-container">
+
+
+    <div class="grid-item">
+        <a href="{{ demand_view }}" class="no-underline">
+            <div class="image-box">
+                <img src="{{ MEDIA_URL }}{{ images.demand_view }}" alt=" اعتبارات" width="70" height="70">
+            </div>
+            <h4>اعتبارات</h4>
+        </a>
     </div>
+
+
+
+</div>
+
+
+
+
+
 {% endblock %}
 
 {% block js %}

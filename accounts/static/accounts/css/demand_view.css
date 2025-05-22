@@ -1,28 +1,27 @@
 .grid-container {
     display: grid;
-    grid-template-columns: repeat(4, 1fr); /* چهار ستون */
-    gap: 20px; /* فاصله بین آیتم‌ها */
+    grid-template-columns: repeat(3, 1fr); /* چهار ستون */
+    gap: 50px; /* فاصله بین آیتم‌ها */
     margin: 20px;
-    margin-top: 100px;
+    margin-top: 150px;
     margin-left: 250px;
     width: 700px; /* عرض ثابت */
     max-width: 100%; /* واکنش‌گرا بودن */
 }
 
 .grid-item {
-    background-color: #e8e8e8;
+    background-color: #efb25e;
     border: 1px solid #ddd;
-    border-radius: 8px;
+    border-radius: 23%; /* تبدیل کادر به دایره */
     text-align: center;
     padding: 20px;
-    padding-top: 40px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s ease;
     font-size: 12px;
 
-    /* تنظیم ارتفاع و عرض برای مربع */
-    width: 100px;
-    height: 100px;
+    /* تنظیم عرض و ارتفاع برابر برای اطمینان از دایره بودن */
+    width: 120px;
+    height: 120px;
 
     /* برای تراز کردن محتوا در مرکز */
     display: flex;
@@ -32,13 +31,17 @@
 
 .grid-item:hover {
     transform: scale(1.2);
+    background-color: #9a721c;
 }
 
+
 .icon-box {
-    font-size: 24px;
-    color: #007bff;
+    font-size: 34px;
+    color: #222325;
     margin-bottom: 10px;
 }
+
+
 .image-container {
         position: absolute;
         top: 0;

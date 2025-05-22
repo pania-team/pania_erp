@@ -13,6 +13,7 @@ urlpatterns = [
     path('reports/', include('reports.urls', namespace='reports')),
     path('finance/', include('finance.urls', namespace='finance')),
     path('taskflow/', include('taskflow.urls', namespace='taskflow')),
+    path('storage/', include('storage.urls', namespace='storage')),
 
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) \
               + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

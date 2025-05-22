@@ -1,104 +1,26 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 {% load static %}
+{% load jformat %}
+{% load humanize %}
 
 {% block css %}
+<link type="text/css" rel="stylesheet" href="{% static 'assets/css/jalalidatepicker.min.css' %}" />
 <link rel="stylesheet" href="{% static 'taskflow/css/project_list.css' %}">
 <link rel="stylesheet" href="{% static 'assets/css/fonts.css' %}">
-<style>
-  .projects-page {
-    background: linear-gradient(135deg, #e0f7fa 0%, #fffde7 100%);
-    min-height: 100vh;
-  }
-  .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 2rem;
-  }
-  .search-box {
-    width: 250px;
-    padding: 0.5rem;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-  }
-  .main-content {
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    margin-top: 2rem;
-  }
-  .projects-list {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-  }
-  .project-card {
-    background: #fff;
-    border-radius: 16px;
-    padding: 2rem;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    min-width: 300px;
-    text-align: center;
-  }
-  .new-project {
-    border: 2px dashed #26c6da;
-    color: #26c6da;
-    cursor: pointer;
-  }
-  .project-info {
-    margin-right: 2rem;
-    min-width: 350px;
-    background: #fff;
-    border-radius: 16px;
-    padding: 2rem;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-  }
-
-  /* Modal Fixes */
-  .custom-modal-bg {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0,0,0,0.5);
-    z-index: 1000;
-    overflow-y: auto;
-    display: none; /* Hidden by default */
-    justify-content: center;
-    align-items: flex-start;
-    padding-top: 50px;
-  }
-  .custom-modal {
-    background: white;
-    border-radius: 8px;
-    width: 90%;
-    max-width: 600px;
-    padding: 20px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-    margin-bottom: 50px;
-    direction: rtl;
-  }
-  body.modal-open {
-    overflow: hidden;
-  }
-</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 {% endblock %}
+
 
 {% block content %}
 <div class="projects-page">
-  <div class="header">
-    <input type="text" id="project-search" placeholder="فیلتر عنوان پروژه ..." class="search-box">
-  </div>
   <div class="projects-title-row">
-    <h2 class="projects-title">پروژه‌ها</h2>
-    <a href="#" id="open-create-project-modal" class="btn btn-primary">+ ایجاد پروژه جدید</a>
+    <h2 class="projects-title">لیست پروژه‌ها</h2>
+    <a href="#" id="open-create-project-modal" class="btn btn-primary">+ ایجاد پروژه </a>
+    <input type="text" id="project-search" placeholder="جستجو پروژه ..." class="search-box">
   </div>
+
   <div class="main-content">
     <div class="projects-list">
-      <div class="project-card new-project">
-        <a href="#" id="open-create-project-modal-2">+ پروژه جدید</a>
-      </div>
       {% for project in projects %}
       <div class="project-card project-item">
         <h2 class="project-title">
@@ -108,7 +30,7 @@
       {% endfor %}
     </div>
   </div>
-</div>
+</div> <!-- پایان projects-page -->
 
 <!-- Modal for Create Project -->
 <div id="create-project-modal" class="custom-modal-bg">
@@ -120,6 +42,7 @@
   </div>
 </div>
 {% endblock %}
+
 
 {% block js %}
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

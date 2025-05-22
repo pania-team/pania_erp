@@ -7,11 +7,18 @@ from django.http import HttpResponse
 from accounts.models import User
 
 
+
+
+
 @login_required
 def meeting_list(request):
     meetings = Meeting.objects.filter(participants=request.user)
     return render(request, 'taskflow/meeting_list.html', {'meetings': meetings})
 
+
+
+
+# ---------------------------------------
 @login_required
 def meeting_detail(request, pk):
     meeting = get_object_or_404(Meeting, pk=pk, participants=request.user)
@@ -21,6 +28,8 @@ def meeting_detail(request, pk):
         'tasks': tasks
     })
 
+
+# ----------------------------------
 @login_required
 def meeting_create(request):
     if request.method == 'POST':
@@ -54,6 +63,10 @@ def meeting_create(request):
     
     return render(request, 'taskflow/meeting_form.html', {'form': form})
 
+
+
+
+# ---------------------------------
 @login_required
 def meeting_update(request, pk):
     meeting = get_object_or_404(Meeting, pk=pk, participants=request.user)
@@ -76,6 +89,9 @@ def meeting_update(request, pk):
         'meeting': meeting
     })
 
+
+
+# -----------------------------------
 @login_required
 def meeting_delete(request, pk):
     meeting = get_object_or_404(Meeting, pk=pk, participants=request.user)
@@ -86,12 +102,20 @@ def meeting_delete(request, pk):
         return redirect('taskflow:project_detail', pk=project_pk)
     return redirect('taskflow:meeting_list')
 
+
+
+
+# ---------------------------------------
 @login_required
 def project_list(request):
 
     projects = Project.objects.all()
     return render(request, 'taskflow/project_list.html', {'projects': projects})
 
+
+
+# --------------------------------------
+import jdatetime
 @login_required
 def project_detail(request, pk):
     project = get_object_or_404(Project, pk=pk, members=request.user)
@@ -103,11 +127,26 @@ def project_detail(request, pk):
             'meeting': meeting,
             'tasks': tasks
         })
+
+        # تبدیل تاریخ شروع و پایان پروژه به جلالی
+    jalali_start_date = None
+    if project.start_date:
+        jalali_start_date = jdatetime.date.fromgregorian(date=project.start_date).strftime('%Y/%m/%d')
+
+    jalali_end_date = None
+    if project.end_date:
+        jalali_end_date = jdatetime.date.fromgregorian(date=project.end_date).strftime('%Y/%m/%d')
     return render(request, 'taskflow/project_detail.html', {
         'project': project,
-        'meetings_with_tasks': meetings_with_tasks
+        'meetings_with_tasks': meetings_with_tasks,
+        'jalali_start_date': jalali_start_date,
+        'jalali_end_date': jalali_end_date,
     })
 
+
+
+
+# ------------------------------------
 @login_required
 def project_create(request):
     if request.method == 'POST':
@@ -128,6 +167,10 @@ def project_create(request):
         return render(request, 'taskflow/create_project.html', {'form': form})
     return render(request, 'taskflow/create_project.html', {'form': form})
 
+
+
+
+# --------------------------------------
 @login_required
 def project_update(request, pk):
 
@@ -152,6 +195,9 @@ def project_update(request, pk):
         'project': project
     })
 
+
+
+# ----------------------------------
 @login_required
 def project_delete(request, pk):
     project = get_object_or_404(Project, pk=pk, members=request.user)
@@ -159,6 +205,9 @@ def project_delete(request, pk):
     messages.success(request, 'پروژه با موفقیت حذف شد.')
     return redirect('taskflow:project_list')
 
+
+
+# ---------------------------------------
 @login_required
 def task_list(request):
     status = request.GET.get('status')
@@ -179,11 +228,15 @@ def task_list(request):
         'selected_status': status or 'active',
     })
 
+
+# ---------------------------------------
 @login_required
 def task_detail(request, pk):
     task = get_object_or_404(Task, pk=pk)
     return render(request, 'taskflow/task_detail.html', {'task': task})
 
+
+# ----------------------------------------
 @login_required
 def task_create(request):
     if request.method == 'POST':
@@ -205,6 +258,9 @@ def task_create(request):
         form = TaskForm()
     return render(request, 'taskflow/task_form.html', {'form': form})
 
+
+
+# -----------------------------------------
 @login_required
 def task_update(request, pk):
     task = get_object_or_404(Task, pk=pk)
@@ -224,6 +280,9 @@ def task_update(request, pk):
         form = TaskForm(instance=task)
     return render(request, 'taskflow/task_form.html', {'form': form, 'edit_mode': True, 'task': task})
 
+
+
+# -------------------------------------------
 @login_required
 def task_delete(request, pk):
     task = get_object_or_404(Task, pk=pk)

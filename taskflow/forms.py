@@ -1,6 +1,9 @@
 from django import forms
 from .models import Project, Meeting, Task
 
+
+
+
 class ProjectForm(forms.ModelForm):
     class Meta:
         model = Project
@@ -12,16 +15,61 @@ class ProjectForm(forms.ModelForm):
             'members': forms.SelectMultiple(attrs={'class': 'select2'}),
         }
 
+
+
+# -------------------------------------------
 class MeetingForm(forms.ModelForm):
     class Meta:
         model = Meeting
         fields = ['title', 'date', 'location', 'duration', 'notes', 'project', 'participants']
         widgets = {
-            'date': forms.DateInput(attrs={'type': 'date'}),
-            'notes': forms.Textarea(attrs={'rows': 4}),
-            'participants': forms.SelectMultiple(attrs={'class': 'select2'}),
-            'project': forms.Select(attrs={'class': 'form-control'}),
+            'title': forms.TextInput(attrs={
+                "placeholder": "عنوان جلسه",
+                "style": "font-family: Vazirmatn, sans-serif; font-size: 11px"
+            }),
+            'date': forms.TextInput(attrs={
+                'data-jdp': 'true',
+                'class': 'form-control',
+                'required': True,
+                'placeholder': 'تاریخ جلسه',
+                'autocomplete': 'off',
+                'style': 'font-family: Vazirmatn, sans-serif; font-size: 11px'
+            }),
+            'location': forms.TextInput(attrs={
+                "placeholder": "محل برگزاری",
+                "style": "font-family: Vazirmatn, sans-serif; font-size: 11px"
+            }),
+            'duration': forms.NumberInput(attrs={
+                "placeholder": "مدت زمان (دقیقه)",
+                "style": "font-family: Vazirmatn, sans-serif; font-size: 11px"
+            }),
+            'notes': forms.Textarea(attrs={
+                'rows': 4,
+                "placeholder": "یادداشت‌ها",
+                "style": "font-family: Vazirmatn, sans-serif; font-size: 11px"
+            }),
+            'project': forms.Select(attrs={
+                'required': True,
+                'class': 'form-control',
+                "style": "font-family: Vazirmatn, sans-serif; font-size: 11px"
+            }),
+            'participants': forms.SelectMultiple(attrs={
+                'class': 'select2',
+                "style": "font-family: Vazirmatn, sans-serif; font-size: 11px"
+            }),
         }
+        labels = {
+            'title': '',
+            'date': '',
+            'location': '',
+            'duration': '',
+            'notes': '',
+            'project': '',
+            'participants': '',
+        }
+
+
+# ------------------------------------------------
 
 class TaskForm(forms.ModelForm):
     class Meta:

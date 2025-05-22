@@ -7,6 +7,7 @@ from .forms import CustomerForm
 from .models import HomeImage
 from .models import Customer
 from django.db.models import Q
+from django.urls import reverse
 
 
 
@@ -18,13 +19,39 @@ def home_view(request):
         home_image = None
     context = {
         'home_image': home_image,
+        'demand_view': reverse('accounts:demand_view'),
+
+        'images': {
+            'demand_view': 'media/home_images/finance.png',
+
+        },
     }
     return render(request, 'accounts/home.html', context)
 
+# -------------------------------------------
+@login_required
+def demand_view(request):
+    try:
+        home_image = HomeImage.objects.get(description='home')
+    except HomeImage.DoesNotExist:
+        home_image = None
+    context = {
+        'home_image': home_image,
+        'create_loan': reverse('demand:create_loan'),
+        'loan_list': reverse('demand:loan_list'),
+        'demand': reverse('demand:demand'),
+        'demand_remain': reverse('demand:demand_remain'),
+        'demand_vosoli': reverse('demand:demand_vosoli'),
+
+
+    }
+    return render(request, 'accounts/demand_view.html', context)
 
 
 
 
+
+# ---------------------------------------------
 def user_logout(request):
     logout(request)
     return redirect('accounts:login')  # بعد از لاگ‌اوت به صفحه لاگین هدایت می‌شود

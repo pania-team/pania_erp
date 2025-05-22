@@ -1,9 +1,19 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 {% load static %}
+{% load jformat %}
+{% load humanize %}
+
+
+
+
 {% block css %}
-    <link rel="stylesheet" href="{% static 'assets/css/fonts.css' %}">
-    <link rel="stylesheet" href="{% static 'taskflow/css/project_detail.css' %}">
+<link type="text/css" rel="stylesheet" href="{% static 'assets/css/jalalidatepicker.min.css' %}" />
+<link rel="stylesheet" href="{% static 'taskflow/css/project_detail.css' %}">
+<link rel="stylesheet" href="{% static 'assets/css/fonts.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 {% endblock %}
+
+
 
 {% block content %}
 <div class="taskflow-container">
@@ -18,8 +28,8 @@
                 <div style="color:#888; font-size:1rem;">{{ project.description }}</div>
             </div>
             <div style="margin-top:1rem; display:flex; gap:2rem;">
-                <div><i class="fas fa-calendar"></i> تاریخ شروع: {{ project.start_date }}</div>
-                <div><i class="fas fa-calendar-check"></i> تاریخ پایان: {{ project.end_date }}</div>
+                <div><i class="fas fa-calendar"></i> تاریخ شروع: {{ jalali_start_date }}</div>
+                <div><i class="fas fa-calendar-check"></i> تاریخ پایان: {{ jalali_end_date }}</div>
                 <div><i class="fas fa-chart-line"></i> وضعیت: {{ project.get_status_display }}</div>
                 <div><i class="fas fa-users"></i> اعضا: {{ project.members.count }} نفر</div>
             </div>
@@ -61,4 +71,18 @@
         </div>
     </div>
 </div>
-{% endblock %} 
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript" src="{% static 'assets/js/jalalidatepicker.min.js' %}"></script>
+<script>
+    jalaliDatepicker.startWatch({
+        minDate: "attr",
+        maxDate: "attr",
+        onSelect: function () {
+            this.setAttribute('value', this.value);
+        }
+    });
+</script>
+
+{% endblock %}

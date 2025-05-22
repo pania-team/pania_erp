@@ -5,14 +5,14 @@ app_name = 'taskflow'
 urlpatterns = [
     # Meeting URLs
     path('meetings/', views.meeting_list, name='meeting_list'),
-    path('meetings/create/', views.meeting_create, name='meeting_create'),
+    path('meetings/meeting-create/', views.meeting_create, name='meeting_create'),
     path('meetings/<int:pk>/', views.meeting_detail, name='meeting_detail'),
     path('meetings/<int:pk>/edit/', views.meeting_update, name='meeting_update'),
     path('meetings/<int:pk>/delete/', views.meeting_delete, name='meeting_delete'),
 
     # Project URLs
-    path('projects/', views.project_list, name='project_list'),
-    path('projects/create/', views.project_create, name='project_create'),
+    path('project_list/', views.project_list, name='project_list'),
+    path('projects-create/', views.project_create, name='project_create'),
     path('projects/<int:pk>/', views.project_detail, name='project_detail'),
     path('projects/<int:pk>/edit/', views.project_update, name='project_update'),
     path('projects/<int:pk>/delete/', views.project_delete, name='project_delete'),
