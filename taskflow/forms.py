@@ -1,6 +1,7 @@
 from django import forms
 from .models import Project, Meeting, Task
-
+from django_jalali.forms import jDateField
+import jdatetime
 
 
 
@@ -19,6 +20,32 @@ class ProjectForm(forms.ModelForm):
 
 # -------------------------------------------
 class MeetingForm(forms.ModelForm):
+    date = jDateField(
+        widget=forms.TextInput(attrs={
+            'data-jdp': 'true',
+            'class': 'form-control',
+            'placeholder': 'تاریخ جلسه',
+            'autocomplete': 'off',
+            'style': 'font-family: Vazirmatn; font-size: 11px'
+        }),
+        input_formats=['%Y-%m-%d'],  # Use hyphen format as required by jDateField
+        label=''
+    )
+
+    def clean_date(self):
+        date_value = self.cleaned_data.get('date')
+        if date_value:
+            # Convert any forward slashes to hyphens
+            if isinstance(date_value, str):
+                date_value = date_value.replace('/', '-')
+                # Parse the date manually
+                try:
+                    year, month, day = map(int, date_value.split('-'))
+                    return jdatetime.date(year, month, day)
+                except (ValueError, TypeError):
+                    raise forms.ValidationError('یک تاریخ معتبر وارد کنید.')
+        return date_value
+
     class Meta:
         model = Meeting
         fields = ['title', 'date', 'location', 'duration', 'notes', 'project', 'participants']
@@ -26,14 +53,6 @@ class MeetingForm(forms.ModelForm):
             'title': forms.TextInput(attrs={
                 "placeholder": "عنوان جلسه",
                 "style": "font-family: Vazirmatn, sans-serif; font-size: 11px"
-            }),
-            'date': forms.TextInput(attrs={
-                'data-jdp': 'true',
-                'class': 'form-control',
-                'required': True,
-                'placeholder': 'تاریخ جلسه',
-                'autocomplete': 'off',
-                'style': 'font-family: Vazirmatn, sans-serif; font-size: 11px'
             }),
             'location': forms.TextInput(attrs={
                 "placeholder": "محل برگزاری",
