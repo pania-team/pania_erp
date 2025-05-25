@@ -8,16 +8,30 @@
 <div class="taskflow-container">
     <div class="meeting-detail-container" dir="rtl">
         <div class="meeting-header">
-            <h2>{{ meeting.title }}</h2>
+            <h1>{{ meeting.title }}</h1>
+            <div class="meeting-meta">
+                <div class="meta-item">
+                    <i class="fa fa-calendar-alt"></i>
+                    <span>تاریخ: {{ meeting.date|default:'-' }}</span>
+                </div>
+                <div class="meta-item">
+                    <i class="fa fa-clock"></i>
+                    <span>مدت زمان: {{ meeting.duration }} دقیقه</span>
+                </div>
+                <div class="meta-item">
+                    <i class="fa fa-map-marker-alt"></i>
+                    <span>مکان: {{ meeting.location|default:'-' }}</span>
+                </div>
+                {% if meeting.project %}
+                <div class="meta-item">
+                    <i class="fa fa-project-diagram"></i>
+                    <span>پروژه: {{ meeting.project.title }}</span>
+                </div>
+                {% endif %}
+            </div>
             <div style="margin-top: 1rem; display: flex; gap: 1rem;">
                 <a href="{% url 'taskflow:meeting_update' meeting.pk %}" class="btn btn-warning">ویرایش جلسه</a>
                 <a href="{% url 'taskflow:meeting_delete' meeting.pk %}" class="btn btn-danger" onclick="return confirm('آیا از حذف جلسه مطمئن هستید؟');">حذف جلسه</a>
-            </div>
-            <div style="color:#888; font-size:1rem;">پروژه: {{ meeting.project|default:'-' }}</div>
-            <div style="margin-top:1rem; display:flex; gap:2rem;">
-                <div><i class="fas fa-calendar"></i> تاریخ جلسه: {{ meeting.date }}</div>
-                <div><i class="fas fa-map-marker-alt"></i> محل: {{ meeting.location|default:'-' }}</div>
-                <div><i class="fas fa-clock"></i> مدت زمان: {{ meeting.duration|default:'-' }} دقیقه</div>
             </div>
             <div style="margin-top:1rem;">
                 <strong>یادداشت‌ها:</strong>

@@ -24,9 +24,8 @@
     white-space: nowrap;
     font-family: "Vazirmatn", sans-serif;
 }
-
 .btn.btn-primary {
-    background-color: #3974b4; /* سبز ملایم */
+    background-color: #3974b4;
     color: white;
     padding: 8px 16px;
     border: none;
@@ -40,9 +39,8 @@
 }
 
 .btn.btn-primary:hover {
-    background-color: #16378c; /* سبز تیره‌تر */
+    background-color: #16378c;
 }
-
 .search-box {
     width: 250px;
     border: 1px solid #CBD5E0; /* خاکستری روشن */

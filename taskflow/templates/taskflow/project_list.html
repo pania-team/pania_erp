@@ -15,7 +15,7 @@
 <div class="projects-page">
   <div class="projects-title-row">
     <h2 class="projects-title">لیست پروژه‌ها</h2>
-    <a href="#" id="open-create-project-modal" class="btn btn-primary">+ ایجاد پروژه </a>
+    <a href="{% url 'taskflow:project_create' %}" class="btn btn-primary">+ ایجاد پروژه </a>
     <input type="text" id="project-search" placeholder="جستجو پروژه ..." class="search-box">
   </div>
 
@@ -31,16 +31,6 @@
     </div>
   </div>
 </div> <!-- پایان projects-page -->
-
-<!-- Modal for Create Project -->
-<div id="create-project-modal" class="custom-modal-bg">
-  <div class="custom-modal" dir="rtl">
-    <span class="close-modal" id="close-create-project-modal" style="float:left;cursor:pointer;">&times;</span>
-    <div id="modal-body-content">
-      <!-- فرم اینجا لود می‌شود -->
-    </div>
-  </div>
-</div>
 {% endblock %}
 
 
@@ -53,44 +43,6 @@ $(document).ready(function() {
         var value = $(this).val().toLowerCase();
         $('.project-item').each(function() {
             $(this).toggle($(this).find('.project-title').text().toLowerCase().indexOf(value) > -1);
-        });
-    });
-
-    // Open modal
-    $('#open-create-project-modal, #open-create-project-modal-2').click(function(e) {
-        e.preventDefault();
-        $('body').addClass('modal-open');
-        $.get("{% url 'taskflow:project_create' %}", function(data) {
-            $('#modal-body-content').html(data);
-            $('#create-project-modal').css('display', 'flex');
-        });
-    });
-
-    // Close modal function
-    function closeModal() {
-        $('body').removeClass('modal-open');
-        $('#create-project-modal').hide();
-    }
-
-    // Close modal handlers
-    $(document).on('click', '.close-modal, #cancel-create-project', closeModal);
-    $('#create-project-modal').click(function(e) {
-        if (e.target === this) closeModal();
-    });
-
-    // Form submission
-    $(document).on('submit', '#project-create-form', function(e) {
-        e.preventDefault();
-        var form = $(this);
-        $.post(form.attr('action'), form.serialize(), function(data) {
-            if ($(data).find('.project-form').length) {
-                $('#modal-body-content').html(data);
-            } else {
-                closeModal();
-                location.reload();
-            }
-        }).fail(function(xhr, status, error) {
-            alert('خطا در ارسال فرم!');
         });
     });
 });

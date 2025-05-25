@@ -4,6 +4,7 @@
     <link rel="stylesheet" href="{% static 'assets/css/fonts.css' %}">
     <link rel="stylesheet" href="{% static 'taskflow/css/task_list.css' %}">
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="{% static 'assets/css/base.css' %}">
 {% endblock %}
 {% block content %}
 <div class="taskflow-container">
@@ -21,87 +22,9 @@
                     </select>
                 </form>
             </div>
-            <button id="open-create-task-modal" class="btn btn-success tasks-create-btn">
-                <i class="fa fa-plus"></i> ایجاد وظیفه
-            </button>
-        </div>
-
-        <!-- Modal ایجاد تسک جدید -->
-        <div id="create-task-modal" class="custom-modal-bg" style="display:none;">
-            <div class="custom-modal" dir="rtl">
-                <form id="create-task-form" method="post" action="{% url 'taskflow:task_create' %}">
-                    {% csrf_token %}
-                    <div class="modal-header">
-                        <span class="modal-title">ایجاد وظیفه</span>
-                        <span class="close-modal" id="close-create-task-modal">&times;</span>
-                    </div>
-                    <div class="modal-body">
-                        <div class="form-group">
-                            <label>عنوان فعالیت</label>
-                            <input type="text" name="title" class="form-control" required>
-                        </div>
-                        <div class="form-group">
-                            <label>توضیحات</label>
-                            <textarea name="description" class="form-control"></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label>پروژه</label>
-                            <select name="project" class="form-control">
-                                <option value="">انتخاب پروژه</option>
-                                {% for project in projects %}
-                                <option value="{{ project.id }}">{{ project.name }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>جلسه</label>
-                            <select name="meeting" class="form-control">
-                                <option value="">انتخاب جلسه</option>
-                                {% for project in projects %}
-                                    {% for meeting in project.meetings.all %}
-                                        <option value="{{ meeting.id }}">{{ meeting.title }}</option>
-                                    {% endfor %}
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>مسئول انجام</label>
-                            <select name="assigned_to" class="form-control">
-                                {% for user in users %}
-                                <option value="{{ user.id }}" {% if user.id == request.user.id %}selected{% endif %}>{{ user.f_name }} {{ user.l_name }}{% if not user.f_name and not user.l_name %}{{ user.mellicod }}{% endif %}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>تاریخ سررسید</label>
-                            <input type="text" name="due_date" class="form-control jalali-datepicker" autocomplete="off">
-                        </div>
-                        <div class="form-group">
-                            <label>وضعیت</label>
-                            <select name="status" class="form-control">
-                                <option value="todo">در انتظار انجام</option>
-                                <option value="in_progress">در حال انجام</option>
-                                <option value="done">انجام شده</option>
-                                <option value="canceled">لغو شده</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>اولویت</label>
-                            <select name="priority" class="form-control">
-                                <option value="low">کم</option>
-                                <option value="medium">متوسط</option>
-                                <option value="high">زیاد</option>
-                                <option value="critical">بحرانی</option>
-                            </select>
-                        </div>
-                        <div id="task-form-errors" class="text-danger" style="margin-top:10px;"></div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" id="close-create-task-modal-2">انصراف</button>
-                        <button type="submit" class="btn btn-success">ایجاد</button>
-                    </div>
-                </form>
-            </div>
+            <a href="{% url 'taskflow:task_create' %}" class="btn btn-primary">
+                + ایجاد وظیفه
+            </a>
         </div>
 
         {% if tasks|length == 0 and waiting_tasks|length == 0 %}
@@ -112,7 +35,7 @@
                 {% else %}
                     <div class="empty-tasks-title improved-empty-title">هیچ وظیفه‌ای برای نمایش وجود ندارد</div>
                 {% endif %}
-                <button id="open-create-task-modal-empty" class="btn btn-success improved-empty-btn">ایجاد وظیفه جدید</button>
+                <a href="{% url 'taskflow:task_create' %}" class="btn btn-success improved-empty-btn">ایجاد وظیفه جدید</a>
             </div>
         {% else %}
             <div class="tasks-list-section">
@@ -127,14 +50,12 @@
                      data-due="{{ task.due_date|default_if_none:'-' }}"
                      data-status="{{ task.get_status_display }}"
                      data-priority="{{ task.get_priority_display }}">
-                    <div class="task-card-header">
-                        <span class="task-title">{{ task.title }}</span>
-                        <span class="task-status status-{{ task.status }}">{{ task.get_status_display }}</span>
-                    </div>
-                    <div class="task-card-body">
-                        <div class="task-desc">{{ task.description|truncatechars:80|default:'بدون توضیح' }}</div>
-                        <div class="task-meta">
-                            <span><i class="fa fa-calendar-alt"></i> {{ task.due_date|default:'-' }}</span>
+                    <div class="task-card-content">
+                        <div class="task-title">{{ task.title }}</div>
+                        <div class="task-status status-{{ task.status }}">{{ task.get_status_display }}</div>
+                        <div class="task-due-date">
+                            <i class="fa fa-calendar-alt"></i>
+                            {{ task.due_date|default:'-' }}
                         </div>
                     </div>
                 </div>
@@ -180,50 +101,6 @@
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    var modal = document.getElementById('create-task-modal');
-    var openBtn = document.getElementById('open-create-task-modal');
-    var openBtnEmpty = document.getElementById('open-create-task-modal-empty');
-    var closeBtn = document.getElementById('close-create-task-modal');
-    var closeBtn2 = document.getElementById('close-create-task-modal-2');
-    if(openBtn && modal) {
-        openBtn.onclick = function() { modal.style.display = 'flex'; }
-    }
-    if(openBtnEmpty && modal) {
-        openBtnEmpty.onclick = function() { modal.style.display = 'flex'; }
-    }
-    if(closeBtn && modal) {
-        closeBtn.onclick = function() { modal.style.display = 'none'; }
-    }
-    if(closeBtn2 && modal) {
-        closeBtn2.onclick = function() { modal.style.display = 'none'; }
-    }
-    window.onclick = function(event) {
-        if (event.target === modal) {
-            modal.style.display = 'none';
-        }
-    }
-});
-
-$(document).ready(function() {
-    $('#create-task-form').on('submit', function(e) {
-        e.preventDefault();
-        var $form = $(this);
-        var $btn = $form.find('button[type=submit]');
-        $btn.prop('disabled', true);
-        $('#task-form-errors').empty();
-        $.post($form.attr('action'), $form.serialize(), function(data) {
-            if ($(data).find('.form-group').length) {
-                $('#task-form-errors').html('لطفا همه فیلدها را به درستی پر کنید.');
-                $btn.prop('disabled', false);
-            } else {
-                $('#create-task-modal').hide();
-                location.reload();
-            }
-        }).fail(function(xhr) {
-            $('#task-form-errors').html('خطا در ارسال فرم!');
-            $btn.prop('disabled', false);
-        });
-    });
     // نمایش جزئیات تسک در مودال
     var currentTaskId = null;
     $('.task-detail-trigger').on('click', function() {
@@ -241,9 +118,11 @@ $(document).ready(function() {
         $('#task-detail-modal').show();
         currentTaskId = $t.data('task-id');
     });
+
     $('#close-task-detail-modal, #close-task-detail-modal-2').on('click', function() {
         $('#task-detail-modal').hide();
     });
+
     $(window).on('click', function(event) {
         if (event.target === document.getElementById('task-detail-modal')) {
             $('#task-detail-modal').hide();
@@ -252,6 +131,7 @@ $(document).ready(function() {
             $('#edit-task-modal').hide();
         }
     });
+
     // ویرایش تسک
     $('#edit-task-btn').on('click', function() {
         if (!currentTaskId) return;
@@ -264,6 +144,7 @@ $(document).ready(function() {
             $('#edit-task-body').html($form);
         });
     });
+
     // ثبت ویرایش با ajax
     $(document).on('submit', '#edit-task-body form', function(e) {
         e.preventDefault();
@@ -271,7 +152,6 @@ $(document).ready(function() {
         var formData = $form.serialize();
         $.post($form.attr('action'), formData, function(data) {
             var $formNew = $(data).find('form');
-            // اگر فرم جدید hidden input با مقدار edit نداشت، مودال را ببند و صفحه را رفرش کن
             if ($formNew.find('input[name="_form_mode"][value="edit"]').length === 0) {
                 $('#edit-task-modal').hide();
                 $('#task-detail-modal').hide();
@@ -289,10 +169,12 @@ $(document).ready(function() {
             }
         });
     });
+
     // انصراف ویرایش
     $(document).on('click', '#cancel-edit-task, #close-edit-task-modal', function() {
         $('#edit-task-modal').hide();
     });
+
     // حذف تسک
     $('#delete-task-btn').on('click', function() {
         if (!currentTaskId) return;
@@ -303,21 +185,6 @@ $(document).ready(function() {
             });
         }
     });
-    jalaliDatepicker.startWatch({
-        selector: '.jalali-datepicker',
-        time: false,
-        persianDigit: true,
-        buttonsColor: "#1976d2",
-        theme: "light"
-    });
-    // $('.js-status-select').select2({
-    //     theme: 'default',
-    //     dir: 'rtl',
-    //     minimumResultsForSearch: Infinity,
-    //     width: 'style',
-    //     dropdownCssClass: 'status-select2-dropdown',
-    //     containerCssClass: 'status-select2-container'
-    // });
 });
 </script>
 {% endblock %}

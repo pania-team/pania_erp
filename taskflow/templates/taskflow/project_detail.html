@@ -28,10 +28,22 @@
                 <div style="color:#888; font-size:1rem;">{{ project.description }}</div>
             </div>
             <div style="margin-top:1rem; display:flex; gap:2rem;">
-                <div><i class="fas fa-calendar"></i> تاریخ شروع: {{ jalali_start_date }}</div>
-                <div><i class="fas fa-calendar-check"></i> تاریخ پایان: {{ jalali_end_date }}</div>
-                <div><i class="fas fa-chart-line"></i> وضعیت: {{ project.get_status_display }}</div>
-                <div><i class="fas fa-users"></i> اعضا: {{ project.members.count }} نفر</div>
+                <div class="meta-item">
+                    <i class="fa fa-calendar-alt"></i>
+                    <span>تاریخ شروع: {{ project.start_date|default:'-' }}</span>
+                </div>
+                <div class="meta-item">
+                    <i class="fa fa-calendar-check"></i>
+                    <span>تاریخ پایان: {{ project.end_date|default:'-' }}</span>
+                </div>
+                <div class="meta-item">
+                    <i class="fa fa-users"></i>
+                    <span>تعداد اعضا: {{ project.members.count }}</span>
+                </div>
+                <div class="meta-item">
+                    <i class="fa fa-tasks"></i>
+                    <span>وضعیت: {{ project.get_status_display }}</span>
+                </div>
             </div>
         </div>
 

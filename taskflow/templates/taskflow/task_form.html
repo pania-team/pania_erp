@@ -1,62 +1,91 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load jformat %}
+{% load humanize %}
+
 {% block css %}
-   <link rel="stylesheet" href="{% static 'assets/css/fonts.css' %}">
-   <link rel="stylesheet" href="{% static 'assets/css/jalalidatepicker.min.css' %}">
+<link type="text/css" rel="stylesheet" href="{% static 'assets/css/jalalidatepicker.min.css' %}" />
+<link rel="stylesheet" href="{% static 'taskflow/css/meeting_form.css' %}">
+<link rel="stylesheet" href="{% static 'assets/css/fonts.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 {% endblock %}
+
 {% block content %}
-<div class="container mt-5">
-    <div class="card">
-        <div class="card-header bg-primary text-white">
-            <h5 class="mb-0">{% if edit_mode %}ویرایش تسک{% else %}ایجاد تسک جدید{% endif %}</h5>
+<div class="meeting-form" dir="rtl">
+    <h2 class="text-center mb-4">{% if edit_mode %}ویرایش تسک{% else %}ایجاد تسک جدید{% endif %}</h2>
+    <form method="post" id="task-form">
+        {% csrf_token %}
+        {% for field in form %}
+        <div class="form-group">
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% if field.errors %}
+            <div class="text-danger">
+                {{ field.errors }}
+            </div>
+            {% endif %}
+            {% if field.help_text %}
+            <small class="form-text text-muted">{{ field.help_text }}</small>
+            {% endif %}
         </div>
-        <div class="card-body">
-            <form method="post" {% if edit_mode and task %}action="{% url 'taskflow:task_update' task.pk %}"{% endif %}>
-                {% csrf_token %}
-                {% for field in form %}
-                <div class="form-group mb-3">
-                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-                    {{ field }}
-                    {% if field.errors %}
-                    <div class="text-danger small">{{ field.errors }}</div>
-                    {% endif %}
-                    {% if field.help_text %}
-                    <small class="form-text text-muted">{{ field.help_text }}</small>
-                    {% endif %}
-                </div>
-                {% endfor %}
-                <div class="d-flex justify-content-end gap-2">
-                    <button type="submit" class="btn btn-success ms-2">{% if edit_mode %}ذخیره تغییرات{% else %}ایجاد تسک{% endif %}</button>
-                    <a href="{% url 'taskflow:task_list' %}" class="btn btn-secondary">انصراف</a>
-                </div>
-            </form>
+        {% endfor %}
+        
+        <div class="text-center" style="display: flex; justify-content: center; gap: 1rem;">
+            <button type="submit" class="btn-submit">{% if edit_mode %}بروزرسانی تسک{% else %}ایجاد تسک{% endif %}</button>
+            <button type="button" class="btn-cancel" onclick="history.back()">انصراف</button>
         </div>
-    </div>
+    </form>
 </div>
 {% endblock %}
 
 {% block js %}
-<!-- Load jQuery first -->
-<script src="{% static 'assets/js/jquery.js' %}"></script>
-<!-- Then load the minified datepicker -->
-<script src="{% static 'assets/js/jalalidatepicker.min.js' %}"></script>
-
+<script type="text/javascript" src="{% static 'assets/js/jalalidatepicker.min.js' %}"></script>
 <script>
-$(document).ready(function() {
-    // More reliable selector options:
-    jalaliDatepicker.startWatch({
-        selector: '#id_due_date', // Recommended
-        // OR: selector: 'input[name="due_date"]',
-        time: false,
-        persianDigit: true,
-        buttonsColor: "#1976d2",
-        theme: "light",
-        zIndex: 9999 // Ensure it appears above other elements
-    });
+    document.addEventListener('DOMContentLoaded', function() {
+        const dateField = document.querySelector('input[name="due_date"]');
+        
+        // Initialize the date picker
+        jalaliDatepicker.startWatch({
+            selector: 'input[name="due_date"]',
+            format: 'YYYY-MM-DD',  // Use hyphen format
+            persianDigit: true,
+            time: false,
+            autoClose: true,
+            onSelect: function() {
+                const date = this.value;
+                if (date) {
+                    // Ensure the date uses hyphens
+                    const formattedDate = date.replace(/\//g, '-');
+                    this.value = formattedDate;
+                    this.setAttribute('value', formattedDate);
+                }
+            }
+        });
 
-    // Debugging check:
-    console.log('Datepicker initialized on:', $('input[name="due_date"]').length + ' elements');
-});
+        // Add form submission handler
+        document.getElementById('task-form').addEventListener('submit', function(e) {
+            const date = dateField.value;
+            if (date) {
+                // Ensure the date uses hyphens before submission
+                const formattedDate = date.replace(/\//g, '-');
+                dateField.value = formattedDate;
+            }
+        });
+
+        // Add validation on input change
+        dateField.addEventListener('change', function() {
+            const date = this.value;
+            if (date) {
+                const formattedDate = date.replace(/\//g, '-');
+                const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+                if (!dateRegex.test(formattedDate)) {
+                    this.setCustomValidity('لطفا یک تاریخ معتبر وارد کنید');
+                } else {
+                    this.setCustomValidity('');
+                }
+            }
+        });
+    });
 </script>
 {% endblock %}
 
