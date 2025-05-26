@@ -3,8 +3,9 @@ from django.contrib.auth.decorators import login_required
 from .models import Meeting, Project, Task
 from django.contrib import messages
 from .forms import ProjectForm, MeetingForm, TaskForm
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from accounts.models import User
+import jdatetime
 
 
 
@@ -115,10 +116,12 @@ def project_list(request):
 
 
 # --------------------------------------
-import jdatetime
 @login_required
 def project_detail(request, pk):
-    project = get_object_or_404(Project, pk=pk, members=request.user)
+    project = get_object_or_404(Project, pk=pk)
+    if not (request.user.is_superuser or project.manager == request.user):
+        messages.error(request, 'شما دسترسی لازم برای مشاهده جزئیات این پروژه را ندارید.')
+        return redirect('taskflow:project_list')
     meetings = Meeting.objects.filter(project=project)
     meetings_with_tasks = []
     for meeting in meetings:
@@ -288,3 +291,13 @@ def task_delete(request, pk):
     task.delete()
     messages.success(request, 'تسک با موفقیت حذف شد.')
     return redirect('taskflow:task_list')
+
+
+@login_required
+def get_project_meetings(request):
+    project_id = request.GET.get('project_id')
+    if project_id:
+        meetings = Meeting.objects.filter(project_id=project_id)
+        meetings_list = [{'id': meeting.id, 'title': meeting.title} for meeting in meetings]
+        return JsonResponse({'meetings': meetings_list})
+    return JsonResponse({'meetings': []})

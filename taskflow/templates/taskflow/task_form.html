@@ -84,6 +84,39 @@
                 }
             }
         });
+
+        // کد مربوط به به‌روزرسانی جلسات بر اساس پروژه انتخاب شده
+        const projectSelect = document.querySelector('#id_project');
+        const meetingSelect = document.querySelector('#id_meeting');
+        
+        function updateMeetings() {
+            const projectId = projectSelect.value;
+            if (projectId) {
+                fetch(`/taskflow/get-project-meetings/?project_id=${projectId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        // پاک کردن گزینه‌های قبلی
+                        meetingSelect.innerHTML = '<option value="">---------</option>';
+                        
+                        // اضافه کردن جلسات جدید
+                        data.meetings.forEach(meeting => {
+                            const option = document.createElement('option');
+                            option.value = meeting.id;
+                            option.textContent = meeting.title;
+                            meetingSelect.appendChild(option);
+                        });
+                    });
+            } else {
+                // اگر پروژه انتخاب نشده باشد، لیست جلسات را خالی می‌کنیم
+                meetingSelect.innerHTML = '<option value="">---------</option>';
+            }
+        }
+
+        // اضافه کردن event listener برای تغییر پروژه
+        projectSelect.addEventListener('change', updateMeetings);
+        
+        // اجرای اولیه برای پر کردن لیست جلسات
+        updateMeetings();
     });
 </script>
 {% endblock %}

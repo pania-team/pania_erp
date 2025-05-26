@@ -27,7 +27,6 @@
             <div class="meta-item">
                 <i class="fa fa-calendar-alt"></i>
                 <span>تاریخ شروع: {{ project.start_date|date:"d-m-Y"|default:'-' }}</span>
-            </
             </div>
             <div class="meta-item">
                 <i class="fa fa-calendar-check"></i>
@@ -87,9 +86,9 @@
                     <div class="empty-state">
                         <i class="fas fa-calendar-times"></i>
                         <h4>هنوز هیچ جلسه‌ای برای این پروژه ثبت نشده است.</h4>
-                        <a href="{% url 'taskflow:meeting_create' %}?project={{ project.pk }}" class="btn btn-primary">
-                            <i class="fas fa-plus"></i> ایجاد اولین جلسه
-                        </a>
+{#                        <a href="{% url 'taskflow:meeting_create' %}?project={{ project.pk }}" class="btn btn-primary">#}
+{#                            <i class="fas fa-plus"></i> ایجاد اولین جلسه#}
+{#                        </a>#}
                     </div>
                 {% endif %}
             </div>

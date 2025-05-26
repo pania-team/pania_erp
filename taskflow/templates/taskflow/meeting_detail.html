@@ -83,8 +83,9 @@
         </div>
     </div>
     <div class="task-detail-actions">
-        <a href="{% url 'taskflow:meeting_update' meeting.pk %}" class="btn btn-warning">ویرایش جلسه</a>
-        <a href="{% url 'taskflow:meeting_delete' meeting.pk %}" class="btn btn-danger" onclick="return confirm('آیا از حذف جلسه مطمئن هستید؟');">حذف جلسه</a>
+        <a href="{% url 'taskflow:meeting_update' meeting.pk %}" class="btn btn-warning">ویرایش</a>
+        <a href="{% url 'taskflow:meeting_delete' meeting.pk %}" class="btn btn-danger" onclick="return confirm('آیا از حذف این جلسه مطمئن هستید؟');">حذف</a>
+        <a href="{% url 'taskflow:task_create' %}" class="btn btn-primary">ایجاد وظیفه جدید</a>
         <a href="{% if meeting.project %}{% url 'taskflow:project_detail' meeting.project.pk %}{% else %}/taskflow/project_list/{% endif %}" class="btn btn-secondary">برگشت به پروژه</a>
     </div>
 </div>

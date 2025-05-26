@@ -107,7 +107,7 @@ class MeetingForm(forms.ModelForm):
             'autocomplete': 'off',
             'style': 'font-family: Vazirmatn; font-size: 11px'
         }),
-        input_formats=['%Y-%m-%d'],  # Use hyphen format as required by jDateField
+        input_formats=['%Y-%m-%d'],
         label=''
     )
 

@@ -22,9 +22,9 @@
                     </select>
                 </form>
             </div>
-            <a href="{% url 'taskflow:task_create' %}" class="btn btn-primary">
-                + ایجاد وظیفه
-            </a>
+{#            <a href="{% url 'taskflow:task_create' %}" class="btn btn-primary">#}
+{#                + ایجاد وظیفه#}
+{#            </a>#}
         </div>
 
         {% if tasks|length == 0 and waiting_tasks|length == 0 %}
@@ -35,7 +35,7 @@
                 {% else %}
                     <div class="empty-tasks-title improved-empty-title">هیچ وظیفه‌ای برای نمایش وجود ندارد</div>
                 {% endif %}
-                <a href="{% url 'taskflow:task_create' %}" class="btn btn-success improved-empty-btn">ایجاد وظیفه جدید</a>
+{#                <a href="{% url 'taskflow:task_create' %}" class="btn btn-success improved-empty-btn">ایجاد وظیفه جدید</a>#}
             </div>
         {% else %}
             <div class="tasks-list-section">
