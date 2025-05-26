@@ -18,7 +18,11 @@
         {% csrf_token %}
         {% for field in form %}
         <div class="form-group">
+            {% if field.name == 'members' %}
+            <label for="{{ field.id_for_label }}">اعضای پروژه</label>
+            {% else %}
             <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {% endif %}
             {{ field }}
             {% if field.errors %}
             <div class="text-danger">
@@ -47,7 +51,7 @@
     document.addEventListener('DOMContentLoaded', function() {
         // Initialize Select2 for members field
         $('.select2').select2({
-            placeholder: 'اعضای پروژه را انتخاب کنید',
+            placeholder: 'اعضای پروژه',
             allowClear: true
         });
         // Initialize date pickers

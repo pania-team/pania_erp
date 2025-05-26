@@ -5,7 +5,6 @@ from django.contrib import messages
 from .forms import ProjectForm, MeetingForm, TaskForm
 from django.http import HttpResponse, JsonResponse
 from accounts.models import User
-import jdatetime
 
 
 
@@ -33,35 +32,31 @@ def meeting_detail(request, pk):
 # ----------------------------------
 @login_required
 def meeting_create(request):
+    project_id = request.GET.get('project')
+    project = None
+    if project_id:
+        try:
+            project = Project.objects.get(id=project_id)
+        except Project.DoesNotExist:
+            project = None
+
     if request.method == 'POST':
         form = MeetingForm(request.POST)
-        if form.is_valid():
+        if form.is_valid() and project:
             meeting = form.save(commit=False)
+            meeting.project = project
             meeting.save()
             form.save_m2m()
-
-            if meeting.project:
-                meeting.participants.add(*meeting.project.members.all())
-            
+            meeting.participants.add(*project.members.all())
             messages.success(request, 'جلسه با موفقیت ایجاد شد.')
-            if meeting.project:
-                return redirect('taskflow:project_detail', pk=meeting.project.pk)
-            return redirect('taskflow:meeting_list')
+            return redirect('taskflow:project_detail', pk=project.pk)
         else:
             print('MeetingForm errors:', form.errors)
     else:
         initial = {}
-        project_id = request.GET.get('project')
-        if project_id:
-            try:
-                project = Project.objects.get(id=project_id)
-                initial['project'] = project
-                initial['participants'] = project.members.all()
-            except Project.DoesNotExist:
-                pass
-        
+        if project:
+            initial['participants'] = project.members.all()
         form = MeetingForm(initial=initial)
-    
     return render(request, 'taskflow/meeting_form.html', {'form': form})
 
 
@@ -116,12 +111,10 @@ def project_list(request):
 
 
 # --------------------------------------
+import jdatetime
 @login_required
 def project_detail(request, pk):
-    project = get_object_or_404(Project, pk=pk)
-    if not (request.user.is_superuser or project.manager == request.user):
-        messages.error(request, 'شما دسترسی لازم برای مشاهده جزئیات این پروژه را ندارید.')
-        return redirect('taskflow:project_list')
+    project = get_object_or_404(Project, pk=pk, members=request.user)
     meetings = Meeting.objects.filter(project=project)
     meetings_with_tasks = []
     for meeting in meetings:

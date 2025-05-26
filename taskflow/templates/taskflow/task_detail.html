@@ -83,12 +83,12 @@
     </div>
 
     <div class="task-detail-actions">
-        <a href="/taskflow/tasks/{{ task.id }}/edit/" class="btn btn-warning">ویرایش</a>
-        <form method="post" action="/taskflow/tasks/{{ task.id }}/delete/" style="display:inline;">
+        <a href="{% url 'taskflow:task_update' task.id %}" class="btn btn-warning">ویرایش</a>
+        <form method="post" action="{% url 'taskflow:task_delete' task.id %}" style="display:inline;">
             {% csrf_token %}
             <button type="submit" class="btn btn-danger" onclick="return confirm('آیا از حذف این تسک مطمئن هستید؟');">حذف</button>
         </form>
-        <a href="/taskflow/tasks/" class="btn btn-secondary">برگشت به صفحه اصلی</a>
+        <a href="{% url 'taskflow:task_list' %}" class="btn btn-secondary">برگشت به صفحه اصلی</a>
     </div>
 </div>
 {% endblock %}

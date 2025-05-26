@@ -4,7 +4,7 @@
     <link rel="stylesheet" href="{% static 'assets/css/fonts.css' %}">
     <link rel="stylesheet" href="{% static 'taskflow/css/task_list.css' %}">
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-    <link rel="stylesheet" href="{% static 'assets/css/base.css' %}">
+{#    <link rel="stylesheet" href="{% static 'assets/css/base.css' %}">#}
 {% endblock %}
 {% block content %}
 <div class="taskflow-container">
@@ -40,7 +40,7 @@
         {% else %}
             <div class="tasks-list-section">
                 {% for task in tasks %}
-                <a href="/taskflow/tasks/{{ task.id }}/" class="task-card-link">
+                <a href="{% url 'taskflow:task_detail' task.id %}" class="task-card-link">
                     <div class="task-card"
                          data-task-id="{{ task.id }}"
                          data-title="{{ task.title|default_if_none:'-' }}"
