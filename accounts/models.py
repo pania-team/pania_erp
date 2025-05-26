@@ -2,6 +2,13 @@
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.db import models
 from django.contrib.auth.models import Permission
+from django.db import models
+from django_jalali.db import models as jmodels
+from decimal import Decimal
+from django.utils.timezone import now
+from django.core.exceptions import ValidationError
+import re
+
 
 
 # =================================کاربران نرم افزار====================
@@ -60,7 +67,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         return self.is_admin or self.is_superuser
 
 
-# ============================ مشتریان وام =====================
+# ============================ مشتریان  =====================
 
 class Customer(models.Model):
     first_name = models.CharField(max_length=50, verbose_name='نام', null=True, blank=True)
@@ -101,3 +108,59 @@ class Seller(models.Model):
     class Meta:
         verbose_name = "فروشنده"
         verbose_name_plural = "فروشندگان"
+
+# ============================   -مدل تامین کنندگان   -===========================
+
+
+class Supplier(models.Model):
+    SUPPLIER_TYPE_CHOICES = (
+        ('individual', 'شخص حقیقی'),
+        ('company', 'شرکت '),
+    )
+    type = models.CharField(
+        max_length=10,
+        choices=SUPPLIER_TYPE_CHOICES,
+        default='individual',
+        verbose_name='نوع تأمین‌کننده'
+    )
+    # برای شخص حقیقی
+    first_name = models.CharField(max_length=50, verbose_name='نام', null=True, blank=True)
+    last_name = models.CharField(max_length=50, verbose_name='نام خانوادگی', null=True, blank=True)
+    mellicode = models.CharField(max_length=15, blank=True, null=True, verbose_name='کد ملی')
+    # برای شرکت
+    company_name = models.CharField(max_length=100, verbose_name='نام شرکت', null=True, blank=True)
+    company_code = models.CharField(max_length=20, verbose_name='شناسه ملی / ثبت شرکت', null=True, blank=True)
+    # اطلاعات تماس مشترک
+    phone = models.CharField(max_length=11, verbose_name='شماره ثابت', null=True, blank=True)
+    phone_number = models.CharField(max_length=11, verbose_name='تلفن همراه', null=False, blank=False)
+    city = models.CharField(max_length=50, verbose_name='شهر', null=True, blank=True)
+    code_posti = models.CharField(max_length=15, verbose_name='کدپستی', null=True, blank=True)
+    address = models.CharField(max_length=150, verbose_name='آدرس', null=True, blank=True)
+
+    class Meta:
+        verbose_name = "تأمین‌کننده"
+        verbose_name_plural = "تأمین‌کنندگان"
+
+    def __str__(self):
+        if self.type == 'individual':
+            return f'{self.first_name or ""} {self.last_name or ""}'.strip()
+        elif self.type == 'company':
+            return self.company_name or "شرکت بدون‌نام"
+        return "تأمین‌کننده"
+
+    def clean(self):
+        # اعتبارسنجی شماره موبایل
+        if self.phone_number:
+            mobile_regex = r"^09\d{9}$"
+            if not re.match(mobile_regex, self.phone_number):
+                raise ValidationError("شماره تلفن همراه را به‌درستی وارد کنید.")
+
+        # بررسی پر بودن فیلدهای متناسب با نوع
+        if self.type == 'individual':
+            if not self.first_name or not self.last_name:
+                raise ValidationError("برای شخص حقیقی، نام و نام خانوادگی الزامی است.")
+        elif self.type == 'company':
+            if not self.company_name:
+                raise ValidationError("برای شرکت، وارد کردن نام شرکت الزامی است.")
+
+# -----------------------------------------------

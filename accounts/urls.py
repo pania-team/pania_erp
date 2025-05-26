@@ -13,6 +13,7 @@ urlpatterns = [
     path('customers-with-loans/', views.customers_with_loans, name='customers_with_loans'),
 
     path('demand_view/', views.demand_view, name='demand_view'),
+    path('storage_view/', views.storage_view, name='storage_view'),
 
 
 ]

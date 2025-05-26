@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load jformat %}
+{% load humanize %}
+{% load custom_filters %}
+
+{% block css %}
+<link type="text/css" rel="stylesheet" href="{% static 'assets/css/jalalidatepicker.min.css' %}">
+<link rel="stylesheet" href="{% static 'storage/css/storage_list.css' %}">
+<link rel="stylesheet" href="{% static 'assets/css/fonts.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+{% endblock %}
+
+{% block body %}
+
+<div class="container">
+    <h2>انبار کالا</h2>
+    <!-- فرم فیلتر -->
+    <form method="GET" class="filter-form">
+        <div style="position: relative; display: inline-block;">
+            <input
+                    type="text"
+                    name="name"
+                    placeholder="نام کالا"
+                    value="{{ filters.name|default_if_none:'' }}"
+                    style="font-family: Vazirmatn, sans-serif; font-size: 12px; padding-left: 30px;">
+            <i
+                    class="fas fa-search"
+                    style="position: absolute; top: 50%; left: 10px; transform: translateY(-50%); color: gray; font-size: 14px;">
+            </i>
+        </div>
+
+        <div style="position: relative; display: inline-block;">
+            <input
+                    type="text"
+                    name="code"
+                    placeholder="کد کالا"
+                    value="{{ filters.code|default_if_none:'' }}"
+                    style="font-family: Vazirmatn, sans-serif; font-size: 12px; padding-left: 30px;">
+            <i
+                    class="fas fa-search"
+                    style="position: absolute; top: 50%; left: 10px; transform: translateY(-50%); color: gray; font-size: 14px;">
+            </i>
+        </div>
+
+
+
+        <a href="{% url 'storage:storage_list' %}?clear_filters=1" class="reset-button">
+            <i class="fas fa-trash"></i>
+        </a>
+        <button type="submit" class="filter-button">جستجو</button>
+    </form>
+
+    <div class="summary-box" style="margin-bottom: 20px;margin-left: 250px; font-family: Vazirmatn; font-size: 14px;">
+        <strong> انبار:</strong>
+        &nbsp;|&nbsp;&nbsp;&nbsp;
+        <strong>تعداد کالا:</strong> {{ total_count }} عدد
+        &nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+        <strong>وزن اجرت خرید:</strong> {{ total_craft_ojrat_weight|floatformat:2 }} گرم
+        &nbsp;|&nbsp;&nbsp;&nbsp;
+        <strong>وزن خالص :</strong> {{ total_weight|floatformat:2 }} گرم
+    </div>
+
+
+<!-- نمایش کارت‌ها -->
+<div class="card-container">
+    {% if page_obj %}
+        {% for item in page_obj %}
+            <div class="product-card">
+                <div class="image-container">
+                    <a href="{% url 'storage:cart_detail' item_id=item.id %}">
+                        {% if item.image %}
+                            <img src="{{ item.image.url }}" alt="Thumbnail" style="width: 50px; height: 50px;">
+                        {% else %}
+                            <img src="{% static 'default_image/default.png' %}" alt="Default Thumbnail"
+                                 style="width: 50px; height: 50px;">
+                        {% endif %}
+                    </a>
+                </div>
+
+                <div class="product-info">
+                    <p class="product-code">{{ item.item.sku }}</p>
+                    <h3 class="product-name">{{ item.item.name }}</h3>
+                    <p class="product-weight">دسته: {{ item.item.category }}</p>
+                    <p class="product-weight">برند: {{ item.item.brand }}</p>
+                    <p class="product-weight">قیمت پایه: {{ item.item.base_price|floatformat:0|intcomma:False }}</p>
+                   <p class="product-weight">تعداد موجودی: {{ count_dict|dict_get:item.item.id }} عدد</p>
+                </div>
+
+            </div>
+        {% endfor %}
+    {% else %}
+        <p style="font-family: Vazirmatn; font-size: 14px; margin-top: 20px;">هیچ کالای موجودی در انبار پیدا نشد.</p>
+    {% endif %}
+</div>
+
+<!-- صفحه‌بندی -->
+<div class="pagination">
+    <span class="step-links">
+        {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}{% if filters.name %}&name={{ filters.name }}{% endif %}{% if filters.code %}&code={{ filters.code }}{% endif %}"
+               class="page-link">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        {% endif %}
+
+        <span class="current">
+            صفحه {{ page_obj.number }} از {{ page_obj.paginator.num_pages }}
+        </span>
+
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}{% if filters.name %}&name={{ filters.name }}{% endif %}{% if filters.code %}&code={{ filters.code }}{% endif %}"
+               class="page-link">
+                <i class="fa fa-angle-left"></i>
+            </a>
+        {% endif %}
+    </span>
+</div>
+
+</div>
+{% endblock %}
+
+
+{% block js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="{% static 'assets/js/select2.min.js' %}"></script>
+<script src="{% static 'assets/js/jalalidatepicker.min.js' %}"></script>
+<script src="{% static 'storage/js/storage_list.js' %}"></script>
+{% endblock %}
+

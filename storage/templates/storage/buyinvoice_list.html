@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load jformat %}
+{% load humanize %}
+
+{% block css %}
+<link type="text/css" rel="stylesheet" href="{% static 'assets/css/jalalidatepicker.min.css' %}">
+<link rel="stylesheet" href="{% static 'storage/css/buyinvoice_list.css' %}">
+<link rel="stylesheet" href="{% static 'assets/css/fonts.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+{% endblock %}
+
+{% block body %}
+<div class="container">
+    <h2>لیست فاکتورهای تامین</h2>
+
+    <!-- فرم فیلتر تاریخ -->
+<form method="GET" class="filter-form">
+     <div class="form-group">
+        <input type="text" data-jdp name="end_date" placeholder="تاریخ پایان" autocomplete="off" value="{{ filters.end_date|default_if_none:'' }}" style="font-family: Vazirmatn, sans-serif; font-size: 12px;">
+    </div>
+    <div class="form-group">
+        <input type="text" data-jdp name="start_date" placeholder="تاریخ شروع" autocomplete="off" value="{{ filters.start_date|default_if_none:'' }}" style="font-family: Vazirmatn, sans-serif; font-size: 12px;">
+    </div>
+    <div class="form-group">
+        <input type="text" name="supply_name" placeholder="تامین کننده" value="{{ filters.supply_name|default_if_none:'' }}" style="font-family: Vazirmatn, sans-serif; font-size: 12px;">
+    </div>
+
+
+    <button type="submit" class="filter-button">جستجو</button>
+
+    <a href="{% url 'storage:buyinvoice_list' %}?clear_filters=1" class="reset-button">
+            <i class="fas fa-trash"></i>
+    </a>
+</form>
+
+
+
+
+<h5 style="margin-left: 550px">لیست فاکتورهای تامین</h5>
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th style="width:40px">ردیف</th>
+                    <th style="width:180px">تامین کننده</th>
+                    <th style="width:60px">تاریخ فاکتور</th>
+                    <th style="width:100px">جمع فاکتور</th>
+                     <th style="width:80px">تخفیف</th>
+                    <th style="width:60px">ثبت کالا</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                {% for invoice in invoices %}
+                <tr>
+                    <td style="width:40px">{{ forloop.revcounter }}</td>
+                    <td style="width:180px">{{ invoice.supplier }}</td>
+                    <td style="width:60px">{{ invoice.date|date:"Y/m/d" }}</td>
+                    <td style="width:100px">{{ invoice.total_amount|floatformat:"0"|intcomma:False }}</td>
+                    <td style="width:80px">{{ invoice.discount_amount|intcomma:False|floatformat:"0" }}</td>
+                    <td style="width:60px; text-align: center;">
+                    <a href="{% url 'storage:register_buyitem' invoice.id %}">
+                        <i class="fas fa-plus-circle" style="font-size: 20px; color: #2e98da;"></i>
+                    </a>
+                    </td>
+
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6">هیچ فاکتوری یافت نشد</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr class="total-row">
+                    <td style="width: 40px"></td>
+                    <td style="width: 180px"></td>
+                    <td style="width: 60px"></td>
+                    <td style="width: 100px"></td>
+                    <td style="width: 80px"></td>
+                     <td style="width: 60px"></td>
+
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript" src="{% static 'assets/js/jalalidatepicker.min.js' %}"></script>
+<script>
+    jalaliDatepicker.startWatch({
+        minDate: "attr",
+        maxDate: "attr",
+        onSelect: function () {
+            this.setAttribute('value', this.value);
+        }
+    });
+</script>
+{% endblock %}

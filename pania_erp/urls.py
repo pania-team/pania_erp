@@ -14,6 +14,7 @@ urlpatterns = [
     path('finance/', include('finance.urls', namespace='finance')),
     path('taskflow/', include('taskflow.urls', namespace='taskflow')),
     path('storage/', include('storage.urls', namespace='storage')),
+    path("select2/", include("django_select2.urls")),
 
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) \
               + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -1,0 +1,217 @@
+.container {
+    margin: 20px auto;
+    max-width: 900px;
+    margin-left: 180px;
+}
+
+h2 {
+    text-align: center;
+    font-family: 'Vazirmatn', sans-serif;
+    margin-bottom: 20px;
+}
+
+/* استایل فیلتر فرم */
+.filter-form {
+    width: 80%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 10px;
+    margin-left: 150px;
+    padding: 8px;
+    background-color: #f6f6f8;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 12px;
+}
+
+/* استایل فیلدهای ورودی */
+.filter-form input {
+    padding: 5px;
+    border: 1px solid #eaeaea;
+    border-radius: 4px;
+    width: 100px;
+    height: 20px;
+    font-size: 14px;
+    color: #96420c;
+    font-weight: bold;
+}
+
+/* استایل دکمه فیلتر */
+.filter-button {
+    padding: 4px 10px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    font-family: "Vazirmatn", sans-serif;
+    height: 30px;
+}
+
+.filter-button:hover {
+    background-color: #2980b9;
+}
+
+/* استایل چک‌باکس‌های فیلتر نوع طلا */
+.gold-type-filters {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 12px;
+    font-family: "Vazirmatn", sans-serif;
+}
+
+.gold-type-filters label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+}
+
+.gold-type-filters input[type="checkbox"] {
+    width: 14px;
+    height: 14px;
+    accent-color: #3498db; /* تغییر رنگ تیک چک‌باکس */
+    cursor: pointer;
+}
+
+/* استایل دکمه بازنشانی فیلتر */
+.reset-button {
+    text-decoration: none;
+    color: #dc1c1c;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.reset-button i {
+    font-size: 14px;
+}
+
+.reset-button:hover {
+    color: #9f1b17;
+}
+
+/* استایل کارت‌های محصولات */
+.card-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 20px;
+    padding: 20px;
+}
+
+.product-card {
+    background: #dadada;
+    border: 1px solid #cbc9c9;
+    border-radius: 8px;
+    overflow: hidden;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    font-family: 'Vazirmatn', sans-serif;
+}
+
+.image-container img {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    margin: 0 auto;
+    margin-top: 10px;
+}
+
+.product-info {
+    padding: 5px;
+}
+
+.product-name {
+    font-size: 11px;
+    font-weight: bold;
+    margin: 5px 0;
+}
+
+.product-code,
+.product-weight,
+.product-net-weight {
+    font-size: 12px;
+    margin: 3px 0;
+}
+
+.no-products {
+    text-align: center;
+    font-family: 'Vazirmatn', sans-serif;
+    font-size: 16px;
+    color: #555;
+}
+
+/* استایل صفحه‌بندی */
+.pagination {
+    text-align: center;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.pagination .step-links {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.pagination .step-links .page-link {
+    text-decoration: none;
+    color: #007bff;
+    padding: 8px 10px;
+    border: 1px solid #c5c6c9;
+    border-radius: 4px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pagination .step-links .page-link i {
+    font-size: 16px;
+    margin: 0 5px;
+}
+
+.pagination .step-links .page-link:hover {
+    background-color: #007bff;
+    color: #fff;
+}
+
+.pagination .current {
+    font-weight: bold;
+    color: #6c757d;
+    font-size: 14px;
+    margin: 0 10px;
+}
+
+/* استایل نمایش نوع طلا */
+.product-type-and-icon {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.product-weight {
+    margin: 0;
+    font-size: 12px;
+}
+
+.add-to-invoice {
+    font-size: 14px;
+    color: #1f658f;
+    border-radius: 30%;
+    padding: 5px;
+    transition: transform 0.3s ease;
+}
+
+.add-to-invoice:hover {
+    transform: scale(1.2);
+    color: #837907;
+}

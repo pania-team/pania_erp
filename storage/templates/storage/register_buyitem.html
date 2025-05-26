@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load jformat %}
+{% load humanize %}
+
+{% block css %}
+<link type="text/css" rel="stylesheet" href="{% static 'assets/css/select2.min.css' %}" />
+<link type="text/css" rel="stylesheet" href="{% static 'assets/css/jalalidatepicker.min.css' %}" />
+<link rel="stylesheet" href="{% static 'storage/css/register_buyitem.css' %}">
+<link rel="stylesheet" href="{% static 'assets/css/fonts.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+{% endblock %}
+
+{% block body %}
+<div class="container">
+    <div class="content-wrapper" style="display: flex; flex-direction: column; align-items: stretch; gap: 20px;">
+        <div id="invoice-form-container">
+            <h4 style="display: flex; justify-content: center; align-items: center;">
+                <span style="margin-right: 20px; color: #96420c">
+                    {% if invoice.supplier.type == "individual" %}
+                        {{ invoice.supplier.first_name }} {{ invoice.supplier.last_name }} (شخص حقیقی)
+                    {% elif invoice.supplier.type == "company" %}
+                        {{ invoice.supplier.company_name }}
+                    {% else %}
+                        نامشخص
+                    {% endif %}
+                </span>
+
+                ثبت کالاهای فاکتور
+            </h4>
+            <form id="buyitem-form" method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    {{ form.as_p }}
+                </div>
+                <div class="button-container">
+                    <a href="{% url 'storage:buyinvoice_list' %}" class="btn btn-primary btn-back">بازگشت</a>
+                    <button type="submit" class="btn btn-primary btn-submit">ثبت</button>
+                </div>
+            </form>
+        </div>
+
+        {% if items %}
+        <div class="table-container">
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 5%;">ردیف</th>
+                            <th style="width: 55%;">ایتم</th>
+                            <th style="width: 10%;">تعداد</th>
+                            <th style="width: 15%;">قیمت واحد</th>
+                            <th style="width: 15%;">مالیات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in items reversed %}
+                        <tr>
+                            <td>{{ forloop.revcounter }}</td>
+                            <td>{{ item.item }}</td>
+                            <td>{{ item.quantity }}</td>
+                            <td>{{ item.unit_price|floatformat:0|intcomma:False }}</td>
+                            <td>{{ item.tax|floatformat:0|intcomma:False }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}
+
+
+
+{% block js %}
+<script src="{% static 'storage/css/register_buyitem.js' %}"></script>
+<script type="text/javascript" src="{% static 'assets/js/select2.min.js' %}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('.select2').select2({
+            placeholder: "دسته بندی",
+            allowClear: true
+        });
+    });
+</script>
+<script>
+    // حذف پیام‌ها بعد از 5 ثانیه
+    setTimeout(function() {
+        var messages = document.querySelector('.messages');
+        if (messages) {
+            messages.style.transition = "opacity 0.5s ease";
+            messages.style.opacity = "0"; // محو شدن پیام
+            setTimeout(function() {
+                messages.remove(); // حذف پیام از DOM
+            }, 500); // صبر برای تکمیل محو شدن
+        }
+    }, 5000); // 5 ثانیه انتظار
+</script>
+{% endblock %}

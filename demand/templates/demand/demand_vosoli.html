@@ -44,6 +44,7 @@
                     <th style="width: 70px">کد وام</th>
                     <th style="width: 60px">شماره قسط</th>
                     <th style="width: 100px">بازپرداخت قسط</th>
+                    <th style="width: 60px">محل پرداخت</th>
                     <th style="width: 80px">جریمه</th>
                     <th style="width: 60px">نوع قسط</th>
                 </tr>
@@ -58,6 +59,12 @@
                     <td style="width: 70px">{{ installment.loan.loan_code }}</td>
                     <td style="width: 60px">{{ installment.ghest_count }}</td>
                     <td style="width: 100px">{{ installment.total_ghest_repaid|intcomma:False }}</td>
+                    <td style="width: 60px">
+                        {% with installment.repayments.last as repayment %}
+                            {{ repayment.payment_place }}
+                        {% endwith %}
+                    </td>
+
                     <td style="width: 80px">{{ installment.penalty_amount|intcomma:False }}</td>
                     <td style="width: 60px">{{ installment.ghest_type }}</td>
                 </tr>
@@ -76,6 +83,7 @@
                     <td style="width: 70px"></td>
                     <td style="width: 60px"></td>
                     <td style="width: 100px"></td>
+                    <td style="width: 60px"></td>
                     <td style="width: 80px"></td>
                     <td style="width: 70px"></td>
                 </tr>

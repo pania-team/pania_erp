@@ -1,0 +1,159 @@
+/* استایل کلی جدول */
+.table-container {
+    margin-top: 50px;
+    margin-left: 350px;
+    white-space: nowrap;
+    padding: 3px;
+
+}
+
+table {
+    border-collapse: collapse;
+    table-layout: fixed;
+
+}
+
+/* تنظیمات ستون‌های جدول */
+thead, tfoot {
+    display: table;
+    table-layout: fixed;
+    background-color: #0fb6a9;
+    color: white;
+    height: 35px;
+
+}
+
+tbody {
+    display: block;
+    max-height: 250px; /* حداکثر ارتفاع برای بدنه جدول */
+    overflow-y: scroll; /* فعال‌سازی اسکرول عمودی */
+}
+
+/* اسکرول مستقل برای بدنه جدول */
+tbody tr {
+    display: table;
+    table-layout: fixed;
+}
+
+/* استایل‌های ردیف‌ها */
+thead th{
+    border: 1px solid #dcdcdc;
+    text-align: center;
+    font-size: 11px;
+     padding: 5px;
+}
+tfoot td{
+    text-align: center;
+    font-size: 11px;
+     padding: 5px;
+}
+
+tbody td {
+    border: 1px solid #dcdcdc;
+    text-align: center;
+    font-size: 11px;
+     padding: 5px;
+}
+
+
+/* رنگ متناوب برای ردیف‌های بدنه */
+tbody tr:nth-child(even) {
+    background-color: #eeeeee;
+}
+
+/* استایل برای ردیف جمع کل */
+tfoot {
+    background-color: #4de5cc;
+    color: white;
+    font-weight: normal;
+    font-size: 12px;
+    height: 30px;
+}
+/* استایل فیلتر فرم */
+.filter-form {
+    width: 50%;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 10px;
+    margin-left: 250px;
+    padding: 5px;
+    background-color: #f6f6f6;
+    border: 1px solid #f1f1f1;
+    border-radius: 5px;
+    font-size: 12px;
+}
+
+.filter-form .form-group {
+    margin-right: 10px;
+}
+
+.filter-form input {
+    padding: 5px;
+    border: 1px solid #eaeaea;
+    border-radius: 4px;
+    width: 100px;
+    height: 15px;
+    font-size: 12px;
+    color: #96420c;
+    font-weight: bold;
+}
+
+.filter-button {
+    padding: 4px 10px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    font-family: "Vazirmatn", sans-serif;
+     height: 25px;
+}
+
+/* استایل چک‌باکس‌های فیلتر نوع طلا */
+.supply_type-filters {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 12px;
+    font-family: "Vazirmatn", sans-serif;
+}
+
+.supply_type-filters label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+}
+
+.supply_type-filters input[type="checkbox"] {
+    width: 14px;
+    height: 14px;
+    accent-color: #3498db; /* تغییر رنگ تیک چک‌باکس */
+    cursor: pointer;
+}
+
+
+.filter-button:hover {
+    background-color: #2980b9;
+}
+.red-text {
+    color: #a45b14;
+}
+.green-text{
+    color: #68a223;
+}
+
+/* استایل‌های دکمه و لینک‌های پاکسازی فیلتر */
+.reset-button {
+    text-decoration: none;
+    font-size: 14px;
+    color: #e74c3c;
+    cursor: pointer;
+}
+
+.reset-button:hover {
+    color: #c0392b;
+}
