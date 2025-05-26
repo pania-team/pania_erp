@@ -176,7 +176,7 @@ class TaskForm(forms.ModelForm):
             'class': 'form-control',
             'placeholder': 'تاریخ سررسید',
             'autocomplete': 'off',
-            'style': 'font-family: Vazirmatn; font-size: 11px'
+            'style': 'font-family: Vazirmatn, sans-serif; font-size: 11px'
         }),
         input_formats=['%Y-%m-%d'],  # Use hyphen format as required by jDateField
         label=''

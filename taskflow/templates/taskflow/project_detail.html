@@ -7,6 +7,7 @@
 
 
 {% block css %}
+    {{ block.super }}
 <link type="text/css" rel="stylesheet" href="{% static 'assets/css/jalalidatepicker.min.css' %}" />
 <link rel="stylesheet" href="{% static 'taskflow/css/project_detail.css' %}">
 <link rel="stylesheet" href="{% static 'assets/css/fonts.css' %}">
@@ -16,71 +17,88 @@
 
 
 {% block content %}
-<div class="taskflow-container">
-    <div class="project-detail-container">
-        <div class="project-header">
-            <div style="display:flex; align-items:center; justify-content:space-between; gap:1rem;">
-                <div>
-                    <h2 style="display:inline-block; margin-left:1rem;">{{ project.name }}</h2>
-                    <a href="{% url 'taskflow:project_update' project.pk %}" class="btn btn-warning" style="margin-left:0.5rem;">ویرایش</a>
-                    <a href="{% url 'taskflow:project_delete' project.pk %}" class="btn btn-danger" onclick="return confirm('آیا از حذف پروژه مطمئن هستید؟');">حذف</a>
-                </div>
-                <div style="color:#888; font-size:1rem;">{{ project.description }}</div>
+<div class="detail-container">
+    <div class="detail-header">
+        <div class="detail-title">
+            <i class="fa fa-project-diagram"></i>
+            {{ project.name|default:'بدون عنوان' }}
+        </div>
+        <div class="detail-meta">
+            <div class="meta-item">
+                <i class="fa fa-calendar-alt"></i>
+                <span>تاریخ شروع: {{ project.start_date|date:"d-m-Y"|default:'-' }}</span>
+            </
             </div>
-            <div style="margin-top:1rem; display:flex; gap:2rem;">
-                <div class="meta-item">
-                    <i class="fa fa-calendar-alt"></i>
-                    <span>تاریخ شروع: {{ project.start_date|default:'-' }}</span>
-                </div>
-                <div class="meta-item">
-                    <i class="fa fa-calendar-check"></i>
-                    <span>تاریخ پایان: {{ project.end_date|default:'-' }}</span>
-                </div>
-                <div class="meta-item">
-                    <i class="fa fa-users"></i>
-                    <span>تعداد اعضا: {{ project.members.count }}</span>
-                </div>
-                <div class="meta-item">
-                    <i class="fa fa-tasks"></i>
-                    <span>وضعیت: {{ project.get_status_display }}</span>
-                </div>
+            <div class="meta-item">
+                <i class="fa fa-calendar-check"></i>
+                <span>تاریخ پایان: {{ project.end_date|date:"d-m-Y"|default:'-' }}</span>
+            </div>
+            <div class="meta-item">
+                <i class="fa fa-users"></i>
+                <span>تعداد اعضا: {{ project.members.count }}</span>
+            </div>
+            <div class="meta-item">
+                <i class="fa fa-tasks"></i>
+                <span>وضعیت: {{ project.get_status_display }}</span>
+            </div>
+            <div class="meta-item">
+                <i class="fa fa-money-bill"></i>
+                <span>بودجه: {{ project.budget|default:'-' }}</span>
             </div>
         </div>
-
-        <div class="meetings-section">
+    </div>
+    <div class="detail-content-card">
+        <div class="detail-description">
+            <div class="section-title"><i class="fa fa-align-right"></i> توضیحات</div>
+            <div class="description-text">
+                {{ project.description|linebreaks|default:'توضیحاتی ثبت نشده است.' }}
+            </div>
+        </div>
+        <div class="detail-meetings">
             <div class="meetings-header">
-                <h3 class="meetings-title">جلسات پروژه</h3>
+                <div class="section-title"><i class="fa fa-users"></i> جلسات پروژه</div>
                 <a href="{% url 'taskflow:meeting_create' %}?project={{ project.pk }}" class="btn btn-primary">
                     <i class="fas fa-plus"></i> ایجاد جلسه جدید
                 </a>
             </div>
-
-            {% if meetings_with_tasks %}
-                {% for mt in meetings_with_tasks %}
-                <div class="meeting-block">
-                    <a href="{% url 'taskflow:meeting_detail' mt.meeting.pk %}" style="text-decoration:none; color:inherit;">
-                        <div class="meeting-header">
-                            <div class="meeting-title">{{ mt.meeting.title }}</div>
-                            <div class="meeting-date">
-                                <i class="fas fa-calendar-alt"></i> {{ mt.meeting.date }}
+            <div class="meeting-list">
+                {% if meetings_with_tasks %}
+                    {% for mt in meetings_with_tasks %}
+                    <div class="meeting-block">
+                        <a href="{% url 'taskflow:meeting_detail' mt.meeting.pk %}" style="text-decoration:none; color:inherit;">
+                            <div class="meeting-header">
+                                <div class="meeting-title">{{ mt.meeting.title }}</div>
+                                <div class="meeting-date">
+                                    <i class="fa fa-calendar-alt"></i> {{ mt.meeting.date|default:'-' }}
+                                </div>
                             </div>
-                        </div>
-                        {% if mt.meeting.description %}
-                        <div class="meeting-description">{{ mt.meeting.description }}</div>
-                        {% endif %}
-                    </a>
-                </div>
-                {% endfor %}
-            {% else %}
-                <div class="no-meetings">
-                    <i class="fas fa-calendar-times fa-2x" style="margin-bottom:1rem;"></i>
-                    <p>هنوز هیچ جلسه‌ای برای این پروژه ثبت نشده است.</p>
-                    <a href="{% url 'taskflow:meeting_create' %}?project={{ project.pk }}" class="btn btn-primary">
-                        <i class="fas fa-plus"></i> ایجاد اولین جلسه
-                    </a>
-                </div>
-            {% endif %}
+                            <div class="meeting-meta">
+                                <div class="meta-item">
+                                    <i class="fa fa-tasks"></i> تعداد تسک: {{ mt.tasks.count }}
+                                </div>
+                            </div>
+                            {% if mt.meeting.description %}
+                            <div class="meeting-description">{{ mt.meeting.description }}</div>
+                            {% endif %}
+                        </a>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state">
+                        <i class="fas fa-calendar-times"></i>
+                        <h4>هنوز هیچ جلسه‌ای برای این پروژه ثبت نشده است.</h4>
+                        <a href="{% url 'taskflow:meeting_create' %}?project={{ project.pk }}" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> ایجاد اولین جلسه
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
         </div>
+    </div>
+    <div class="task-detail-actions">
+        <a href="{% url 'taskflow:project_update' project.pk %}" class="btn btn-warning">ویرایش</a>
+        <a href="{% url 'taskflow:project_delete' project.pk %}" class="btn btn-danger" onclick="return confirm('آیا از حذف پروژه مطمئن هستید؟');">حذف</a>
+        <a href="/taskflow/project_list/" class="btn btn-secondary">برگشت به صفحه اصلی</a>
     </div>
 </div>
 {% endblock %}

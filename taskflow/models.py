@@ -36,7 +36,7 @@ class Project(models.Model):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='planning', verbose_name='وضعیت')
     manager = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL, related_name='managed_projects', verbose_name="مدیر پروژه")
     members = models.ManyToManyField(User, related_name='projects', verbose_name='اعضای پروژه')
-    budget = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name='بودجه')
+    budget = models.IntegerField(null=True, blank=True, verbose_name='بودجه')
     progress = models.IntegerField(default=0, verbose_name='پیشرفت')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='تاریخ ایجاد')
     updated_at = models.DateTimeField(auto_now=True, verbose_name='تاریخ بروزرسانی')

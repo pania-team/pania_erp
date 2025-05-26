@@ -231,3 +231,105 @@
     justify-content: flex-end;
     gap: 0.5rem;
 }
+
+.task-card-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+.task-card-link:hover .task-card {
+    box-shadow: 0 6px 18px rgba(25, 118, 210, 0.15);
+    border: 1.5px solid #1976d2;
+    background: #f0f7ff;
+    transition: all 0.2s;
+}
+
+/* استایل مخصوص صفحه جزئیات تسک */
+.task-detail-container {
+    max-width: 600px;
+    margin: 2.5rem auto;
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 4px 24px rgba(25, 118, 210, 0.08);
+    padding: 2.5rem 2rem 2rem 2rem;
+    font-family: "Vazirmatn", sans-serif;
+}
+.task-header {
+    border-bottom: 1px solid #e3e3e3;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+}
+.task-header h1 {
+    font-size: 1.6rem;
+    color: #1976d2;
+    margin-bottom: 0.5rem;
+}
+.task-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.2rem;
+    font-size: 1rem;
+    color: #555;
+}
+.meta-item {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+.task-content {
+    margin-top: 2rem;
+}
+.task-description h2, .task-meeting h2 {
+    font-size: 1.1rem;
+    color: #1976d2;
+    margin-bottom: 0.5rem;
+}
+.description-content {
+    background: #f7fafd;
+    border-radius: 8px;
+    padding: 1rem;
+    color: #333;
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+}
+.task-meeting {
+    margin-top: 1.5rem;
+    background: #f5f5f5;
+    border-radius: 8px;
+    padding: 1rem;
+}
+.meeting-title {
+    font-weight: bold;
+    color: #1976d2;
+    margin-bottom: 0.5rem;
+}
+.meeting-meta {
+    display: flex;
+    gap: 1.5rem;
+    color: #666;
+    font-size: 0.97rem;
+}
+.task-detail-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 2.5rem;
+    margin-bottom: 0.5rem;
+}
+.btn-warning {
+    background: #f39c12;
+    color: white;
+}
+.btn-danger {
+    background: #e74c3c;
+    color: white;
+}
+.btn-secondary {
+    background: #7f8c8d;
+    color: white;
+}
+.btn:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
