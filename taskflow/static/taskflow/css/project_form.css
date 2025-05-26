@@ -1,0 +1,121 @@
+.project-form {
+    max-width: 600px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: #fafafa;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.project-form h2 {
+    text-align: center;
+    margin-bottom: 2.5rem;
+    color: #2D3748;
+    font-size: 2rem;
+    font-weight: 600;
+}
+
+.form-group {
+    margin-bottom: 0.75rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    margin-bottom: 0.25rem;
+    font-weight: bold;
+    font-size: 16px;
+    color: #333;
+}
+
+/* عمومی برای همه‌ی فیلدها */
+.form-control,
+select.form-control,
+textarea.form-control,
+input[type="text"],
+input[type="number"],
+input[type="date"] {
+    width: 100%;
+    height: 40px;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    font-family: Vazirmatn, sans-serif;
+    box-sizing: border-box;
+}
+
+/* مخصوص textarea که نباید خیلی کوچیک بشه */
+textarea.form-control {
+    min-height: 100px;
+    resize: vertical;
+}
+
+select.form-control {
+    cursor: pointer;
+}
+
+/* برای select2 هم هماهنگ با بقیه */
+.select2-container--default .select2-selection--multiple {
+    min-height: 40px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-family: Vazirmatn, sans-serif;
+    font-size: 16px;
+    padding: 0.3rem 0.5rem;
+}
+
+input[data-jdp] {
+    font-family: Vazirmatn, sans-serif !important;
+    cursor: pointer;
+}
+
+/* دکمه‌ها */
+.btn-submit,
+.btn-cancel {
+    padding: 0.6rem 1.5rem;
+    font-size: 0.95rem;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    font-family: Vazirmatn, sans-serif;
+}
+
+.btn-submit {
+    background-color: #007bff;
+    color: white;
+}
+
+.btn-cancel {
+    background: #eee;
+    color: #333;
+}
+
+.btn-submit:hover { background: #0056b3; }
+.btn-cancel:hover { background: #bbb; }
+
+/* برای نمایش خطا یا توضیح */
+.text-danger {
+    color: #dc3545;
+    font-size: 0.85rem;
+    margin-top: 0.25rem;
+}
+
+.text-muted {
+    color: #6c757d;
+    font-size: 0.85rem;
+    margin-top: 0.25rem;
+}
+
+@media (max-width: 768px) {
+    .project-form {
+        margin: 1rem;
+        padding: 1rem;
+    }
+    .project-form h2 {
+        font-size: 1.5rem;
+    }
+    .form-control {
+        font-size: 0.95rem;
+    }
+} 

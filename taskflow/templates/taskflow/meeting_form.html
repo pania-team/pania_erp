@@ -47,13 +47,50 @@
 {% block js %}
 <script type="text/javascript" src="{% static 'assets/js/jalalidatepicker.min.js' %}"></script>
 <script>
-    jalaliDatepicker.startWatch({
-        minDate: "attr",
-        maxDate: "attr",
-        onSelect: function () {
-            this.setAttribute('value', this.value);
-        }
+    document.addEventListener('DOMContentLoaded', function() {
+        const dateField = document.querySelector('input[name="date"]');
+        
+        // Initialize the date picker
+        jalaliDatepicker.startWatch({
+            selector: 'input[name="date"]',
+            format: 'YYYY-MM-DD',  // Use hyphen format
+            persianDigit: true,
+            time: false,
+            autoClose: true,
+            onSelect: function() {
+                const date = this.value;
+                if (date) {
+                    // Ensure the date uses hyphens
+                    const formattedDate = date.replace(/\//g, '-');
+                    this.value = formattedDate;
+                    this.setAttribute('value', formattedDate);
+                }
+            }
+        });
+
+        // Add form submission handler
+        document.getElementById('meeting-form').addEventListener('submit', function(e) {
+            const date = dateField.value;
+            if (date) {
+                // Ensure the date uses hyphens before submission
+                const formattedDate = date.replace(/\//g, '-');
+                dateField.value = formattedDate;
+            }
+        });
+
+        // Add validation on input change
+        dateField.addEventListener('change', function() {
+            const date = this.value;
+            if (date) {
+                const formattedDate = date.replace(/\//g, '-');
+                const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+                if (!dateRegex.test(formattedDate)) {
+                    this.setCustomValidity('لطفا یک تاریخ معتبر وارد کنید');
+                } else {
+                    this.setCustomValidity('');
+                }
+            }
+        });
     });
 </script>
-
 {% endblock %}

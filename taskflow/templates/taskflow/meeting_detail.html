@@ -5,59 +5,88 @@
     <link rel="stylesheet" href="{% static 'taskflow/css/meeting_detail.css' %}">
 {% endblock %}
 {% block content %}
-<div class="taskflow-container">
-    <div class="meeting-detail-container" dir="rtl">
-        <div class="meeting-header">
-            <h2>{{ meeting.title }}</h2>
-            <div style="margin-top: 1rem; display: flex; gap: 1rem;">
-                <a href="{% url 'taskflow:meeting_update' meeting.pk %}" class="btn btn-warning">ویرایش جلسه</a>
-                <a href="{% url 'taskflow:meeting_delete' meeting.pk %}" class="btn btn-danger" onclick="return confirm('آیا از حذف جلسه مطمئن هستید؟');">حذف جلسه</a>
+<div class="detail-container">
+    <div class="detail-header">
+        <div class="detail-title" style="color: black">
+            <i class="fa fa-users" style="color: black"></i>
+            {{ meeting.title|default:'بدون عنوان' }}
+        </div>
+        <div class="detail-meta">
+            <div class="meta-item">
+                <i class="fa fa-calendar-alt"></i>
+                <span>تاریخ: {{ meeting.date|date:"d-m-Y"|default:'-' }}</span>
             </div>
-            <div style="color:#888; font-size:1rem;">پروژه: {{ meeting.project|default:'-' }}</div>
-            <div style="margin-top:1rem; display:flex; gap:2rem;">
-                <div><i class="fas fa-calendar"></i> تاریخ جلسه: {{ meeting.date }}</div>
-                <div><i class="fas fa-map-marker-alt"></i> محل: {{ meeting.location|default:'-' }}</div>
-                <div><i class="fas fa-clock"></i> مدت زمان: {{ meeting.duration|default:'-' }} دقیقه</div>
+            <div class="meta-item">
+                <i class="fa fa-clock"></i>
+                <span>مدت زمان: {{ meeting.duration }} دقیقه</span>
             </div>
-            <div style="margin-top:1rem;">
-                <strong>یادداشت‌ها:</strong>
-                <div>{{ meeting.notes|default:'-' }}</div>
+            <div class="meta-item">
+                <i class="fa fa-map-marker-alt"></i>
+                <span>مکان: {{ meeting.location|default:'-' }}</span>
             </div>
-            <div style="margin-top:1rem;">
-                <strong>شرکت‌کنندگان:</strong>
+            {% if meeting.project %}
+            <div class="meta-item project-name">
+                <i class="fa fa-project-diagram"></i>
+                <span>پروژه: {{ meeting.project.name|default:'-' }}</span>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    <div class="detail-content-card">
+        <div class="detail-description">
+            <div class="section-title"><i class="fa fa-sticky-note"></i> یادداشت‌ها</div>
+            <div class="description-text">{{ meeting.notes|default:'-' }}</div>
+        </div>
+        <div class="detail-description">
+            <div class="section-title"><i class="fa fa-users"></i> شرکت‌کنندگان</div>
+            <div class="description-text">
                 {% for user in meeting.participants.all %}
-                    <span style="margin-left:0.5rem;">{{ user.f_name}} {{ user.l_name }}</span>
+                    <span style="margin-left:0.5rem;">{{ user.f_name }} {{ user.l_name }}</span>
                 {% empty %}
                     <span>-</span>
                 {% endfor %}
             </div>
         </div>
-
-        <div class="tasks-section" style="margin-top:2rem;">
-            <h3>تسک‌های این جلسه</h3>
-            {% if tasks %}
-                <ul class="tasks-list">
+        <div class="detail-meetings">
+            <div class="section-title"><i class="fa fa-tasks"></i> تسک‌های این جلسه</div>
+            <div class="meeting-list">
+                {% if tasks %}
                     {% for task in tasks %}
-                    <li class="task-item">
-                        <div><strong>{{ task.title }}</strong></div>
-                        <div>{{ task.description }}</div>
-                        <div>
-                            <span class="task-status status-{{ task.status }}">{{ task.get_status_display }}</span>
-                            {% if task.due_date %}
-                            <span style="margin-right:1rem; color:#666;">
-                                <i class="fas fa-clock"></i> تاریخ سررسید: {{ task.due_date }}
-                            </span>
-                            {% endif %}
+                    <a href="/taskflow/tasks/{{ task.id }}/" style="text-decoration:none; color:inherit;">
+                    <div class="meeting-block">
+                        <div class="meeting-header">
+                            <div class="meeting-title meeting-title">
+                                {{ task.title }}
+                            </div>
+                            <div class="meeting-date">
+                                <i class="fa fa-calendar-alt"></i> {{ task.due_date|default:'-' }}
+                            </div>
                         </div>
-                    </li>
+                        <div class="meeting-meta">
+                            <div class="meta-item status-{{ task.status }}">
+                                <i class="fa fa-tasks"></i> وضعیت: <span class="task-status status-{{ task.status }}">{{ task.get_status_display }}</span>
+                            </div>
+                            <div class="meta-item">
+                                <i class="fa fa-user"></i> مسئول: {% if task.assigned_to.get_full_name %}{{ task.assigned_to.get_full_name }}{% else %}{{ task.assigned_to.f_name}} {{ task.assigned_to.l_name }}{% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    </a>
                     {% endfor %}
-                </ul>
-            {% else %}
-                <div style="color:#888; text-align:center; padding:1rem;">
-                    <i class="fas fa-info-circle"></i> تسکی برای این جلسه ثبت نشده است.
-                </div>
-            {% endif %}
+                {% else %}
+                    <div class="empty-state">
+                        <i class="fas fa-info-circle"></i>
+                        <h4>تسکی برای این جلسه ثبت نشده است.</h4>
+                    </div>
+                {% endif %}
+            </div>
         </div>
+    </div>
+    <div class="task-detail-actions">
+        <a href="{% url 'taskflow:meeting_update' meeting.pk %}" class="btn btn-warning">ویرایش</a>
+        <a href="{% url 'taskflow:meeting_delete' meeting.pk %}" class="btn btn-danger" onclick="return confirm('آیا از حذف این جلسه مطمئن هستید؟');">حذف</a>
+        <a href="{% url 'taskflow:task_create' %}" class="btn btn-primary">ایجاد وظیفه جدید</a>
+        <a href="{% if meeting.project %}{% url 'taskflow:project_detail' meeting.project.pk %}{% else %}/taskflow/project_list/{% endif %}" class="btn btn-secondary">برگشت به پروژه</a>
     </div>
 </div>
 

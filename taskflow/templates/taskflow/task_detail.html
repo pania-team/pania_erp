@@ -1,31 +1,94 @@
 {% extends 'base.html' %}
 {% load static %}
+
 {% block css %}
+{{ block.super }}
     <link rel="stylesheet" href="{% static 'assets/css/fonts.css' %}">
+    <link rel="stylesheet" href="{% static 'taskflow/css/task_detail.css' %}">
 {% endblock %}
+
 {% block content %}
-<div class="container mt-5">
-    <div class="card">
-        <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">جزئیات تسک</h5>
-            <div>
-                <a href="{% url 'taskflow:task_update' task.pk %}" class="btn btn-warning btn-sm">ویرایش</a>
-                <a href="{% url 'taskflow:task_delete' task.pk %}" class="btn btn-danger btn-sm" onclick="return confirm('آیا از حذف تسک مطمئن هستید؟');">حذف</a>
+<div class="task-detail-container" dir="rtl">
+    <div class="task-header">
+        <h1>{{ task.title|default:'بدون عنوان' }}</h1>
+        <div class="task-meta">
+            <div class="meta-item">
+                <i class="fa fa-calendar-alt"></i>
+                <span>تاریخ سررسید: {{ task.due_date|date:"d-m-Y"|default:'-' }}</span>
+            </div>
+            <div class="meta-item">
+                <i class="fa fa-user"></i>
+                <span>
+                  مسئول:
+                  {% if task.assigned_to.get_full_name %}
+                    {{ task.assigned_to.get_full_name }}
+                  {% elif task.assigned_to.f_name or task.assigned_to.l_name %}
+                    {{ task.assigned_to.f_name }} {{ task.assigned_to.l_name }}
+                  {% else %}
+                    تعیین نشده
+                  {% endif %}
+                </span>
+            </div>
+            <div class="meta-item">
+                <i class="fa fa-tasks"></i>
+                <span>وضعیت: {{ task.get_status_display }}</span>
+            </div>
+            <div class="meta-item">
+                <i class="fa fa-project-diagram"></i>
+                <span>
+                  پروژه:
+                  {% if task.project %}
+                    {{ task.project.name }}
+                  {% else %}
+                    تعیین نشده
+                  {% endif %}
+                </span>
+            </div>
+            <div class="meta-item">
+                <i class="fa fa-flag"></i>
+                <span>اولویت: {{ task.get_priority_display|default:'-' }}</span>
             </div>
         </div>
-        <div class="card-body">
-            <h4 class="card-title">{{ task.title }}</h4>
-            <p class="card-text">{{ task.description|default:'بدون توضیح' }}</p>
-            <ul class="list-group list-group-flush mb-3">
-                <li class="list-group-item"><strong>وضعیت:</strong> {{ task.get_status_display }}</li>
-                <li class="list-group-item"><strong>اولویت:</strong> {{ task.get_priority_display }}</li>
-                <li class="list-group-item"><strong>پروژه:</strong> {{ task.project|default:'-' }}</li>
-                <li class="list-group-item"><strong>جلسه:</strong> {{ task.meeting|default:'-' }}</li>
-                <li class="list-group-item"><strong>مسئول انجام:</strong> {{ task.assigned_to.get_full_name|default:task.assigned_to.f_name|default:'کاربر' }}</li>
-                <li class="list-group-item"><strong>تاریخ سررسید:</strong> {{ task.due_date|default:'-' }}</li>
-            </ul>
-            <a href="{% url 'taskflow:task_list' %}" class="btn btn-secondary">بازگشت به لیست تسک‌ها</a>
+    </div>
+
+    <div class="task-content">
+        <div class="task-description">
+            <h2><i class="fa fa-align-right"></i> توضیحات</h2>
+            <div class="description-content">
+                {{ task.description|linebreaks|default:'توضیحاتی ثبت نشده است.' }}
+            </div>
         </div>
+
+        {% if task.meeting %}
+        <div class="task-meeting">
+            <h2><i class="fa fa-users"></i> جلسه مرتبط</h2>
+            <div class="meeting-info">
+                <div class="meeting-title">
+                    <i class="fa fa-users"></i>
+                    {{ task.meeting.title }}
+                </div>
+                <div class="meeting-meta">
+                    <div class="meta-item">
+                        <i class="fa fa-calendar-alt"></i>
+                        <span>تاریخ: {{ task.meeting.date|date:"d-m-Y"|default:'-' }}</span>
+                    </div>
+                    <div class="meta-item">
+                        <i class="fa fa-clock"></i>
+                        <span>مدت زمان: {{ task.meeting.duration }} دقیقه</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="task-detail-actions">
+        <a href="/taskflow/tasks/{{ task.id }}/edit/" class="btn btn-warning">ویرایش</a>
+        <form method="post" action="/taskflow/tasks/{{ task.id }}/delete/" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger" onclick="return confirm('آیا از حذف این تسک مطمئن هستید؟');">حذف</button>
+        </form>
+        <a href="/taskflow/tasks/" class="btn btn-secondary">برگشت به صفحه اصلی</a>
     </div>
 </div>
-{% endblock %} 
+{% endblock %}

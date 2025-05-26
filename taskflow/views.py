@@ -3,8 +3,9 @@ from django.contrib.auth.decorators import login_required
 from .models import Meeting, Project, Task
 from django.contrib import messages
 from .forms import ProjectForm, MeetingForm, TaskForm
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from accounts.models import User
+import jdatetime
 
 
 
@@ -115,10 +116,12 @@ def project_list(request):
 
 
 # --------------------------------------
-import jdatetime
 @login_required
 def project_detail(request, pk):
-    project = get_object_or_404(Project, pk=pk, members=request.user)
+    project = get_object_or_404(Project, pk=pk)
+    if not (request.user.is_superuser or project.manager == request.user):
+        messages.error(request, 'شما دسترسی لازم برای مشاهده جزئیات این پروژه را ندارید.')
+        return redirect('taskflow:project_list')
     meetings = Meeting.objects.filter(project=project)
     meetings_with_tasks = []
     for meeting in meetings:
@@ -156,16 +159,13 @@ def project_create(request):
             project.save()
             form.save_m2m()
             messages.success(request, 'پروژه با موفقیت ایجاد شد.')
-            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-                return HttpResponse('')
             return redirect('taskflow:project_list')
         else:
             print('ProjectForm errors:', form.errors)
     else:
         form = ProjectForm()
-    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-        return render(request, 'taskflow/create_project.html', {'form': form})
-    return render(request, 'taskflow/create_project.html', {'form': form})
+    
+    return render(request, 'taskflow/project_form.html', {'form': form})
 
 
 
@@ -173,14 +173,10 @@ def project_create(request):
 # --------------------------------------
 @login_required
 def project_update(request, pk):
-
     project = get_object_or_404(Project, pk=pk, members=request.user)
-
     if request.method == 'POST':
-
         form = ProjectForm(request.POST, instance=project)
         if form.is_valid():
-
             project = form.save()
             messages.success(request, 'پروژه با موفقیت بروزرسانی شد.')
             return redirect('taskflow:project_detail', pk=project.pk)
@@ -188,8 +184,8 @@ def project_update(request, pk):
             print('ProjectForm errors:', form.errors)
     else:
         form = ProjectForm(instance=project)
-
-    return render(request, 'taskflow/create_project.html', {
+    
+    return render(request, 'taskflow/project_form.html', {
         'form': form,
         'edit_mode': True,
         'project': project
@@ -247,15 +243,21 @@ def task_create(request):
             task.save()
             form.save_m2m()
             messages.success(request, 'تسک با موفقیت ایجاد شد.')
-            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-                return HttpResponse('')
             return redirect('taskflow:task_list')
         else:
             print('TaskForm errors:', form.errors)
-            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-                return render(request, 'taskflow/task_form.html', {'form': form})
     else:
-        form = TaskForm()
+        initial = {}
+        project_id = request.GET.get('project')
+        if project_id:
+            try:
+                project = Project.objects.get(id=project_id)
+                initial['project'] = project
+            except Project.DoesNotExist:
+                pass
+        
+        form = TaskForm(initial=initial)
+    
     return render(request, 'taskflow/task_form.html', {'form': form})
 
 
@@ -289,3 +291,13 @@ def task_delete(request, pk):
     task.delete()
     messages.success(request, 'تسک با موفقیت حذف شد.')
     return redirect('taskflow:task_list')
+
+
+@login_required
+def get_project_meetings(request):
+    project_id = request.GET.get('project_id')
+    if project_id:
+        meetings = Meeting.objects.filter(project_id=project_id)
+        meetings_list = [{'id': meeting.id, 'title': meeting.title} for meeting in meetings]
+        return JsonResponse({'meetings': meetings_list})
+    return JsonResponse({'meetings': []})

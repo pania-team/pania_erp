@@ -4,6 +4,7 @@
     <link rel="stylesheet" href="{% static 'assets/css/fonts.css' %}">
     <link rel="stylesheet" href="{% static 'taskflow/css/task_list.css' %}">
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="{% static 'assets/css/base.css' %}">
 {% endblock %}
 {% block content %}
 <div class="taskflow-container">
@@ -21,87 +22,9 @@
                     </select>
                 </form>
             </div>
-            <button id="open-create-task-modal" class="btn btn-success tasks-create-btn">
-                <i class="fa fa-plus"></i> ایجاد وظیفه
-            </button>
-        </div>
-
-        <!-- Modal ایجاد تسک جدید -->
-        <div id="create-task-modal" class="custom-modal-bg" style="display:none;">
-            <div class="custom-modal" dir="rtl">
-                <form id="create-task-form" method="post" action="{% url 'taskflow:task_create' %}">
-                    {% csrf_token %}
-                    <div class="modal-header">
-                        <span class="modal-title">ایجاد وظیفه</span>
-                        <span class="close-modal" id="close-create-task-modal">&times;</span>
-                    </div>
-                    <div class="modal-body">
-                        <div class="form-group">
-                            <label>عنوان فعالیت</label>
-                            <input type="text" name="title" class="form-control" required>
-                        </div>
-                        <div class="form-group">
-                            <label>توضیحات</label>
-                            <textarea name="description" class="form-control"></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label>پروژه</label>
-                            <select name="project" class="form-control">
-                                <option value="">انتخاب پروژه</option>
-                                {% for project in projects %}
-                                <option value="{{ project.id }}">{{ project.name }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>جلسه</label>
-                            <select name="meeting" class="form-control">
-                                <option value="">انتخاب جلسه</option>
-                                {% for project in projects %}
-                                    {% for meeting in project.meetings.all %}
-                                        <option value="{{ meeting.id }}">{{ meeting.title }}</option>
-                                    {% endfor %}
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>مسئول انجام</label>
-                            <select name="assigned_to" class="form-control">
-                                {% for user in users %}
-                                <option value="{{ user.id }}" {% if user.id == request.user.id %}selected{% endif %}>{{ user.f_name }} {{ user.l_name }}{% if not user.f_name and not user.l_name %}{{ user.mellicod }}{% endif %}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>تاریخ سررسید</label>
-                            <input type="text" name="due_date" class="form-control jalali-datepicker" autocomplete="off">
-                        </div>
-                        <div class="form-group">
-                            <label>وضعیت</label>
-                            <select name="status" class="form-control">
-                                <option value="todo">در انتظار انجام</option>
-                                <option value="in_progress">در حال انجام</option>
-                                <option value="done">انجام شده</option>
-                                <option value="canceled">لغو شده</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>اولویت</label>
-                            <select name="priority" class="form-control">
-                                <option value="low">کم</option>
-                                <option value="medium">متوسط</option>
-                                <option value="high">زیاد</option>
-                                <option value="critical">بحرانی</option>
-                            </select>
-                        </div>
-                        <div id="task-form-errors" class="text-danger" style="margin-top:10px;"></div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" id="close-create-task-modal-2">انصراف</button>
-                        <button type="submit" class="btn btn-success">ایجاد</button>
-                    </div>
-                </form>
-            </div>
+{#            <a href="{% url 'taskflow:task_create' %}" class="btn btn-primary">#}
+{#                + ایجاد وظیفه#}
+{#            </a>#}
         </div>
 
         {% if tasks|length == 0 and waiting_tasks|length == 0 %}
@@ -112,212 +35,39 @@
                 {% else %}
                     <div class="empty-tasks-title improved-empty-title">هیچ وظیفه‌ای برای نمایش وجود ندارد</div>
                 {% endif %}
-                <button id="open-create-task-modal-empty" class="btn btn-success improved-empty-btn">ایجاد وظیفه جدید</button>
+{#                <a href="{% url 'taskflow:task_create' %}" class="btn btn-success improved-empty-btn">ایجاد وظیفه جدید</a>#}
             </div>
         {% else %}
             <div class="tasks-list-section">
                 {% for task in tasks %}
-                <div class="task-card task-detail-trigger"
-                     data-task-id="{{ task.id }}"
-                     data-title="{{ task.title|default_if_none:'-' }}"
-                     data-description="{{ task.description|default_if_none:'-' }}"
-                     data-project="{{ task.project.name|default_if_none:'-' }}"
-                     data-meeting="{{ task.meeting.title|default_if_none:'-' }}"
-                     data-assigned="{{ task.assigned_to.f_name }} {{ task.assigned_to.l_name }}"
-                     data-due="{{ task.due_date|default_if_none:'-' }}"
-                     data-status="{{ task.get_status_display }}"
-                     data-priority="{{ task.get_priority_display }}">
-                    <div class="task-card-header">
-                        <span class="task-title">{{ task.title }}</span>
-                        <span class="task-status status-{{ task.status }}">{{ task.get_status_display }}</span>
-                    </div>
-                    <div class="task-card-body">
-                        <div class="task-desc">{{ task.description|truncatechars:80|default:'بدون توضیح' }}</div>
-                        <div class="task-meta">
-                            <span><i class="fa fa-calendar-alt"></i> {{ task.due_date|default:'-' }}</span>
+                <a href="/taskflow/tasks/{{ task.id }}/" class="task-card-link">
+                    <div class="task-card"
+                         data-task-id="{{ task.id }}"
+                         data-title="{{ task.title|default_if_none:'-' }}"
+                         data-description="{{ task.description|default_if_none:'-' }}"
+                         data-project="{{ task.project.name|default_if_none:'-' }}"
+                         data-meeting="{{ task.meeting.title|default_if_none:'-' }}"
+                         data-assigned="{{ task.assigned_to.f_name }} {{ task.assigned_to.l_name }}"
+                         data-due="{{ task.due_date|default_if_none:'-' }}"
+                         data-status="{{ task.get_status_display }}"
+                         data-priority="{{ task.get_priority_display }}">
+                        <div class="task-card-content">
+                            <div class="task-title">{{ task.title }}</div>
+                            <div class="task-status status-{{ task.status }}">{{ task.get_status_display }}</div>
+                            <div class="task-due-date">
+                                <i class="fa fa-calendar-alt"></i>
+                                {{ task.due_date|default:'-' }}
+                            </div>
                         </div>
                     </div>
-                </div>
+                </a>
                 {% endfor %}
             </div>
         {% endif %}
-    </div>
-
-    <!-- Modal نمایش جزئیات تسک -->
-    <div id="task-detail-modal" class="custom-modal-bg" style="display:none;">
-        <div class="custom-modal" dir="rtl" style="max-width: 500px;">
-            <div class="modal-header">
-                <span class="modal-title" id="detail-title">جزئیات تسک</span>
-                <span class="close-modal" id="close-task-detail-modal">&times;</span>
-            </div>
-            <div class="modal-body" id="task-detail-body">
-                <!-- اطلاعات تسک اینجا قرار می‌گیرد -->
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" id="delete-task-btn" style="margin-left: 0.5rem;">حذف</button>
-                <button type="button" class="btn btn-secondary" id="edit-task-btn" style="margin-left: 0.5rem;">ویرایش</button>
-                <button type="button" class="btn btn-secondary" id="close-task-detail-modal-2">بستن</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal ویرایش تسک -->
-    <div id="edit-task-modal" class="custom-modal-bg" style="display:none;">
-        <div class="custom-modal" dir="rtl" style="max-width: 500px;">
-            <div class="modal-header">
-                <span class="modal-title">ویرایش تسک</span>
-                <span class="close-modal" id="close-edit-task-modal">&times;</span>
-            </div>
-            <div class="modal-body" id="edit-task-body">
-                <!-- فرم ویرایش اینجا لود می‌شود -->
-            </div>
-        </div>
     </div>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script type="text/javascript" src="{% static 'assets/js/jalalidatepicker.min.js' %}"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    var modal = document.getElementById('create-task-modal');
-    var openBtn = document.getElementById('open-create-task-modal');
-    var openBtnEmpty = document.getElementById('open-create-task-modal-empty');
-    var closeBtn = document.getElementById('close-create-task-modal');
-    var closeBtn2 = document.getElementById('close-create-task-modal-2');
-    if(openBtn && modal) {
-        openBtn.onclick = function() { modal.style.display = 'flex'; }
-    }
-    if(openBtnEmpty && modal) {
-        openBtnEmpty.onclick = function() { modal.style.display = 'flex'; }
-    }
-    if(closeBtn && modal) {
-        closeBtn.onclick = function() { modal.style.display = 'none'; }
-    }
-    if(closeBtn2 && modal) {
-        closeBtn2.onclick = function() { modal.style.display = 'none'; }
-    }
-    window.onclick = function(event) {
-        if (event.target === modal) {
-            modal.style.display = 'none';
-        }
-    }
-});
-
-$(document).ready(function() {
-    $('#create-task-form').on('submit', function(e) {
-        e.preventDefault();
-        var $form = $(this);
-        var $btn = $form.find('button[type=submit]');
-        $btn.prop('disabled', true);
-        $('#task-form-errors').empty();
-        $.post($form.attr('action'), $form.serialize(), function(data) {
-            if ($(data).find('.form-group').length) {
-                $('#task-form-errors').html('لطفا همه فیلدها را به درستی پر کنید.');
-                $btn.prop('disabled', false);
-            } else {
-                $('#create-task-modal').hide();
-                location.reload();
-            }
-        }).fail(function(xhr) {
-            $('#task-form-errors').html('خطا در ارسال فرم!');
-            $btn.prop('disabled', false);
-        });
-    });
-    // نمایش جزئیات تسک در مودال
-    var currentTaskId = null;
-    $('.task-detail-trigger').on('click', function() {
-        var $t = $(this);
-        var html = '';
-        html += '<div class="mb-2"><b>عنوان:</b> ' + ($t.data('title') || '-') + '</div>';
-        html += '<div class="mb-2"><b>توضیحات:</b> ' + ($t.data('description') || '-') + '</div>';
-        html += '<div class="mb-2"><b>پروژه:</b> ' + ($t.data('project') || '-') + '</div>';
-        html += '<div class="mb-2"><b>جلسه:</b> ' + ($t.data('meeting') || '-') + '</div>';
-        html += '<div class="mb-2"><b>مسئول انجام:</b> ' + ($t.data('assigned') || '-') + '</div>';
-        html += '<div class="mb-2"><b>تاریخ سررسید:</b> ' + ($t.data('due') || '-') + '</div>';
-        html += '<div class="mb-2"><b>وضعیت:</b> ' + ($t.data('status') || '-') + '</div>';
-        html += '<div class="mb-2"><b>اولویت:</b> ' + ($t.data('priority') || '-') + '</div>';
-        $('#task-detail-body').html(html);
-        $('#task-detail-modal').show();
-        currentTaskId = $t.data('task-id');
-    });
-    $('#close-task-detail-modal, #close-task-detail-modal-2').on('click', function() {
-        $('#task-detail-modal').hide();
-    });
-    $(window).on('click', function(event) {
-        if (event.target === document.getElementById('task-detail-modal')) {
-            $('#task-detail-modal').hide();
-        }
-        if (event.target === document.getElementById('edit-task-modal')) {
-            $('#edit-task-modal').hide();
-        }
-    });
-    // ویرایش تسک
-    $('#edit-task-btn').on('click', function() {
-        if (!currentTaskId) return;
-        $('#edit-task-body').html('<div style="text-align:center;padding:2rem;">در حال بارگذاری...</div>');
-        $('#edit-task-modal').show();
-        $.get('/taskflow/tasks/' + currentTaskId + '/edit/', function(data) {
-            var $form = $(data).find('form');
-            $form.find('button[type=submit], .btn-secondary, .d-flex.justify-content-end').remove();
-            $form.append('<div class="d-flex justify-content-end gap-2 mt-3"><button type="submit" class="btn btn-secondary ms-2">ذخیره تغییرات</button><button type="button" class="btn btn-secondary" id="cancel-edit-task">انصراف</button></div>');
-            $('#edit-task-body').html($form);
-        });
-    });
-    // ثبت ویرایش با ajax
-    $(document).on('submit', '#edit-task-body form', function(e) {
-        e.preventDefault();
-        var $form = $(this);
-        var formData = $form.serialize();
-        $.post($form.attr('action'), formData, function(data) {
-            var $formNew = $(data).find('form');
-            // اگر فرم جدید hidden input با مقدار edit نداشت، مودال را ببند و صفحه را رفرش کن
-            if ($formNew.find('input[name="_form_mode"][value="edit"]').length === 0) {
-                $('#edit-task-modal').hide();
-                $('#task-detail-modal').hide();
-                location.reload();
-                return;
-            }
-            if ($formNew.find('.form-group').length) {
-                $formNew.find('button[type=submit], .btn-secondary, .d-flex.justify-content-end').remove();
-                $formNew.append('<div class="d-flex justify-content-end gap-2 mt-3"><button type="submit" class="btn btn-secondary ms-2">ذخیره تغییرات</button><button type="button" class="btn btn-secondary" id="cancel-edit-task">انصراف</button></div>');
-                $('#edit-task-body').html($formNew);
-            } else {
-                $('#edit-task-modal').hide();
-                $('#task-detail-modal').hide();
-                location.reload();
-            }
-        });
-    });
-    // انصراف ویرایش
-    $(document).on('click', '#cancel-edit-task, #close-edit-task-modal', function() {
-        $('#edit-task-modal').hide();
-    });
-    // حذف تسک
-    $('#delete-task-btn').on('click', function() {
-        if (!currentTaskId) return;
-        if (confirm('آیا از حذف این تسک مطمئن هستید؟')) {
-            $.post('/taskflow/tasks/' + currentTaskId + '/delete/', {csrfmiddlewaretoken: '{{ csrf_token }}'}, function() {
-                $('#task-detail-modal').hide();
-                location.reload();
-            });
-        }
-    });
-    jalaliDatepicker.startWatch({
-        selector: '.jalali-datepicker',
-        time: false,
-        persianDigit: true,
-        buttonsColor: "#1976d2",
-        theme: "light"
-    });
-    // $('.js-status-select').select2({
-    //     theme: 'default',
-    //     dir: 'rtl',
-    //     minimumResultsForSearch: Infinity,
-    //     width: 'style',
-    //     dropdownCssClass: 'status-select2-dropdown',
-    //     containerCssClass: 'status-select2-container'
-    // });
-});
-</script>
 {% endblock %}
