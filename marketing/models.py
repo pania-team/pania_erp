@@ -58,6 +58,13 @@ class FollowUp(models.Model):
         ('in_person', 'حضوری'),
         ('other', 'سایر'),
     ]
+    RESULT_CHOICES = [
+        ('successful', 'موفق'),
+        ('no_answer', 'پاسخ نداد'),
+        ('callback_later', 'قرار شد بعداً تماس بگیریم'),
+        ('not_interested', 'علاقه‌مند نبود'),
+        ('other', 'سایر'),
+    ]
     lead = models.ForeignKey('Lead', on_delete=models.CASCADE, verbose_name="لید")
     user = models.ForeignKey('accounts.User', on_delete=models.SET_NULL, null=True, blank=True, verbose_name="پیگیری‌کننده")
     follow_date = jmodels.jDateTimeField(verbose_name="تاریخ پیگیری")
@@ -66,6 +73,8 @@ class FollowUp(models.Model):
     notes = models.TextField(blank=True, verbose_name="یادداشت‌ها")
     follow_up_required = models.BooleanField(default=False, verbose_name="نیاز به پیگیری مجدد")
     next_followup_date = jmodels.jDateTimeField(null=True, blank=True, verbose_name="تاریخ پیگیری بعدی")
+    result = models.CharField(max_length=50, choices=RESULT_CHOICES, null=True, blank=True,
+                              verbose_name="نتیجه پیگیری")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
