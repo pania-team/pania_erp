@@ -52,12 +52,12 @@
                          data-status="{{ task.get_status_display }}"
                          data-priority="{{ task.get_priority_display }}">
                         <div class="task-card-content">
-                            <div class="task-title">{{ task.title }}</div>
-                            <div class="task-status status-{{ task.status }}">{{ task.get_status_display }}</div>
                             <div class="task-due-date">
                                 <i class="fa fa-calendar-alt"></i>
                                 {{ task.due_date|default:'-' }}
                             </div>
+                            <div class="task-status status-{{ task.status }}">{{ task.get_status_display }}</div>
+                            <div class="task-title">{{ task.title }}</div>
                         </div>
                     </div>
                 </a>

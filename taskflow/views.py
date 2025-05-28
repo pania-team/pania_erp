@@ -5,6 +5,7 @@ from django.contrib import messages
 from .forms import ProjectForm, MeetingForm, TaskForm
 from django.http import HttpResponse, JsonResponse
 from accounts.models import User
+from django import forms
 
 
 
@@ -47,7 +48,6 @@ def meeting_create(request):
             meeting.project = project
             meeting.save()
             form.save_m2m()
-            meeting.participants.add(*project.members.all())
             messages.success(request, 'جلسه با موفقیت ایجاد شد.')
             return redirect('taskflow:project_detail', pk=project.pk)
         else:
@@ -228,28 +228,41 @@ def task_detail(request, pk):
 # ----------------------------------------
 @login_required
 def task_create(request):
+    meeting_id = request.GET.get('meeting')
+    meeting = None
+    if meeting_id:
+        try:
+            meeting = Meeting.objects.get(id=meeting_id)
+        except Meeting.DoesNotExist:
+            meeting = None
+
     if request.method == 'POST':
         form = TaskForm(request.POST)
+        # حذف فیلدها از فرم
+        # form.fields.pop('project', None)
+        # form.fields.pop('meeting', None)
         if form.is_valid():
             task = form.save(commit=False)
-            task.created_by = request.user
+            if meeting:
+                task.meeting = meeting
+                task.project = meeting.project
             task.save()
             form.save_m2m()
             messages.success(request, 'تسک با موفقیت ایجاد شد.')
+            if task.meeting:
+                return redirect('taskflow:meeting_detail', pk=task.meeting.pk)
+            elif task.project:
+                return redirect('taskflow:project_detail', pk=task.project.pk)
             return redirect('taskflow:task_list')
-        else:
-            print('TaskForm errors:', form.errors)
     else:
         initial = {}
-        project_id = request.GET.get('project')
-        if project_id:
-            try:
-                project = Project.objects.get(id=project_id)
-                initial['project'] = project
-            except Project.DoesNotExist:
-                pass
-        
+        if meeting:
+            initial['meeting'] = meeting
+            initial['project'] = meeting.project
         form = TaskForm(initial=initial)
+        # حذف فیلدها از فرم
+        # form.fields.pop('project', None)
+        # form.fields.pop('meeting', None)
     
     return render(request, 'taskflow/task_form.html', {'form': form})
 
@@ -261,8 +274,16 @@ def task_update(request, pk):
     task = get_object_or_404(Task, pk=pk)
     if request.method == 'POST':
         form = TaskForm(request.POST, instance=task)
+        # حذف فیلدها از فرم
+        form.fields.pop('project', None)
+        form.fields.pop('meeting', None)
         if form.is_valid():
-            form.save()
+            task = form.save(commit=False)
+            # حفظ پروژه و جلسه اصلی
+            task.project = task.project
+            task.meeting = task.meeting
+            task.save()
+            form.save_m2m()
             messages.success(request, 'تسک با موفقیت بروزرسانی شد.')
             if request.headers.get('x-requested-with') == 'XMLHttpRequest':
                 return HttpResponse('')
@@ -273,6 +294,10 @@ def task_update(request, pk):
                 return render(request, 'taskflow/task_form.html', {'form': form, 'edit_mode': True, 'task': task})
     else:
         form = TaskForm(instance=task)
+        # حذف فیلدها از فرم
+        form.fields.pop('project', None)
+        form.fields.pop('meeting', None)
+    
     return render(request, 'taskflow/task_form.html', {'form': form, 'edit_mode': True, 'task': task})
 
 
@@ -294,3 +319,10 @@ def get_project_meetings(request):
         meetings_list = [{'id': meeting.id, 'title': meeting.title} for meeting in meetings]
         return JsonResponse({'meetings': meetings_list})
     return JsonResponse({'meetings': []})
+
+
+@login_required
+def project_tasks_view(request, pk):
+    project = get_object_or_404(Project, pk=pk)
+    tasks = Task.objects.filter(project=project)
+    return render(request, 'taskflow/project_tasks.html', {'project': project, 'tasks': tasks})

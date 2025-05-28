@@ -95,6 +95,7 @@
         </div>
     </div>
     <div class="task-detail-actions">
+        <a href="{% url 'taskflow:project_tasks' project.pk %}" class="btn btn-info">مشاهده تسک های پروژه</a>
         <a href="{% url 'taskflow:project_update' project.pk %}" class="btn btn-warning">ویرایش</a>
         <a href="{% url 'taskflow:project_delete' project.pk %}" class="btn btn-danger" onclick="return confirm('آیا از حذف پروژه مطمئن هستید؟');">حذف</a>
         <a href="/taskflow/project_list/" class="btn btn-secondary">برگشت به صفحه اصلی</a>

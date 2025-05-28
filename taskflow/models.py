@@ -62,8 +62,8 @@ class Task(models.Model):
 
     title = models.CharField(max_length=255, null=True, blank=True, verbose_name='موضوع')
     description = models.TextField(blank=True, default="", verbose_name='شرح')
-    assigned_to = models.ForeignKey(User, on_delete=models.PROTECT, related_name='assigned_tasks', help_text="کاربری که این تسک به او محول شده")
-    meeting = models.ForeignKey(Meeting, null=True, blank=True, on_delete=models.SET_NULL, related_name='meeting_tasks', help_text="اگر این تسک در یک جلسه ایجاد شده باشد، اینجا ثبت می‌شود")
+    assigned_to = models.ManyToManyField(User, related_name='assigned_tasks', verbose_name='مسئولین', help_text="کاربرانی که این تسک به آن‌ها محول شده")
+    meeting = models.ForeignKey(Meeting, null=True, blank=True, on_delete=models.CASCADE, related_name='meeting_tasks', help_text="اگر این تسک در یک جلسه ایجاد شده باشد، اینجا ثبت می‌شود")
     project = models.ForeignKey(Project, null=True, blank=True, on_delete=models.CASCADE, related_name='tasks', help_text="پروژه‌ای که این تسک به آن تعلق دارد")
     due_date = jmodels.jDateField(verbose_name='تاریخ سررسید', null=True, blank=True)
     is_completed = models.BooleanField(default=False, verbose_name='تکمیل شده')

@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'taskflow/css/project_tasks.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="taskflow-container">
+    <div class="tasks-page-container">
+        <div class="tasks-header">
+            <h2 style="color: #000; direction: rtl; margin-left: 25rem;"> تسک‌های پروژه: {{ project.name }}</h2>
+        </div>
+        {% if tasks %}
+        <div class="tasks-list-section">
+            {% for task in tasks %}
+            <a href="{% url 'taskflow:task_detail' task.id %}" class="task-card-link">
+                <div class="task-card">
+                    <div class="task-card-content">
+                        <div class="task-due-date">
+                            <i class="fa fa-calendar-alt"></i>
+                            {{ task.due_date|date:'Y/m/d'|default:'-' }}
+                        </div>
+                        <div class="task-status status-{{ task.status }}">{{ task.get_status_display }}</div>
+                        <div class="task-title">{{ task.title|default:'-' }}</div>
+                    </div>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+        {% else %}
+            <div class="empty-tasks-center improved-empty">
+                <i class="fa fa-tasks fa-4x improved-empty-icon"></i>
+                <div class="empty-tasks-title improved-empty-title">تسکی برای این پروژه ثبت نشده است</div>
+            </div>
+        {% endif %}
+        <div style="margin-top:2rem;text-align:left;">
+            <a href="{% url 'taskflow:project_detail' project.pk %}" class="btn btn-secondary">بازگشت به پروژه</a>
+        </div>
+    </div>
+</div>
+{% endblock %} 
