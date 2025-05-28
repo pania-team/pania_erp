@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load jformat %}
+{% load humanize %}
+
+{% block css %}
+<link type="text/css" rel="stylesheet" href="{% static 'assets/css/select2.min.css' %}" />
+<link type="text/css" rel="stylesheet" href="{% static 'assets/css/jalalidatepicker.min.css' %}" />
+<link rel="stylesheet" href="{% static 'taskflow/css/daily_report_create.css' %}">
+<link rel="stylesheet" href="{% static 'assets/css/fonts.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+{% endblock %}
+
+{% block body %}
+<div class="container">
+
+    <div class="report-header" style="margin-bottom: 20px; margin-left: 140px">
+        <h4>
+            <span style="color: #555;"> ثبت گزارش روزانه</span>&nbsp;
+            <span style="color: #007bff;">{{ user.f_name }} {{ user.l_name }}</span>
+        </h4>
+        <p>
+            <span style="color: #28a745;">{{ weekday_name }}</span>
+            &nbsp; | &nbsp;
+            <span style="color: #28a745;">{{ today|date:"Y/m/d" }}</span>
+        </p>
+    </div>
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <div class="form-group">
+            {{ form.as_p }}
+        </div>
+        <div class="button-container">
+            <a href="{% url 'taskflow:daily_report_list' %}" class="btn btn-primary btn-back">بازگشت</a>
+        <button type="submit" class="btn btn-primary">ثبت</button>
+        </div>
+
+    </form>
+</div>
+{% endblock %}
+
+{% block js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript" src="{% static 'assets/js/select2.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'assets/js/jalalidatepicker.min.js' %}"></script>
+<script>
+jalaliDatepicker.startWatch({
+  minDate: "attr",
+  maxDate: "attr"
+});
+</script>
+<script>
+    $(document).ready(function() {
+        $('.select2').select2({
+            placeholder: "انتخاب مشتری",
+            allowClear: true
+        });
+    });
+</script>
+{% endblock %}

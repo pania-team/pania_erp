@@ -1,5 +1,5 @@
 from django import forms
-from .models import Project, Meeting, Task
+from .models import Project, Meeting, Task, DailyReport
 from django_jalali.forms import jDateField
 import jdatetime
 
@@ -241,3 +241,58 @@ class TaskForm(forms.ModelForm):
             'priority': '',
         }
 
+# ---------------------------------
+
+#
+class DailyReportForm(forms.ModelForm):
+    class Meta:
+        model = DailyReport
+        exclude = ['date']
+        fields = ['tasks_done','duration_minutes',  'status', 'done_percent','blockers', 'suggestions']
+        widgets = {
+            'tasks_done': forms.TextInput(attrs={
+                'placeholder': 'فعالیت انجام‌شده',
+                'style': 'font-family: Vazirmatn; font-size: 11px',
+                'required': True,
+            }),
+            'duration_minutes': forms.NumberInput(attrs={
+                'placeholder': 'مدت زمان (دقیقه)',
+                'class': 'form-control',
+                'style': 'font-family: Vazirmatn; font-size: 11px',
+                'min': '0',
+                'max': '480',
+                'required': True,
+            }),
+            'blockers': forms.TextInput(attrs={
+                'placeholder': 'مشکلات یا موانع (اختیاری)',
+                'style': 'font-family: Vazirmatn; font-size: 11px'
+            }),
+            'suggestions': forms.TextInput(attrs={
+                'placeholder': 'پیشنهادات (اختیاری)',
+                'style': 'font-family: Vazirmatn; font-size: 11px'
+            }),
+            'status': forms.Select(attrs={
+                'class': 'form-control',
+                'style': 'font-family: Vazirmatn; font-size: 11px',
+                'required': True,
+            }),
+            'done_percent': forms.NumberInput(attrs={
+                'placeholder': 'درصد انجام کار',
+                'class': 'form-control',
+                'style': 'font-family: Vazirmatn; font-size: 11px',
+                'min': '0',
+                'max': '100',
+               'required': True,
+            }),
+        }
+        labels = {
+            'date': '',
+            'tasks_done': '',
+            'duration_minutes':'',
+            'blockers': '',
+            'suggestions': '',
+            'status': '',
+            'done_percent': '',
+        }
+
+# ---------------------------------------------------

@@ -1,8 +1,12 @@
 from django.db import models
 from django_jalali.db import models as jmodels
 from accounts.models import User
+import jdatetime
 
 
+
+
+# -------------------------
 # مدل جلسه
 class Meeting(models.Model):
     title = models.CharField(verbose_name='موضوع', max_length=255)
@@ -77,6 +81,52 @@ class Task(models.Model):
     def __str__(self):
         return self.title if self.title else "بدون عنوان"
 
+# ---------------------------------------
 
 
+class DailyReport(models.Model):
+    STATUS_CHOICES = [
+        ('completed', 'انجام شده'),
+        ('in_progress', 'در حال انجام'),
+    ]
+    employee = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="کارمند")
+    date = jmodels.jDateField(verbose_name="تاریخ")
+    tasks_done = models.CharField(max_length=255,verbose_name="کارهای انجام‌شده")
+    duration_minutes = models.PositiveIntegerField(blank=True, null=True, verbose_name="مدت زمان (دقیقه)")
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='completed',
+                              verbose_name="وضعیت انجام کار")
+    done_percent = models.PositiveSmallIntegerField(blank=True, null=True, verbose_name="درصد انجام")
+    blockers = models.CharField(max_length=255, blank=True, null=True, verbose_name="مشکلات یا موانع")
+    suggestions = models.CharField(max_length=255, blank=True, null=True, verbose_name="پیشنهادات")
+    created_at = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        verbose_name = "گزارش روزانه"
+        verbose_name_plural = "گزارش‌های روزانه"
+
+    def __str__(self):
+        return f"{self.employee} - {self.date}"
+
+
+    @property
+    def weekday_name(self):
+        if self.date:
+            weekdays = {
+                'Saturday': 'شنبه',
+                'Sunday': 'یکشنبه',
+                'Monday': 'دوشنبه',
+                'Tuesday': 'سه‌شنبه',
+                'Wednesday': 'چهارشنبه',
+                'Thursday': 'پنج‌شنبه',
+                'Friday': 'جمعه',
+            }
+            # اطمینان از اینکه date از نوع jDate هست
+            if isinstance(self.date, jdatetime.date):
+                return weekdays[self.date.strftime('%A')]
+            else:
+                # تبدیل میلادی به جلالی در صورت نیاز
+                jdate = jdatetime.date.fromgregorian(date=self.date)
+                return weekdays[jdate.strftime('%A')]
+        return ''
+
+# -----------------------------------------

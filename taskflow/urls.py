@@ -26,4 +26,9 @@ urlpatterns = [
 
 
     path('get-project-meetings/', views.get_project_meetings, name='get_project_meetings'),
+
+    # Report Url
+    path('daily-report-create/create/', views.daily_report_create, name='daily_report_create'),
+    path('daily-report-list/', views.daily_report_list, name='daily_report_list'),
+
 ]

@@ -1,10 +1,11 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
-from .models import Meeting, Project, Task
+from .models import Meeting, Project, Task,DailyReport
 from django.contrib import messages
-from .forms import ProjectForm, MeetingForm, TaskForm
+from .forms import ProjectForm, MeetingForm, TaskForm,DailyReportForm
 from django.http import HttpResponse, JsonResponse
 from accounts.models import User
+from django.db.models import Sum
 import jdatetime
 
 
@@ -301,3 +302,63 @@ def get_project_meetings(request):
         meetings_list = [{'id': meeting.id, 'title': meeting.title} for meeting in meetings]
         return JsonResponse({'meetings': meetings_list})
     return JsonResponse({'meetings': []})
+
+# ======================================
+def get_persian_weekday_name(jdate):
+    weekdays = {
+        'شنبه': 'شنبه',
+        'یکشنبه': 'یکشنبه',
+        'دوشنبه': 'دوشنبه',
+        'سه شنبه': 'سه‌شنبه',
+        'چهارشنبه': 'چهارشنبه',
+        'پنجشنبه': 'پنج‌شنبه',
+        'جمعه': 'جمعه',
+    }
+    raw_weekday = jdate.strftime('%A')
+    cleaned_weekday = raw_weekday.replace('\u200c', ' ').strip()
+    return weekdays.get(cleaned_weekday, cleaned_weekday)
+# -----------------------------------
+@login_required
+def daily_report_list(request):
+    reports = DailyReport.objects.all().select_related('employee').order_by('-date', '-created_at')
+    today = jdatetime.date.today()
+    weekday_name = get_persian_weekday_name(today)
+    # جمع دقیقه‌ها برای هر تاریخ
+    daily_durations = (
+        DailyReport.objects
+        .values('date')
+        .annotate(total_minutes=Sum('duration_minutes'))
+        .order_by('-date')
+    )
+    return render(request, 'taskflow/daily_report_list.html', {'reports': reports ,'weekday_name': weekday_name,
+        'today': today,'daily_durations': daily_durations,})
+# -----------------------------------------
+
+
+@login_required
+def daily_report_create(request):
+    today = jdatetime.date.today()
+    weekday_name = get_persian_weekday_name(today)
+    if request.method == 'POST':
+        form = DailyReportForm(request.POST)
+        if form.is_valid():
+            report = form.save(commit=False)
+            report.employee = request.user
+            report.date = today  # همان today که بالا تعریف شده
+            report.save()
+            messages.success(request, 'گزارش جدید با موفقیت ثبت شد.')
+            return redirect('taskflow:daily_report_list')
+        else:
+            print('DailyReportForm errors:', form.errors)
+    else:
+        form = DailyReportForm()
+
+    return render(request, 'taskflow/daily_report_create.html', {
+        'form': form,
+        'weekday_name': weekday_name,  # ارسال روز هفته به قالب
+        'today': today,  # ارسال تاریخ امروز به قالب
+        'user': request.user,
+    })
+
+
+# ---------------------------------------------

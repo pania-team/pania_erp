@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load jformat %}
+{% load humanize %}
+
+{% block css %}
+<link type="text/css" rel="stylesheet" href="{% static 'assets/css/jalalidatepicker.min.css' %}" />
+<link rel="stylesheet" href="{% static 'taskflow/css/daily_report_list.css' %}">
+<link rel="stylesheet" href="{% static 'assets/css/fonts.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+{% endblock %}
+
+{% block content %}
+<div class="projects-page">
+  <div class="projects-title-row">
+    <h2 class="projects-title">لیست گزارش کار روزانه</h2>
+    <a href="{% url 'taskflow:daily_report_create' %}" class="btn btn-primary">+ ثبت فعالیت روزانه </a>
+    <input type="text" id="project-search" placeholder="جستجو در گزارش‌ها..." class="search-box">
+  </div>
+
+  <div class="main-content">
+    <div class="projects-list">
+
+      {% if reports %}
+      <div class="table-container">
+      <table class="table table-bordered" style="font-size: 12px; font-family: Vazirmatn;">
+        <thead>
+          <tr>
+            <th style="width: 60px">کاربر</th>
+            <th style="width: 70px">(دقیقه)مدت</th>
+            <th style="width: 70px">درصدانجام</th>
+            <th style="width: 60px">وضعیت</th>
+            <th style="width: 100px">پیشنهادات</th>
+            <th style="width: 50px">موانع</th>
+            <th style="width: 220px">کارهای انجام‌شده</th>
+            <th style="width: 130px">تاریخ</th>
+          </tr>
+        </thead>
+        {% with previous_date=None %}
+          {% for report in reports %}
+            {% ifchanged report.date %}
+              {% if not forloop.first %}
+                <tr class="day-separator"><td colspan="8"></td></tr>
+              {% endif %}
+            {% endifchanged %}
+            <tr class="project-item">
+              <td>{{ report.employee.l_name }}</td>
+              <td>{{ report.duration_minutes }}</td>
+              <td>{{ report.done_percent }}٪</td>
+              <td>
+                {% if report.status == "completed" %}
+                  <span class="badge bg-success">انجام شده</span>
+                {% elif report.status == "in_progress" %}
+                  <span class="badge bg-warning">در حال انجام</span>
+                {% else %}
+                  <span class="badge bg-secondary">نامشخص</span>
+                {% endif %}
+              </td>
+              <td>{{ report.suggestions|default:"-"|truncatechars:30 }}</td>
+              <td>{{ report.blockers|default:"-"|truncatechars:30 }}</td>
+              <td>{{ report.tasks_done|truncatechars:50 }}</td>
+
+              {% ifchanged report.date %}
+                  <td style="width: 130px">
+                    {{ report.date|jformat:"%Y/%m/%d" }} | {{ report.date|jformat:"%A" }}
+                  </td>
+                {% else %}
+                  <td></td>
+                    {% endifchanged %}
+                </tr>
+              {% endfor %}
+            {% endwith %}
+      </table>
+    </div>
+      {% else %}
+        <p>هیچ گزارشی ثبت نشده است.</p>
+      {% endif %}
+
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function() {
+    // Search functionality
+    $('#project-search').on('input', function() {
+        var value = $(this).val().toLowerCase();
+        $('.project-item').each(function() {
+            $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+        });
+    });
+});
+</script>
+{% endblock %}
