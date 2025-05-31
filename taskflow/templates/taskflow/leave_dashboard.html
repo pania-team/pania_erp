@@ -1,0 +1,79 @@
+{% block js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript" src="{% static 'assets/js/select2.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'assets/js/jalalidatepicker.min.js' %}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize date pickers for both forms
+    const dateFields = ['leave_date'];
+    dateFields.forEach(fieldName => {
+        const dateField = document.querySelector(`input[name="${fieldName}"]`);
+        if (dateField) {
+            jalaliDatepicker.startWatch({
+                selector: `input[name="${fieldName}"]`,
+                format: 'YYYY-MM-DD',
+                persianDigit: true,
+                time: false,
+                autoClose: true,
+                onSelect: function() {
+                    const date = this.value;
+                    if (date) {
+                        const formattedDate = date.replace(/\//g, '-');
+                        this.value = formattedDate;
+                        this.setAttribute('value', formattedDate);
+                    }
+                }
+            });
+
+            // Add validation on input change
+            dateField.addEventListener('change', function() {
+                const date = this.value;
+                if (date) {
+                    const formattedDate = date.replace(/\//g, '-');
+                    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+                    if (!dateRegex.test(formattedDate)) {
+                        this.setCustomValidity('لطفا یک تاریخ معتبر وارد کنید');
+                    } else {
+                        this.setCustomValidity('');
+                    }
+                }
+            });
+        }
+    });
+
+    // Add form submission handlers
+    const forms = document.querySelectorAll('form');
+    forms.forEach(form => {
+        form.addEventListener('submit', function(e) {
+            const dateField = this.querySelector('input[name="leave_date"]');
+            if (dateField && dateField.value) {
+                const formattedDate = dateField.value.replace(/\//g, '-');
+                dateField.value = formattedDate;
+            }
+        });
+    });
+});
+
+function checkDuration() {
+    const start = document.getElementById('id_start_time').value;
+    const end = document.getElementById('id_end_time').value;
+
+    if (start && end) {
+        const [sh, sm] = start.split(':').map(Number);
+        const [eh, em] = end.split(':').map(Number);
+
+        const duration = (eh * 60 + em) - (sh * 60 + sm);
+
+        if (duration <= 0) {
+            alert("ساعت پایان باید بعد از ساعت شروع باشد.");
+            return false;
+        }
+        if (duration > 240) {  // بیشتر از ۴ ساعت
+            alert("مدت زمان نمی‌تواند بیش از ۴ ساعت باشد.");
+            return false;
+        }
+    }
+    return true;
+}
+</script>
+{% endblock %}
