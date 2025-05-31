@@ -14,6 +14,7 @@ from .forms import DailyLeaveRequestForm, HourlyLeaveRequestForm
 
 
 
+
 @login_required
 def meeting_list(request):
     meetings = Meeting.objects.filter(participants=request.user)
@@ -36,35 +37,30 @@ def meeting_detail(request, pk):
 # ----------------------------------
 @login_required
 def meeting_create(request):
+    project_id = request.GET.get('project')
+    project = None
+    if project_id:
+        try:
+            project = Project.objects.get(id=project_id)
+        except Project.DoesNotExist:
+            project = None
+
     if request.method == 'POST':
         form = MeetingForm(request.POST)
-        if form.is_valid():
+        if form.is_valid() and project:
             meeting = form.save(commit=False)
+            meeting.project = project
             meeting.save()
             form.save_m2m()
-
-            if meeting.project:
-                meeting.participants.add(*meeting.project.members.all())
-            
             messages.success(request, 'جلسه با موفقیت ایجاد شد.')
-            if meeting.project:
-                return redirect('taskflow:project_detail', pk=meeting.project.pk)
-            return redirect('taskflow:meeting_list')
+            return redirect('taskflow:project_detail', pk=project.pk)
         else:
             print('MeetingForm errors:', form.errors)
     else:
         initial = {}
-        project_id = request.GET.get('project')
-        if project_id:
-            try:
-                project = Project.objects.get(id=project_id)
-                initial['project'] = project
-                initial['participants'] = project.members.all()
-            except Project.DoesNotExist:
-                pass
-        
+        if project:
+            initial['participants'] = project.members.all()
         form = MeetingForm(initial=initial)
-    
     return render(request, 'taskflow/meeting_form.html', {'form': form})
 
 
@@ -119,12 +115,10 @@ def project_list(request):
 
 
 # --------------------------------------
+import jdatetime
 @login_required
 def project_detail(request, pk):
-    project = get_object_or_404(Project, pk=pk)
-    if not (request.user.is_superuser or project.manager == request.user):
-        messages.error(request, 'شما دسترسی لازم برای مشاهده جزئیات این پروژه را ندارید.')
-        return redirect('taskflow:project_list')
+    project = get_object_or_404(Project, pk=pk, members=request.user)
     meetings = Meeting.objects.filter(project=project)
     meetings_with_tasks = []
     for meeting in meetings:
@@ -238,28 +232,41 @@ def task_detail(request, pk):
 # ----------------------------------------
 @login_required
 def task_create(request):
+    meeting_id = request.GET.get('meeting')
+    meeting = None
+    if meeting_id:
+        try:
+            meeting = Meeting.objects.get(id=meeting_id)
+        except Meeting.DoesNotExist:
+            meeting = None
+
     if request.method == 'POST':
         form = TaskForm(request.POST)
+        # حذف فیلدها از فرم
+        # form.fields.pop('project', None)
+        # form.fields.pop('meeting', None)
         if form.is_valid():
             task = form.save(commit=False)
-            task.created_by = request.user
+            if meeting:
+                task.meeting = meeting
+                task.project = meeting.project
             task.save()
             form.save_m2m()
             messages.success(request, 'تسک با موفقیت ایجاد شد.')
+            if task.meeting:
+                return redirect('taskflow:meeting_detail', pk=task.meeting.pk)
+            elif task.project:
+                return redirect('taskflow:project_detail', pk=task.project.pk)
             return redirect('taskflow:task_list')
-        else:
-            print('TaskForm errors:', form.errors)
     else:
         initial = {}
-        project_id = request.GET.get('project')
-        if project_id:
-            try:
-                project = Project.objects.get(id=project_id)
-                initial['project'] = project
-            except Project.DoesNotExist:
-                pass
-        
+        if meeting:
+            initial['meeting'] = meeting
+            initial['project'] = meeting.project
         form = TaskForm(initial=initial)
+        # حذف فیلدها از فرم
+        # form.fields.pop('project', None)
+        # form.fields.pop('meeting', None)
     
     return render(request, 'taskflow/task_form.html', {'form': form})
 
@@ -271,8 +278,16 @@ def task_update(request, pk):
     task = get_object_or_404(Task, pk=pk)
     if request.method == 'POST':
         form = TaskForm(request.POST, instance=task)
+        # حذف فیلدها از فرم
+        form.fields.pop('project', None)
+        form.fields.pop('meeting', None)
         if form.is_valid():
-            form.save()
+            task = form.save(commit=False)
+            # حفظ پروژه و جلسه اصلی
+            task.project = task.project
+            task.meeting = task.meeting
+            task.save()
+            form.save_m2m()
             messages.success(request, 'تسک با موفقیت بروزرسانی شد.')
             if request.headers.get('x-requested-with') == 'XMLHttpRequest':
                 return HttpResponse('')
@@ -283,6 +298,10 @@ def task_update(request, pk):
                 return render(request, 'taskflow/task_form.html', {'form': form, 'edit_mode': True, 'task': task})
     else:
         form = TaskForm(instance=task)
+        # حذف فیلدها از فرم
+        form.fields.pop('project', None)
+        form.fields.pop('meeting', None)
+    
     return render(request, 'taskflow/task_form.html', {'form': form, 'edit_mode': True, 'task': task})
 
 
@@ -304,9 +323,14 @@ def get_project_meetings(request):
         meetings_list = [{'id': meeting.id, 'title': meeting.title} for meeting in meetings]
         return JsonResponse({'meetings': meetings_list})
     return JsonResponse({'meetings': []})
+# ----------------------
+@login_required
+def project_tasks_view(request, pk):
+    project = get_object_or_404(Project, pk=pk)
+    tasks = Task.objects.filter(project=project)
+    return render(request, 'taskflow/project_tasks.html', {'project': project, 'tasks': tasks})
 
 # ======================================
-
 
 @login_required
 def daily_report_list(request):
@@ -328,7 +352,7 @@ def daily_report_list(request):
 
 # ---------------------------------
 
- # دریافت لیست زیرمجموعه‌ها (بدون خود کاربر)
+# دریافت لیست زیرمجموعه‌ها (بدون خود کاربر)
 @login_required
 def employee_report_list(request):
     user = request.user
@@ -380,7 +404,6 @@ def daily_report_create(request):
 
 # ---------------------------------------------
 
-
 @login_required
 def leave_dashboard(request):
     leaves = LeaveRequest.objects.filter(user=request.user)
@@ -391,51 +414,39 @@ def leave_dashboard(request):
     daily_leaves = leaves.filter(leave_type__in=['daily_leave', 'daily_mission'])
     total_days = daily_leaves.count()
 
-    daily_form = None
-    hourly_form = None
+    daily_form = DailyLeaveRequestForm()
+    hourly_form = HourlyLeaveRequestForm()
 
     if request.method == 'POST':
         leave_type = request.POST.get('leave_type', '')
 
         if leave_type in ['daily_leave', 'daily_mission']:
             daily_form = DailyLeaveRequestForm(request.POST)
-            hourly_form = HourlyLeaveRequestForm()  # فرم خالی برای ساعتی
-            form = daily_form
+            if daily_form.is_valid():
+                leave_request = daily_form.save(commit=False)
+                leave_request.user = request.user
+                leave_request.save()
+                messages.success(request, 'درخواست مرخصی روزانه با موفقیت ثبت شد.')
+                return redirect('taskflow:leave_dashboard')
+            else:
+                print('DailyLeaveRequestForm errors:', daily_form.errors)
+
         elif leave_type in ['hourly_leave', 'hourly_mission']:
             hourly_form = HourlyLeaveRequestForm(request.POST)
-            daily_form = DailyLeaveRequestForm()  # فرم خالی برای روزانه
-            form = hourly_form
-        else:
-            daily_form = DailyLeaveRequestForm()
-            hourly_form = HourlyLeaveRequestForm()
-            form = None
-
-        if form:
-            jalali_date = form.data.get('leave_date')
-            try:
-                formatted_date = jdatetime.datetime.strptime(jalali_date, '%Y/%m/%d').strftime('%Y-%m-%d')
-                form.data = form.data.copy()
-                form.data['leave_date'] = formatted_date
-            except (ValueError, TypeError):
-                form.add_error('leave_date', 'تاریخ وارد شده نامعتبر است.')
-
-            if form.is_valid():
-                leave = form.save(commit=False)
-                leave.user = request.user
-                leave.save()
+            if hourly_form.is_valid():
+                leave_request = hourly_form.save(commit=False)
+                leave_request.user = request.user
+                leave_request.save()
+                messages.success(request, 'درخواست مرخصی ساعتی با موفقیت ثبت شد.')
                 return redirect('taskflow:leave_dashboard')
+            else:
+                print('HourlyLeaveRequestForm errors:', hourly_form.errors)
 
-    else:
-        daily_form = DailyLeaveRequestForm()
-        hourly_form = HourlyLeaveRequestForm()
-    full_name = (request.user.f_name or '') + ' ' + (request.user.l_name or '')
-    full_name = full_name.strip()
     return render(request, 'taskflow/leave_dashboard.html', {
-        'daily_form': daily_form,
-        'hourly_form': hourly_form,
         'leaves': leaves,
         'total_hours': total_hours,
         'total_days': total_days,
-        'user_name': full_name if full_name else request.user.mellicod
+        'daily_form': daily_form,
+        'hourly_form': hourly_form,
     })
-# ----------------------------------------
+
