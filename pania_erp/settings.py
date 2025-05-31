@@ -103,7 +103,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'pania_erp',
-        'USER': 'postgres',
+        'USER': 'topghest_ramezani',
         'PASSWORD': '77308914elia',
         'HOST': '127.0.0.1',
         'PORT': '5432',

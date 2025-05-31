@@ -1,7 +1,8 @@
 from django import forms
-from .models import Project, Meeting, Task, DailyReport
+from .models import Project, Meeting, Task, DailyReport,LeaveRequest
 from django_jalali.forms import jDateField
 import jdatetime
+
 
 
 
@@ -296,3 +297,114 @@ class DailyReportForm(forms.ModelForm):
         }
 
 # ---------------------------------------------------
+
+class DailyLeaveRequestForm(forms.ModelForm):
+    class Meta:
+        model = LeaveRequest
+        fields = ['leave_type', 'leave_date', 'description']
+        widgets = {
+            'leave_type': forms.Select(attrs={
+                'class': 'form-control',
+                'style': 'font-family: Vazirmatn, sans-serif; font-size: 12px;',
+            }),
+            'leave_date': forms.TextInput(attrs={
+                'data-jdp': 'true',
+                'class': 'form-control',
+                'required': True,
+                'placeholder': 'تاریخ مرخصی یا ماموریت',
+                'style': 'font-family: Vazirmatn, sans-serif; font-size: 11px',
+                'autocomplete': 'off',
+            }),
+            'description': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'شرح مرخصی یا ماموریت',
+                'style': 'font-family: Vazirmatn, sans-serif; font-size: 11px',
+            }),
+        }
+        labels = {
+            'leave_type': '',
+            'leave_date': '',
+            'description': '',
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # فقط گزینه‌های روزانه را در leave_type نمایش بده
+        self.fields['leave_type'].choices = [
+            choice for choice in LeaveRequest.LEAVE_TYPES
+            if choice[0] in ['daily_leave', 'daily_mission']
+        ]
+
+# -----------------------------------
+import datetime
+
+class HourlyLeaveRequestForm(forms.ModelForm):
+    class Meta:
+        model = LeaveRequest
+        fields = ['leave_type', 'leave_date', 'start_time', 'end_time', 'description']
+        widgets = {
+            'leave_type': forms.Select(attrs={
+                'class': 'form-control',
+                'style': 'font-family: Vazirmatn, sans-serif; font-size: 12px;',
+            }),
+            'leave_date': forms.TextInput(attrs={
+                'data-jdp': 'true',
+                'class': 'form-control',
+                'required': True,
+                'placeholder': 'تاریخ مرخصی یا ماموریت',
+                'style': 'font-family: Vazirmatn, sans-serif; font-size: 11px',
+                'autocomplete': 'off',
+            }),
+            'start_time': forms.TimeInput(attrs={
+                'type': 'time',
+                'class': 'form-control',
+                'placeholder': 'ساعت شروع',
+                'style': 'font-family: Vazirmatn, sans-serif; font-size: 11px',
+            }),
+            'end_time': forms.TimeInput(attrs={
+                'type': 'time',
+                'class': 'form-control',
+                'placeholder': 'ساعت پایان',
+                'style': 'font-family: Vazirmatn, sans-serif; font-size: 11px',
+            }),
+            'description': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'شرح مرخصی یا ماموریت',
+                'style': 'font-family: Vazirmatn, sans-serif; font-size: 11px',
+            }),
+        }
+        labels = {
+            'leave_type': '',
+            'leave_date': '',
+            'start_time': '',
+            'end_time': '',
+            'description': '',
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # فقط گزینه‌های ساعتی را در leave_type نمایش بده
+        self.fields['leave_type'].choices = [
+            choice for choice in LeaveRequest.LEAVE_TYPES
+            if choice[0] in ['hourly_leave', 'hourly_mission']
+        ]
+
+    def clean(self):
+        cleaned_data = super().clean()
+        start_time = cleaned_data.get('start_time')
+        end_time = cleaned_data.get('end_time')
+        leave_type = cleaned_data.get('leave_type')
+
+        if leave_type in ['hourly_leave', 'hourly_mission'] and start_time and end_time:
+            # از datetime.datetime استاندارد استفاده کن چون فقط محاسبه اختلاف زمانی است
+            start_dt = datetime.datetime.combine(datetime.date.today(), start_time)
+            end_dt = datetime.datetime.combine(datetime.date.today(), end_time)
+            delta = end_dt - start_dt
+            duration_hours = delta.total_seconds() / 3600
+
+            if duration_hours <= 0:
+                raise forms.ValidationError("ساعت پایان باید بعد از ساعت شروع باشد.")
+            if duration_hours > 4:
+                raise forms.ValidationError("مدت مرخصی ساعتی نمی‌تواند بیش از ۴ ساعت باشد.")
+
+# --------------------------------------

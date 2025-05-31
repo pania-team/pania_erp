@@ -30,5 +30,7 @@ urlpatterns = [
     # Report Url
     path('daily-report-create/create/', views.daily_report_create, name='daily_report_create'),
     path('daily-report-list/', views.daily_report_list, name='daily_report_list'),
-
+    path('employee_report_list/', views.employee_report_list, name='employee_report_list'),
+    # Leave Url
+    path('leave-dashboard/', views.leave_dashboard, name='leave_dashboard'),
 ]

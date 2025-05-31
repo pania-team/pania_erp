@@ -1,12 +1,14 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
-from .models import Meeting, Project, Task,DailyReport
+from .models import Meeting, Project, Task,DailyReport,LeaveRequest
 from django.contrib import messages
 from .forms import ProjectForm, MeetingForm, TaskForm,DailyReportForm
 from django.http import HttpResponse, JsonResponse
 from accounts.models import User
 from django.db.models import Sum
 import jdatetime
+from .forms import DailyLeaveRequestForm, HourlyLeaveRequestForm
+
 
 
 
@@ -304,47 +306,65 @@ def get_project_meetings(request):
     return JsonResponse({'meetings': []})
 
 # ======================================
-def get_persian_weekday_name(jdate):
-    weekdays = {
-        'شنبه': 'شنبه',
-        'یکشنبه': 'یکشنبه',
-        'دوشنبه': 'دوشنبه',
-        'سه شنبه': 'سه‌شنبه',
-        'چهارشنبه': 'چهارشنبه',
-        'پنجشنبه': 'پنج‌شنبه',
-        'جمعه': 'جمعه',
-    }
-    raw_weekday = jdate.strftime('%A')
-    cleaned_weekday = raw_weekday.replace('\u200c', ' ').strip()
-    return weekdays.get(cleaned_weekday, cleaned_weekday)
-# -----------------------------------
+
+
 @login_required
 def daily_report_list(request):
-    reports = DailyReport.objects.all().select_related('employee').order_by('-date', '-created_at')
+    # فقط گزارش‌های کاربر جاری را نمایش بده
+    reports = DailyReport.objects.filter(employee=request.user).select_related('employee').order_by('-date', '-created_at')
     today = jdatetime.date.today()
-    weekday_name = get_persian_weekday_name(today)
-    # جمع دقیقه‌ها برای هر تاریخ
     daily_durations = (
         DailyReport.objects
+        .filter(employee=request.user)  # همین‌طور فقط مجموع زمان‌های خودش
         .values('date')
         .annotate(total_minutes=Sum('duration_minutes'))
         .order_by('-date')
     )
-    return render(request, 'taskflow/daily_report_list.html', {'reports': reports ,'weekday_name': weekday_name,
-        'today': today,'daily_durations': daily_durations,})
-# -----------------------------------------
+    return render(request, 'taskflow/daily_report_list.html', {
+        'reports': reports,
+        'today': today,
+        'daily_durations': daily_durations,
+    })
 
+# ---------------------------------
+
+ # دریافت لیست زیرمجموعه‌ها (بدون خود کاربر)
+@login_required
+def employee_report_list(request):
+    user = request.user
+    if hasattr(user, 'get_all_subordinates'):
+        subordinates = user.get_all_subordinates()
+    else:
+        subordinates = user.subordinates.all()
+    reports = DailyReport.objects.filter(employee__in=subordinates) \
+                                 .select_related('employee') \
+                                 .order_by('-date', '-created_at')
+
+    today = jdatetime.date.today()
+    daily_durations = (
+        DailyReport.objects
+        .filter(employee__in=subordinates)
+        .values('date')
+        .annotate(total_minutes=Sum('duration_minutes'))
+        .order_by('-date')
+    )
+    return render(request, 'taskflow/employee_report_list.html', {
+        'reports': reports,
+        'today': today,
+        'daily_durations': daily_durations,
+    })
+
+# -----------------------------------------
 
 @login_required
 def daily_report_create(request):
     today = jdatetime.date.today()
-    weekday_name = get_persian_weekday_name(today)
     if request.method == 'POST':
         form = DailyReportForm(request.POST)
         if form.is_valid():
             report = form.save(commit=False)
             report.employee = request.user
-            report.date = today  # همان today که بالا تعریف شده
+            report.date = today  # تاریخ امروز
             report.save()
             messages.success(request, 'گزارش جدید با موفقیت ثبت شد.')
             return redirect('taskflow:daily_report_list')
@@ -352,13 +372,70 @@ def daily_report_create(request):
             print('DailyReportForm errors:', form.errors)
     else:
         form = DailyReportForm()
-
     return render(request, 'taskflow/daily_report_create.html', {
         'form': form,
-        'weekday_name': weekday_name,  # ارسال روز هفته به قالب
-        'today': today,  # ارسال تاریخ امروز به قالب
+        'today': today,
         'user': request.user,
     })
 
-
 # ---------------------------------------------
+
+
+@login_required
+def leave_dashboard(request):
+    leaves = LeaveRequest.objects.filter(user=request.user)
+
+    hourly_leaves = leaves.filter(leave_type__in=['hourly_leave', 'hourly_mission'])
+    total_hours = sum([l.duration_hours() or 0 for l in hourly_leaves])
+
+    daily_leaves = leaves.filter(leave_type__in=['daily_leave', 'daily_mission'])
+    total_days = daily_leaves.count()
+
+    daily_form = None
+    hourly_form = None
+
+    if request.method == 'POST':
+        leave_type = request.POST.get('leave_type', '')
+
+        if leave_type in ['daily_leave', 'daily_mission']:
+            daily_form = DailyLeaveRequestForm(request.POST)
+            hourly_form = HourlyLeaveRequestForm()  # فرم خالی برای ساعتی
+            form = daily_form
+        elif leave_type in ['hourly_leave', 'hourly_mission']:
+            hourly_form = HourlyLeaveRequestForm(request.POST)
+            daily_form = DailyLeaveRequestForm()  # فرم خالی برای روزانه
+            form = hourly_form
+        else:
+            daily_form = DailyLeaveRequestForm()
+            hourly_form = HourlyLeaveRequestForm()
+            form = None
+
+        if form:
+            jalali_date = form.data.get('leave_date')
+            try:
+                formatted_date = jdatetime.datetime.strptime(jalali_date, '%Y/%m/%d').strftime('%Y-%m-%d')
+                form.data = form.data.copy()
+                form.data['leave_date'] = formatted_date
+            except (ValueError, TypeError):
+                form.add_error('leave_date', 'تاریخ وارد شده نامعتبر است.')
+
+            if form.is_valid():
+                leave = form.save(commit=False)
+                leave.user = request.user
+                leave.save()
+                return redirect('taskflow:leave_dashboard')
+
+    else:
+        daily_form = DailyLeaveRequestForm()
+        hourly_form = HourlyLeaveRequestForm()
+    full_name = (request.user.f_name or '') + ' ' + (request.user.l_name or '')
+    full_name = full_name.strip()
+    return render(request, 'taskflow/leave_dashboard.html', {
+        'daily_form': daily_form,
+        'hourly_form': hourly_form,
+        'leaves': leaves,
+        'total_hours': total_hours,
+        'total_days': total_days,
+        'user_name': full_name if full_name else request.user.mellicod
+    })
+# ----------------------------------------

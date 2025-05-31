@@ -2,6 +2,7 @@
 {% load static %}
 {% load jformat %}
 {% load humanize %}
+{% load persian_weekday %}
 
 {% block css %}
 <link type="text/css" rel="stylesheet" href="{% static 'assets/css/select2.min.css' %}" />
@@ -20,7 +21,7 @@
             <span style="color: #007bff;">{{ user.f_name }} {{ user.l_name }}</span>
         </h4>
         <p>
-            <span style="color: #28a745;">{{ weekday_name }}</span>
+            <span style="color: #28a745;">{{ today|persian_weekday }}</span>
             &nbsp; | &nbsp;
             <span style="color: #28a745;">{{ today|date:"Y/m/d" }}</span>
         </p>

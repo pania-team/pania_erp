@@ -9,14 +9,18 @@
 .projects-title-row {
     display: flex;
     flex-direction: row;
-    justify-content: flex-start;
+    justify-content: center;     /* عناصر داخل به‌صورت وسط‌چین */
     align-items: center;
-    gap: 10rem;
-    padding: 4rem 2rem 2rem;
+    gap: 2rem;                   /* فاصله بین دکمه و عنوان */
+    padding: 2rem 1rem;          /* فضای داخلی */
     direction: rtl;
-    width: fit-content;
-    margin: 0 auto;
+    max-width: 700px;            /* حداکثر عرض کادر */
+    width: 100%;
+    margin: 2rem auto;           /* قرار گرفتن در مرکز صفحه */
 }
+
+
+
 
 .projects-title {
     margin: 0;
@@ -39,10 +43,6 @@
 .table-container table {
     margin-bottom: 0;
 }
-
-
-
-
 
 
 

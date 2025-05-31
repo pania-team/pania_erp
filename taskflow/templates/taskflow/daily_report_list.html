@@ -2,6 +2,8 @@
 {% load static %}
 {% load jformat %}
 {% load humanize %}
+{% load persian_weekday %}
+
 
 {% block css %}
 <link type="text/css" rel="stylesheet" href="{% static 'assets/css/jalalidatepicker.min.css' %}" />
@@ -13,7 +15,8 @@
 {% block content %}
 <div class="projects-page">
   <div class="projects-title-row">
-    <h2 class="projects-title">لیست گزارش کار روزانه</h2>
+    <a href="{% url 'taskflow:employee_report_list' %}" class="btn btn-primary">گزارش روزانه پرسنل </a>
+  <h2 class="projects-title"> گزارش کار روزانه</h2>
     <a href="{% url 'taskflow:daily_report_create' %}" class="btn btn-primary">+ ثبت فعالیت روزانه </a>
     <input type="text" id="project-search" placeholder="جستجو در گزارش‌ها..." class="search-box">
   </div>
@@ -62,7 +65,7 @@
 
               {% ifchanged report.date %}
                   <td style="width: 130px">
-                    {{ report.date|jformat:"%Y/%m/%d" }} | {{ report.date|jformat:"%A" }}
+                    {{ report.date|jformat:"%Y/%m/%d" }} | {{ report.date|persian_weekday }}
                   </td>
                 {% else %}
                   <td></td>

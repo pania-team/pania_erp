@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+{% load static %}
+{% block css %}
+<link type="text/css" rel="stylesheet" href="{% static 'assets/css/select2.min.css' %}" />
+<link type="text/css" rel="stylesheet" href="{% static 'assets/css/jalalidatepicker.min.css' %}" />
+<link rel="stylesheet" href="{% static 'taskflow/css/leave_dashboard.css' %}">
+<link rel="stylesheet" href="{% static 'assets/css/fonts.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+
+    <h3>ثبت مرخصی و ماموریت پرسنل</h3>
+    <div class="form-wrapper">
+        <div class="form-box">
+            <h4>مرخصی روزانه</h4>
+            <form method="post" action="">
+                {% csrf_token %}
+                {{ daily_form.as_p }}
+                <button type="submit" name="submit_daily">ثبت مرخصی روزانه</button>
+            </form>
+        </div>
+        <div class="form-box">
+            <h4>مرخصی ساعتی</h4>
+            <form method="post" action="">
+                {% csrf_token %}
+                {{ hourly_form.as_p }}
+                <button type="submit" name="submit_hourly">ثبت مرخصی ساعتی</button>
+            </form>
+        </div>
+    </div>
+
+    <h3>داشبورد مرخصی‌ {{ user_name }}</h3>
+    <p><strong>جمع مرخصی/ماموریت ساعتی:</strong> {{ total_hours|floatformat:1 }} ساعت</p>
+
+    <p><strong>جمع مرخصی/ماموریت روزانه:</strong> {{ total_days }} روز</p>
+
+    <h4>مرخصی/ماموریت روزانه</h4>
+    <div class="table-container">
+    <table class="table-daily">
+        <thead>
+            <tr>
+                <th>نوع</th>
+                <th>تاریخ</th>
+                <th>توضیحات</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for leave in leaves %}
+                {% if leave.leave_type == 'daily_leave' or leave.leave_type == 'daily_mission' %}
+                <tr>
+                    <td>{{ leave.get_leave_type_display }}</td>
+                    <td>{{ leave.leave_date|date:"Y/m/d" }}</td>
+                    <td>{{ leave.description }}</td>
+                </tr>
+                {% endif %}
+            {% endfor %}
+        </tbody>
+    </table>
+        </div>
+
+    <h4>مرخصی/ماموریت ساعتی</h4>
+    <div class="table-container">
+    <table class="table-hourly">
+        <thead>
+            <tr>
+                <th>نوع</th>
+                <th>تاریخ</th>
+                <th>ساعت شروع</th>
+                <th>ساعت پایان</th>
+                <th>زمان مرخصی(ساعت)</th>
+                <th>توضیحات</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for leave in leaves %}
+                {% if leave.leave_type == 'hourly_leave' or leave.leave_type == 'hourly_mission' %}
+                <tr>
+                    <td>{{ leave.get_leave_type_display }}</td>
+                    <td>{{ leave.leave_date|date:"Y/m/d" }}</td>
+                    <td>{{ leave.start_time }}</td>
+                    <td>{{ leave.end_time }}</td>
+                    <td>{{ leave.duration_hours }}</td>
+                    <td>{{ leave.description }}</td>
+                </tr>
+                {% endif %}
+            {% endfor %}
+        </tbody>
+    </table>
+         </div>
+
+</div>
+{% endblock %}
+
+{% block js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript" src="{% static 'assets/js/select2.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'assets/js/jalalidatepicker.min.js' %}"></script>
+<script>
+jalaliDatepicker.startWatch({
+  minDate: "attr",
+  maxDate: "attr"
+});
+</script>
+<script>
+function checkDuration() {
+    const start = document.getElementById('start_time').value;
+    const end = document.getElementById('end_time').value;
+
+    if (start && end) {
+        const [sh, sm] = start.split(':').map(Number);
+        const [eh, em] = end.split(':').map(Number);
+
+        const duration = (eh * 60 + em) - (sh * 60 + sm);
+
+        if (duration > 240) {  // بیشتر از ۴ ساعت
+            alert("مدت زمان نمی‌تواند بیش از ۴ ساعت باشد.");
+        }
+    }
+}
+</script>
+{% endblock %}

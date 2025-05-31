@@ -130,3 +130,32 @@ class DailyReport(models.Model):
         return ''
 
 # -----------------------------------------
+import datetime
+from django_jalali.db import models as jmodels
+
+
+class LeaveRequest(models.Model):
+    LEAVE_TYPES = [
+        ('daily_leave', 'مرخصی روزانه'),
+        ('hourly_leave', 'مرخصی ساعتی'),
+        ('daily_mission', 'ماموریت روزانه'),
+        ('hourly_mission', 'ماموریت ساعتی'),
+    ]
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    leave_type = models.CharField(max_length=20, choices=LEAVE_TYPES)
+    leave_date = jmodels.jDateField()
+    start_time = models.TimeField(null=True, blank=True)
+    end_time = models.TimeField(null=True, blank=True)
+    description = models.CharField(max_length=255, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-leave_date']
+
+    def duration_hours(self):
+        if self.leave_type in ['hourly_leave', 'hourly_mission'] and self.start_time and self.end_time:
+            delta = datetime.datetime.combine(datetime.date.min, self.end_time) - datetime.datetime.combine(datetime.date.min, self.start_time)
+            return round(delta.total_seconds() / 3600, 2)
+        return 0
+# ----------------------------------------------

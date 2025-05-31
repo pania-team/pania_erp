@@ -1,11 +1,7 @@
 
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
-from django.db import models
 from django.contrib.auth.models import Permission
 from django.db import models
-from django_jalali.db import models as jmodels
-from decimal import Decimal
-from django.utils.timezone import now
 from django.core.exceptions import ValidationError
 import re
 
@@ -32,27 +28,27 @@ class UserManager(BaseUserManager):
 
 class User(AbstractBaseUser, PermissionsMixin):
     ROLE_CHOICES = [
-        ('EMPLOYEE', 'Employee'),
-        ('MANAGER', 'Manager'),
-        ('CEO', 'CEO'),
+        ('EMPLOYEE', 'کارمند'),
+        ('SUPERVISOR', 'سرپرست'),
+        ('MANAGER', 'مدیر'),
+        ('CEO', 'مدیرعامل'),
     ]
     f_name = models.CharField(max_length=50, verbose_name='نام', blank=True, null=True)
     l_name = models.CharField(max_length=50, verbose_name='فامیلی', blank=True, null=True)
-    mellicod = models.CharField(max_length=10, verbose_name='کدملی', unique=True)
-    phone = models.CharField(max_length=11, verbose_name='موبایل', blank=True, null=True)
+    mellicod = models.CharField(max_length=15, verbose_name='کدملی', unique=True)
+    phone = models.CharField(max_length=15, verbose_name='موبایل', blank=True, null=True)
     create = models.DateTimeField(auto_now_add=True, verbose_name='تاریخ', blank=True, null=True)
-    role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='EMPLOYEE', verbose_name='نقش')
+    role = models.CharField(max_length=50, choices=ROLE_CHOICES, default='EMPLOYEE', verbose_name='جایگاه')
     manager = models.ForeignKey('self', null=True, blank=True, on_delete=models.SET_NULL, related_name='team_members',
-                                verbose_name='مدیریت', help_text="مدیری که این کاربر زیرمجموعه‌ی اوست")
+                                verbose_name='مدیر مافوق', help_text="مدیر مافوق کاربر")
 
-    is_active = models.BooleanField(default=True)
-    is_admin = models.BooleanField(default=False)
-    is_superuser = models.BooleanField(default=False)
-    permission = models.ManyToManyField(Permission, related_name='users')
+    is_superuser = models.BooleanField(default=False, verbose_name='Superuser ')
+    is_admin = models.BooleanField(default=False, verbose_name='دسترسی به پنل ادمین')
+    is_active = models.BooleanField(default=True, verbose_name='کاربر فعال')
+
 
     USERNAME_FIELD = 'mellicod'
     REQUIRED_FIELDS = ['phone', 'f_name', 'l_name']
-
     objects = UserManager()
 
     class Meta:
@@ -60,12 +56,19 @@ class User(AbstractBaseUser, PermissionsMixin):
         verbose_name_plural = "کاربران"
 
     def __str__(self):
-        return f"{self.f_name} {self.l_name}"
+        return f"{self.l_name} {self.f_name} "
 
+        # شرط دسترسی به پنل ادمین
     @property
     def is_staff(self):
         return self.is_admin or self.is_superuser
 
+            # تمام کاربران زیرمجموعه این کاربر را برمی‌گرداند.
+    def get_all_subordinates(self):
+        subordinates = list(self.team_members.all())
+        for member in self.team_members.all():
+            subordinates += member.get_all_subordinates()
+        return subordinates
 
 # ============================ مشتریان  =====================
 

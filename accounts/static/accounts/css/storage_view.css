@@ -1,16 +1,16 @@
 .grid-container {
     display: grid;
     grid-template-columns: repeat(3, 1fr); /* چهار ستون */
-    gap: 50px; /* فاصله بین آیتم‌ها */
+    gap: 30px; /* فاصله بین آیتم‌ها */
     margin: 20px;
     margin-top: 150px;
-    margin-left: 250px;
-    width: 700px; /* عرض ثابت */
+    margin-left: 300px;
+    width: 500px; /* عرض ثابت */
     max-width: 100%; /* واکنش‌گرا بودن */
 }
 
 .grid-item {
-    background-color: #56e3b0;
+    background-color: #51ab83;
     border: 1px solid #ddd;
     border-radius: 23%; /* تبدیل کادر به دایره */
     text-align: center;
@@ -20,8 +20,8 @@
     font-size: 12px;
 
     /* تنظیم عرض و ارتفاع برابر برای اطمینان از دایره بودن */
-    width: 120px;
-    height: 120px;
+    width: 80px;
+    height: 80px;
 
     /* برای تراز کردن محتوا در مرکز */
     display: flex;
@@ -36,7 +36,7 @@
 
 
 .icon-box {
-    font-size: 34px;
+    font-size: 24px;
     color: #222325;
     margin-bottom: 10px;
 }
