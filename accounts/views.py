@@ -20,9 +20,10 @@ def home_view(request):
     context = {
         'home_image': home_image,
         'demand_view': reverse('accounts:demand_view'),
-
+        'storage_view': reverse('accounts:storage_view'),
         'images': {
             'demand_view': 'media/home_images/finance.png',
+            'storage_view': 'media/home_images/storage.png',
 
         },
     }
@@ -47,8 +48,23 @@ def demand_view(request):
     }
     return render(request, 'accounts/demand_view.html', context)
 
+# ----------------------------------
+@login_required
+def storage_view(request):
+    try:
+        home_image = HomeImage.objects.get(description='home')
+    except HomeImage.DoesNotExist:
+        home_image = None
+    context = {
+        'home_image': home_image,
+        'create_buyinvoice': reverse('storage:create_buyinvoice'),
+        'buyinvoice_list': reverse('storage:buyinvoice_list'),
+        'storage_list': reverse('storage:storage_list'),
 
 
+
+    }
+    return render(request, 'accounts/storage_view.html', context)
 
 
 # ---------------------------------------------

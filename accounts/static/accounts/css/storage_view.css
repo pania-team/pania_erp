@@ -1,0 +1,70 @@
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* چهار ستون */
+    gap: 30px; /* فاصله بین آیتم‌ها */
+    margin: 20px;
+    margin-top: 150px;
+    margin-left: 300px;
+    width: 500px; /* عرض ثابت */
+    max-width: 100%; /* واکنش‌گرا بودن */
+}
+
+.grid-item {
+    background-color: #51ab83;
+    border: 1px solid #ddd;
+    border-radius: 23%; /* تبدیل کادر به دایره */
+    text-align: center;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+    font-size: 12px;
+
+    /* تنظیم عرض و ارتفاع برابر برای اطمینان از دایره بودن */
+    width: 80px;
+    height: 80px;
+
+    /* برای تراز کردن محتوا در مرکز */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.grid-item:hover {
+    transform: scale(1.2);
+    background-color: #21ab66;
+}
+
+
+.icon-box {
+    font-size: 24px;
+    color: #222325;
+    margin-bottom: 10px;
+}
+
+
+.image-container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1; /* تصویر به پس‌زمینه منتقل می‌شود */
+}
+
+.image-container img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover; /* تصویر کل فضای موجود را پر کند */
+}
+
+
+.content {
+        position: relative;
+        z-index: 1; /* محتوای صفحه بالای تصویر نمایش داده شود */
+}
+
+.no-underline {
+    text-decoration: none;
+    color: #02052c;
+    font-family: "Vazirmatn", sans-serif;
+}

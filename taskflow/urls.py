@@ -27,4 +27,12 @@ urlpatterns = [
 
 
     path('get-project-meetings/', views.get_project_meetings, name='get_project_meetings'),
+
+    # Report Url
+    path('daily-report-create/create/', views.daily_report_create, name='daily_report_create'),
+    path('daily-report-list/', views.daily_report_list, name='daily_report_list'),
+    path('employee_report_list/', views.employee_report_list, name='employee_report_list'),
+    # Leave Url
+    path('leave-dashboard/', views.leave_dashboard, name='leave_dashboard'),
+    path('leave_approval_list/', views.leave_approval_list, name='leave_approval_list'),
 ]

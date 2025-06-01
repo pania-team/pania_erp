@@ -1,0 +1,97 @@
+body {
+    font-size: 16px; /* اندازه فونت پیش‌فرض */
+    line-height: 1.6; /* فاصله بین خطوط */
+    color: #333; /* رنگ متن پیش‌فرض */
+    display: flex;
+    justify-content: center; /* تراز کردن به صورت افقی در وسط */
+
+}
+
+/* استایل برای کادرهای فرم */
+.form-group {
+    border: 1px solid #ccc; /* حاشیه کادر */
+    border-radius: 5px; /* گوشه‌های گرد */
+    padding: 40px; /* فاصله داخلی */
+    padding-top: 10px; /* فاصله داخلی */
+    margin-bottom: 20px; /* فاصله از فرم‌های دیگر */
+    margin-top: 40px; /* فاصله از فرم‌های دیگر */
+    background-color: #efecec; /* رنگ پس‌زمینه کادر */
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2); /* سایه‌ی سبک برای کادرها */
+    text-align: center; /* تراز کردن متن به مرکز */
+}
+
+/* استایل برای فیلدهای ورودی */
+input, textarea, select {
+    width: 100%; /* عرض 100% از والد (form-group) */
+    height: 35px; /* ارتفاع ثابت */
+    padding: 4px; /* فاصله داخلی */
+    border: 1px solid #ccc; /* حاشیه فیلدها */
+    border-radius: 5px; /* گوشه‌های گرد */
+    box-sizing: border-box; /* تنظیم باکس برای در نظر گرفتن پدینگ و حاشیه */
+    margin-bottom: 20px; /* فاصله از فیلدهای دیگر */
+    font-size: 14px; /* اندازه فونت فیلدها */
+}
+
+textarea {
+    height: 100px; /* ارتفاع بیشتر برای text area */
+}
+
+.form-group label {
+    font-size: 14px; /* اندازه فونت برچسب‌ها */
+    display: block; /* نمایش برچسب‌ها به صورت بلوک */
+    margin-bottom: 10px; /* فاصله زیر برچسب */
+}
+
+.container {
+    max-width: 600px; /* عرض حداکثر */
+    padding: 20px; /* فاصله داخلی */
+    background-color: #ffffff; /* رنگ پس‌زمینه کل فرم‌ها */
+    border-radius: 8px; /* گوشه‌های گرد کل فرم‌ها */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2); /* سایه برای فرم‌ها */
+}
+
+h2 {
+    text-align: center; /* تراز کردن عنوان به مرکز */
+    margin-bottom: 10px; /* فاصله پایین عنوان */
+    font-size: 24px; /* اندازه فونت عنوان */
+    color: #0056b3; /* رنگ عنوان */
+}
+
+/* استایل برای دکمه ارسال */
+.btn-primary {
+    background-color: #007bff; /* رنگ پس‌زمینه دکمه */
+    border-color: #007bff; /* رنگ حاشیه دکمه */
+    color: #fff; /* رنگ متن دکمه */
+    padding: 10px 20px; /* فاصله داخلی دکمه */
+    border-radius: 5px; /* گوشه‌های گرد دکمه */
+    cursor: pointer; /* تغییر نشانگر ماوس */
+    text-align: center; /* تراز کردن متن به مرکز */
+    display: block; /* نمایش دکمه به صورت بلوک */
+    width: 100%; /* عرض دکمه برابر با عرض فرم */
+    margin: 20px auto; /* مرکز‌سازی دکمه */
+    font-size: 14px; /* اندازه فونت دکمه */
+    font-family: "Vazirmatn", sans-serif; /* اطمینان از استفاده از فونت */
+    transition: background-color 0.3s ease; /* انیمیشن برای تغییر رنگ پس‌زمینه */
+}
+
+.btn-primary:hover {
+    background-color: #0056b3; /* رنگ پس‌زمینه دکمه هنگام هاور */
+    border-color: #0056b3; /* رنگ حاشیه دکمه هنگام هاور */
+}
+/* استایل برای کادر جستجو */
+.select2-container .select2-selection--single .select2-selection__rendered {
+    font-family: "Vazirmatn", sans-serif; /* فونت دلخواه شما */
+    font-size: 12px; /* سایز فونت */
+}
+
+/* استایل برای کادر جستجو */
+.select2-container .select2-selection--single {
+    height: 38px; /* ارتفاع کادر */
+
+}
+
+/* استایل برای دکمه حذف */
+.select2-container .select2-selection__clear {
+    font-family: 'Vazirmatn', sans-serif;
+    font-size: 14px;
+}

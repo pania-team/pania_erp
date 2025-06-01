@@ -1,0 +1,143 @@
+/* تنظیم فونت و استایل کلی */
+body {
+    font-family: "Vazirmatn", sans-serif;
+    font-size: 13px;
+    line-height: 1.5;
+    color: #646464;
+    background-color: #dbdbde;
+    display: flex;
+    justify-content: center;
+    margin: 0;
+    padding: 0;
+    margin-top: 30px;
+}
+
+.container {
+    max-width: 900px;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    margin-top: 50px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.content-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    gap: 20px;
+}
+
+#invoice-form-container,
+.table-container {
+    width: 100%;
+}
+
+#invoice-form-container {
+    background: #f9f9f9;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
+}
+
+.table-container {
+    max-height: 400px;
+    overflow-y: auto;
+    border: 1px solid #d2cfcf;
+    padding: 0;
+    border-radius: 8px;
+    background-color: #fff;
+}
+
+
+.table-wrapper {
+    flex-grow: 1;
+    overflow-y: auto;
+
+}
+
+
+/* تنظیم عرض یکسان برای فیلدهای فرم */
+#buyitem-form input,
+#buyitem-form select,
+#buyitem-form textarea {
+    width: 70%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+/* استایل دکمه‌ها */
+.button-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 10px;
+    width: 70%;
+}
+
+.btn {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s;
+    text-align: center;
+}
+
+.btn-back {
+    background-color: #0d5094;
+    color: white;
+    width: 20%;
+    font-family: "Vazirmatn", sans-serif;
+}
+
+.btn-back:hover {
+    background-color: #0864de;
+}
+
+.btn-submit {
+    background-color: #28a745;
+    color: white;
+    width: 80%;
+    font-family: "Vazirmatn", sans-serif;
+}
+
+.btn-submit:hover {
+    background-color: #218838;
+}
+
+/* استایل جدول */
+table {
+    margin: 0;
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+th, td {
+    padding: 12px 8px;
+    text-align: center;
+    font-size: 12px;
+    border: 1px solid #ddd;
+    word-wrap: break-word;
+}
+
+th {
+    background-color: #b8c795;
+    font-weight: bold;
+}
+
+tbody tr:hover {
+    background-color: #f1f1f1;
+}
+
+tbody tr:nth-child(even) {
+    background-color: #dcdcdc;
+}

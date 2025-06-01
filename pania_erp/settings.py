@@ -50,6 +50,8 @@ INSTALLED_APPS = [
     'finance.apps.FinanceConfig',
     'taskflow.apps.TaskflowConfig',
     'storage.apps.StorageConfig',
+    'marketing.apps.MarketingConfig',
+    'credit.apps.CreditConfig',
     # Third party
     'django_jalali',
     "django.contrib.humanize",

@@ -1,7 +1,7 @@
 from django.db import models
 from django_jalali.db import models as jmodels
 from django.utils import timezone
-
+from accounts .models import Supplier
 
 
 
@@ -13,7 +13,9 @@ class Category(models.Model):
 
     def __str__(self):
         return self.name
-
+    class Meta:
+        verbose_name = "دسته بندی"
+        verbose_name_plural = "دسته بندی ها"
 
 # -----------------------------------
 # اطلاعات عمومی کالا
@@ -25,12 +27,14 @@ class Item(models.Model):
     image = models.ImageField(upload_to='item_images/', blank=True, null=True, verbose_name='تصویر')
     created_at = jmodels.jDateTimeField(default=timezone.now)
     description = models.TextField(blank=True, verbose_name='شرح')
-    buy_price = models.DecimalField(max_digits=12, decimal_places=2, default=0.00, verbose_name='مبلغ خرید')
-    buy_tax = models.DecimalField(max_digits=12, decimal_places=2, default=0.00, verbose_name='مالیات خرید')
+    base_price = models.DecimalField(max_digits=12, decimal_places=1, default=0.0, verbose_name='قیمت پایه')
+    base_tax = models.DecimalField(max_digits=12, decimal_places=1, default=0.0, verbose_name='مالیات پایه')
     def __str__(self):
         return f"{self.name} ({self.sku}) - {self.category.name}"
 
-
+    class Meta:
+        verbose_name = "آیتم"
+        verbose_name_plural = "آیتم ها"
 # ----------------------------------
 # ویژگی های اختصاصی کالا
 
@@ -64,8 +68,68 @@ class Inventory(models.Model):
     ], default='available')
 
 
-
     def __str__(self):
         return f"{self.item.name} - {self.quantity} {self.unit} @ {self.location}"
 
-# --------------------------------------------------
+
+    class Meta:
+        verbose_name = "موجودی انبار"
+        verbose_name_plural = "موجودی انبار"
+# ========================   مدل فاکتورهای خرید و فروش ==========================
+
+class BuyInvoice(models.Model):
+    date = jmodels.jDateField( null=True, blank=True, verbose_name='تاریخ خرید')
+    supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE, null=True, blank=True, verbose_name='تأمین‌کننده',
+                                 related_name='buy_invoices')
+    total_amount = models.DecimalField(max_digits=14, decimal_places=2, default=0, verbose_name='مبلغ کل')
+    note = models.TextField(blank=True, verbose_name='یادداشت')
+    discount_amount = models.DecimalField(max_digits=14, decimal_places=2, default=0, verbose_name='تخفیف کلی')
+
+    def __str__(self):
+        return f"فاکتور خرید #{self.id} - {self.supplier}"
+
+    class Meta:
+        verbose_name = "فاکتور تامین"
+        verbose_name_plural = "فاکتورهای تامین"
+# --------------------------------------------
+
+class BuyItem(models.Model):
+    invoice = models.ForeignKey(BuyInvoice, on_delete=models.CASCADE, related_name='items')
+    item = models.ForeignKey(Item, on_delete=models.CASCADE, verbose_name='کالا')
+    quantity = models.PositiveIntegerField(verbose_name='تعداد')
+    unit_price = models.DecimalField(max_digits=12, decimal_places=2, verbose_name='قیمت واحد')
+    tax = models.DecimalField(max_digits=12, decimal_places=2, default=0.00, verbose_name='مالیات')
+    discount_kala = models.DecimalField(max_digits=14, decimal_places=2, default=0.00, verbose_name='تخفیف کالا')
+
+    def __str__(self):
+        return f"{self.item.name} x {self.quantity}"
+
+    class Meta:
+        verbose_name = "کالای تامین"
+        verbose_name_plural = "کالاهای تامین"
+# =========================================
+
+class SaleInvoice(models.Model):
+    date = jmodels.jDateField(null=True, blank=True, verbose_name='تاریخ فروش')
+    customer = models.CharField(max_length=200, verbose_name='مشتری')
+    total_amount = models.DecimalField(max_digits=14, decimal_places=2, default=0, verbose_name='مبلغ کل')
+    note = models.TextField(blank=True, verbose_name='یادداشت')
+    discount_amount = models.DecimalField(max_digits=14, decimal_places=2, default=0, verbose_name='تخفیف کلی')
+
+    def __str__(self):
+        return f"فاکتور فروش #{self.id} - {self.customer}"
+
+# ------------------------------------
+
+class SaleItem(models.Model):
+    invoice = models.ForeignKey(SaleInvoice, on_delete=models.CASCADE, related_name='items')
+    item = models.ForeignKey(Item, on_delete=models.CASCADE, verbose_name='کالا')
+    quantity = models.PositiveIntegerField(verbose_name='تعداد')
+    unit_price = models.DecimalField(max_digits=12, decimal_places=2, verbose_name='قیمت فروش')
+    tax = models.DecimalField(max_digits=12, decimal_places=2, default=0.00, verbose_name='مالیات')
+    discount_kala = models.DecimalField(max_digits=14, decimal_places=2, default=0.00, verbose_name='تخفیف کالا')
+
+    def __str__(self):
+        return f"{self.item.name} x {self.quantity}"
+
+# -------------------------------------

@@ -1,8 +1,13 @@
 from django.db import models
 from django_jalali.db import models as jmodels
 from accounts.models import User
+import jdatetime
+import datetime
+from django.conf import settings
 
 
+
+# -------------------------
 # مدل جلسه
 class Meeting(models.Model):
     title = models.CharField(verbose_name='موضوع', max_length=255)
@@ -18,7 +23,7 @@ class Meeting(models.Model):
     def __str__(self):
         return f"{self.title} ({self.date})" if self.date else self.title
 
-
+# -----------------------------------
 
 class Project(models.Model):
     STATUS_CHOICES = [
@@ -44,7 +49,7 @@ class Project(models.Model):
     def __str__(self):
         return self.name
 
-
+# -----------------------------------
 
 class Task(models.Model):
     STATUS_CHOICES = [
@@ -77,6 +82,99 @@ class Task(models.Model):
     def __str__(self):
         return self.title if self.title else "بدون عنوان"
 
+# ---------------------------------------
+
+
+class DailyReport(models.Model):
+    STATUS_CHOICES = [
+        ('completed', 'انجام شده'),
+        ('in_progress', 'در حال انجام'),
+    ]
+    employee = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="کارمند")
+    date = jmodels.jDateField(verbose_name="تاریخ")
+    tasks_done = models.CharField(max_length=255,verbose_name="کارهای انجام‌شده")
+    duration_minutes = models.PositiveIntegerField(blank=True, null=True, verbose_name="مدت زمان (دقیقه)")
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='completed',
+                              verbose_name="وضعیت انجام کار")
+    done_percent = models.PositiveSmallIntegerField(blank=True, null=True, verbose_name="درصد انجام")
+    blockers = models.CharField(max_length=255, blank=True, null=True, verbose_name="مشکلات یا موانع")
+    suggestions = models.CharField(max_length=255, blank=True, null=True, verbose_name="پیشنهادات")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "گزارش روزانه"
+        verbose_name_plural = "گزارش‌های روزانه"
+
+    def __str__(self):
+        return f"{self.employee} - {self.date}"
+
+
+    @property
+    def weekday_name(self):
+        if self.date:
+            weekdays = {
+                'Saturday': 'شنبه',
+                'Sunday': 'یکشنبه',
+                'Monday': 'دوشنبه',
+                'Tuesday': 'سه‌شنبه',
+                'Wednesday': 'چهارشنبه',
+                'Thursday': 'پنج‌شنبه',
+                'Friday': 'جمعه',
+            }
+            # اطمینان از اینکه date از نوع jDate هست
+            if isinstance(self.date, jdatetime.date):
+                return weekdays[self.date.strftime('%A')]
+            else:
+                # تبدیل میلادی به جلالی در صورت نیاز
+                jdate = jdatetime.date.fromgregorian(date=self.date)
+                return weekdays[jdate.strftime('%A')]
+        return ''
+
+# -----------------------------------------
 
 
 
+class LeaveRequest(models.Model):
+    LEAVE_TYPES = [
+        ('daily_leave', 'مرخصی روزانه'),
+        ('hourly_leave', 'مرخصی ساعتی'),
+        ('daily_mission', 'ماموریت روزانه'),
+        ('hourly_mission', 'ماموریت ساعتی'),
+    ]
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='کاربر')
+    leave_type = models.CharField(max_length=20, choices=LEAVE_TYPES, verbose_name='نوع')
+    leave_date = jmodels.jDateField( verbose_name='تاریخ')
+    start_time = models.TimeField(null=True, blank=True, verbose_name='زمان شروع')
+    end_time = models.TimeField(null=True, blank=True, verbose_name='زمان پایان')
+    description = models.CharField(max_length=255, blank=True, verbose_name='شرح')
+    created_at = models.DateTimeField(auto_now_add=True)
+    # فیلدهای مرتبط با تأیید مدیر
+    supervisor = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='supervised_leaves',
+        verbose_name='مدیر تأییدکننده'
+    )
+    approved_by_supervisor = models.BooleanField(null=True, verbose_name='تأیید شده توسط مدیر')
+    approved_at = jmodels.jDateField(null=True, blank=True, verbose_name='تاریخ تأیید')
+    supervisor_note = models.CharField(max_length=255, blank=True, verbose_name='یادداشت مدیر')
+
+    class Meta:
+        ordering = ['-leave_date']
+        verbose_name = "درخواست مرخصی"
+        verbose_name_plural = "درخواست‌های مرخصی"
+
+    def save(self, *args, **kwargs):
+        # اگر supervisor تنظیم نشده بود، آن را از user.manager مقداردهی کن
+        if not self.supervisor and self.user and self.user.manager:
+            self.supervisor = self.user.manager
+        super().save(*args, **kwargs)
+
+    def duration_hours(self):
+        if self.leave_type in ['hourly_leave', 'hourly_mission'] and self.start_time and self.end_time:
+            delta = datetime.datetime.combine(datetime.date.min, self.end_time) - datetime.datetime.combine(datetime.date.min, self.start_time)
+            return round(delta.total_seconds() / 3600, 2)
+        return 0
+# ----------------------------------------------

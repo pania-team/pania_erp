@@ -1,62 +1,117 @@
+{% extends "base.html" %}
+{% load static %}
+{% block css %}
+<link type="text/css" rel="stylesheet" href="{% static 'assets/css/select2.min.css' %}" />
+<link type="text/css" rel="stylesheet" href="{% static 'assets/css/jalalidatepicker.min.css' %}" />
+<link rel="stylesheet" href="{% static 'taskflow/css/leave_dashboard.css' %}">
+<link rel="stylesheet" href="{% static 'assets/css/fonts.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+<div class="header-actions">
+    <h3>ثبت مرخصی/ ماموریت </h3>
+    <a href="{% url 'taskflow:leave_approval_list' %}" class="btn btn-primary">+ تایید مرخصی پرسنل شما </a>
+</div>
+
+    <div class="form-wrapper">
+        <div class="form-box">
+
+            <form method="post" action="">
+                {% csrf_token %}
+                {{ daily_form.as_p }}
+                <button type="submit" name="submit_daily">ثبت مرخصی روزانه</button>
+            </form>
+        </div>
+        <div class="form-box">
+
+            <form method="post" action="">
+                {% csrf_token %}
+                {{ hourly_form.as_p }}
+                <button type="submit" name="submit_hourly">ثبت مرخصی ساعتی</button>
+            </form>
+        </div>
+    </div>
+
+    <h3>داشبورد مرخصی‌ {{ user_name }}</h3>
+    <p><strong>جمع مرخصی روزانه:</strong> {{ daily_leave_total }} روز</p>
+    <p><strong>جمع مرخصی ساعتی:</strong> {{ hourly_leave_total|floatformat:1 }} ساعت</p>
+    <p><strong>جمع ماموریت روزانه:</strong> {{ daily_mission_total }} روز</p>
+    <p><strong>جمع ماموریت ساعتی:</strong> {{ hourly_mission_total|floatformat:1 }} ساعت</p>
+    <h4>مرخصی/ماموریت روزانه</h4>
+    <div class="table-container">
+    <table class="table-daily">
+        <thead>
+            <tr>
+                <th>نوع</th>
+                <th>تاریخ</th>
+                <th>توضیحات</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for leave in leaves %}
+                {% if leave.leave_type == 'daily_leave' or leave.leave_type == 'daily_mission' %}
+                <tr>
+                    <td>{{ leave.get_leave_type_display }}</td>
+                    <td>{{ leave.leave_date|date:"Y/m/d" }}</td>
+                    <td>{{ leave.description }}</td>
+                </tr>
+                {% endif %}
+            {% endfor %}
+        </tbody>
+    </table>
+        </div>
+
+    <h4>مرخصی/ماموریت ساعتی</h4>
+    <div class="table-container">
+    <table class="table-hourly">
+        <thead>
+            <tr>
+                <th>نوع</th>
+                <th>تاریخ</th>
+                <th>ساعت شروع</th>
+                <th>ساعت پایان</th>
+                <th>زمان مرخصی(ساعت)</th>
+                <th>توضیحات</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for leave in leaves %}
+                {% if leave.leave_type == 'hourly_leave' or leave.leave_type == 'hourly_mission' %}
+                <tr>
+                    <td>{{ leave.get_leave_type_display }}</td>
+                    <td>{{ leave.leave_date|date:"Y/m/d" }}</td>
+                    <td>{{ leave.start_time }}</td>
+                    <td>{{ leave.end_time }}</td>
+                    <td>{{ leave.duration_hours }}</td>
+                    <td>{{ leave.description }}</td>
+                </tr>
+                {% endif %}
+            {% endfor %}
+        </tbody>
+    </table>
+         </div>
+
+</div>
+{% endblock %}
+
 {% block js %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script type="text/javascript" src="{% static 'assets/js/select2.min.js' %}"></script>
 <script type="text/javascript" src="{% static 'assets/js/jalalidatepicker.min.js' %}"></script>
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Initialize date pickers for both forms
-    const dateFields = ['leave_date'];
-    dateFields.forEach(fieldName => {
-        const dateField = document.querySelector(`input[name="${fieldName}"]`);
-        if (dateField) {
-            jalaliDatepicker.startWatch({
-                selector: `input[name="${fieldName}"]`,
-                format: 'YYYY-MM-DD',
-                persianDigit: true,
-                time: false,
-                autoClose: true,
-                onSelect: function() {
-                    const date = this.value;
-                    if (date) {
-                        const formattedDate = date.replace(/\//g, '-');
-                        this.value = formattedDate;
-                        this.setAttribute('value', formattedDate);
-                    }
-                }
-            });
-
-            // Add validation on input change
-            dateField.addEventListener('change', function() {
-                const date = this.value;
-                if (date) {
-                    const formattedDate = date.replace(/\//g, '-');
-                    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
-                    if (!dateRegex.test(formattedDate)) {
-                        this.setCustomValidity('لطفا یک تاریخ معتبر وارد کنید');
-                    } else {
-                        this.setCustomValidity('');
-                    }
-                }
-            });
-        }
-    });
-
-    // Add form submission handlers
-    const forms = document.querySelectorAll('form');
-    forms.forEach(form => {
-        form.addEventListener('submit', function(e) {
-            const dateField = this.querySelector('input[name="leave_date"]');
-            if (dateField && dateField.value) {
-                const formattedDate = dateField.value.replace(/\//g, '-');
-                dateField.value = formattedDate;
-            }
-        });
-    });
+jalaliDatepicker.startWatch({
+  minDate: "attr",
+  maxDate: "attr"
 });
-
+</script>
+<script>
 function checkDuration() {
-    const start = document.getElementById('id_start_time').value;
-    const end = document.getElementById('id_end_time').value;
+    const start = document.getElementById('start_time').value;
+    const end = document.getElementById('end_time').value;
 
     if (start && end) {
         const [sh, sm] = start.split(':').map(Number);
@@ -64,16 +119,55 @@ function checkDuration() {
 
         const duration = (eh * 60 + em) - (sh * 60 + sm);
 
-        if (duration <= 0) {
-            alert("ساعت پایان باید بعد از ساعت شروع باشد.");
-            return false;
-        }
         if (duration > 240) {  // بیشتر از ۴ ساعت
             alert("مدت زمان نمی‌تواند بیش از ۴ ساعت باشد.");
-            return false;
         }
     }
-    return true;
 }
 </script>
+
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const timeInputs = document.querySelectorAll('.timepicker');
+
+  timeInputs.forEach(function(input) {
+    // اعمال flatpickr
+    flatpickr(input, {
+      enableTime: true,
+      noCalendar: true,
+      time_24hr: true,
+      dateFormat: 'H:i',
+      locale: 'fa'
+    });
+
+    // جلوگیری از وارد کردن بیش از 5 کاراکتر با فرمت HH:mm
+    input.addEventListener('input', function (e) {
+      let value = input.value.replace(/[^\d:]/g, '');  // فقط اعداد و ":" مجاز هستند
+
+      // جلوگیری از بیش از یک ":"
+      const parts = value.split(':');
+      if (parts.length > 2) {
+        value = parts[0] + ':' + parts[1];
+      }
+
+      // محدودیت هر قسمت به 2 رقم
+      if (parts[0] && parts[0].length > 2) {
+        parts[0] = parts[0].slice(0, 2);
+      }
+      if (parts[1] && parts[1].length > 2) {
+        parts[1] = parts[1].slice(0, 2);
+      }
+
+      // بازسازی مقدار ورودی
+      input.value = parts.join(':');
+    });
+  });
+});
+</script>
+
+
+
 {% endblock %}
