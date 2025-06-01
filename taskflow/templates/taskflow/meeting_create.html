@@ -3,23 +3,27 @@
 {% load jformat %}
 {% load humanize %}
 
+
 {% block css %}
 <link type="text/css" rel="stylesheet" href="{% static 'assets/css/jalalidatepicker.min.css' %}" />
-<link rel="stylesheet" href="{% static 'taskflow/css/task_form.css' %}">
+<link rel="stylesheet" href="{% static 'taskflow/css/meeting_create.css' %}">
 <link rel="stylesheet" href="{% static 'assets/css/fonts.css' %}">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 {% endblock %}
 
+
+
 {% block content %}
 <div class="meeting-form" dir="rtl">
-    <h2 class="text-center mb-4">{% if edit_mode %}ویرایش تسک{% else %}ایجاد تسک جدید{% endif %}</h2>
-    <form method="post" id="task-form">
+    <h2 class="text-center mb-4">{% if edit_mode %}ویرایش جلسه{% else %}ایجاد جلسه جدید{% endif %}</h2>
+    <form method="post" id="meeting-form">
         {% csrf_token %}
         {% for field in form %}
         <div class="form-group">
+            {% if field.name == 'participants' %}
+            <label for="{{ field.id_for_label }}">اعضای جلسه</label>
+            {% else %}
             <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-             {% if field.help_text %}
-            <small class="form-text text-muted">{{ field.help_text }}</small>
             {% endif %}
             {{ field }}
             {% if field.errors %}
@@ -27,28 +31,32 @@
                 {{ field.errors }}
             </div>
             {% endif %}
-{#            {% if field.help_text %}#}
-{#            <small class="form-text text-muted">{{ field.help_text }}</small>#}
-{#            {% endif %}#}
+            {% if field.help_text %}
+            <small class="form-text text-muted">{{ field.help_text }}</small>
+            {% endif %}
         </div>
         {% endfor %}
         
         <div class="text-center" style="display: flex; justify-content: center; gap: 1rem;">
-            <button type="submit" class="btn-submit">{% if edit_mode %}بروزرسانی تسک{% else %}ایجاد تسک{% endif %}</button>
+            <button type="submit" class="btn-submit">{% if edit_mode %}بروزرسانی جلسه{% else %}ایجاد جلسه{% endif %}</button>
+            <button type="button" class="btn-cancel" onclick="history.back()">انصراف</button>
         </div>
     </form>
 </div>
+
+
 {% endblock %}
+
 
 {% block js %}
 <script type="text/javascript" src="{% static 'assets/js/jalalidatepicker.min.js' %}"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const dateField = document.querySelector('input[name="due_date"]');
+        const dateField = document.querySelector('input[name="date"]');
         
         // Initialize the date picker
         jalaliDatepicker.startWatch({
-            selector: 'input[name="due_date"]',
+            selector: 'input[name="date"]',
             format: 'YYYY-MM-DD',  // Use hyphen format
             persianDigit: true,
             time: false,
@@ -65,7 +73,7 @@
         });
 
         // Add form submission handler
-        document.getElementById('task-form').addEventListener('submit', function(e) {
+        document.getElementById('meeting-form').addEventListener('submit', function(e) {
             const date = dateField.value;
             if (date) {
                 // Ensure the date uses hyphens before submission
@@ -87,40 +95,6 @@
                 }
             }
         });
-
-        // کد مربوط به به‌روزرسانی جلسات بر اساس پروژه انتخاب شده
-        const projectSelect = document.querySelector('#id_project');
-        const meetingSelect = document.querySelector('#id_meeting');
-        
-        function updateMeetings() {
-            const projectId = projectSelect.value;
-            if (projectId) {
-                fetch(`/taskflow/get-project-meetings/?project_id=${projectId}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        // پاک کردن گزینه‌های قبلی
-                        meetingSelect.innerHTML = '<option value="">---------</option>';
-                        
-                        // اضافه کردن جلسات جدید
-                        data.meetings.forEach(meeting => {
-                            const option = document.createElement('option');
-                            option.value = meeting.id;
-                            option.textContent = meeting.title;
-                            meetingSelect.appendChild(option);
-                        });
-                    });
-            } else {
-                // اگر پروژه انتخاب نشده باشد، لیست جلسات را خالی می‌کنیم
-                meetingSelect.innerHTML = '<option value="">---------</option>';
-            }
-        }
-
-        // اضافه کردن event listener برای تغییر پروژه
-        projectSelect.addEventListener('change', updateMeetings);
-        
-        // اجرای اولیه برای پر کردن لیست جلسات
-        updateMeetings();
     });
 </script>
 {% endblock %}
-
