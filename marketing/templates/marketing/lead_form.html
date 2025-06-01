@@ -1,1 +1,140 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'marketing/css/lead_form.css' %}">
+<link rel="stylesheet" href="{% static 'assets/css/fonts.css' %}">
+<link rel="stylesheet" href="{% static 'assets/css/select2.min.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container" style="direction: rtl;">
+    <div class="form-container">
+        <h2>{{ title }}</h2>
+        
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+            <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <form method="post" class="lead-form">
+            {% csrf_token %}
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="{{ form.first_name.id_for_label }}">نام</label>
+                    {{ form.first_name }}
+                    {% if form.first_name.errors %}
+                    <div class="error-message">{{ form.first_name.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.last_name.id_for_label }}">نام خانوادگی</label>
+                    {{ form.last_name }}
+                    {% if form.last_name.errors %}
+                    <div class="error-message">{{ form.last_name.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="{{ form.phone_number.id_for_label }}">تلفن همراه</label>
+                    {{ form.phone_number }}
+                    {% if form.phone_number.errors %}
+                    <div class="error-message">{{ form.phone_number.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.phone.id_for_label }}">شماره ثابت</label>
+                    {{ form.phone }}
+                    {% if form.phone.errors %}
+                    <div class="error-message">{{ form.phone.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="{{ form.mellicode.id_for_label }}">کد ملی</label>
+                    {{ form.mellicode }}
+                    {% if form.mellicode.errors %}
+                    <div class="error-message">{{ form.mellicode.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.city.id_for_label }}">شهر</label>
+                    {{ form.city }}
+                    {% if form.city.errors %}
+                    <div class="error-message">{{ form.city.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="{{ form.source.id_for_label }}">منبع</label>
+                    {{ form.source }}
+                    {% if form.source.errors %}
+                    <div class="error-message">{{ form.source.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.requested_products.id_for_label }}">کالاهای درخواستی</label>
+                    {{ form.requested_products }}
+                    {% if form.requested_products.errors %}
+                    <div class="error-message">{{ form.requested_products.errors }}</div>
+                    {% endif %}
+                    {% if form.requested_products.help_text %}
+                    <div class="help-text">
+                        {{ form.requested_products.help_text }}
+                        <a href="{% url 'marketing:product_create' %}" class="btn-create-product">
+                            <i class="fas fa-plus"></i> ایجاد کالای جدید
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.tags.id_for_label }}">تگ‌ها</label>
+                {{ form.tags }}
+                {% if form.tags.errors %}
+                <div class="error-message">{{ form.tags.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn-submit">ذخیره</button>
+                <a href="{% url 'marketing:lead_list' %}" class="btn-cancel">انصراف</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="{% static 'assets/js/select2.min.js' %}"></script>
+<script>
+    $(document).ready(function() {
+        $('.select2').select2({
+            dir: 'rtl',
+            language: {
+                noResults: function() {
+                    return "نتیجه‌ای یافت نشد";
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

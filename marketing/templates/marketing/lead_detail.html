@@ -1,10 +1,103 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends 'base.html' %}
+{% load static %}
 
-</body>
-</html>
+{% block css %}
+<link rel="stylesheet" href="{% static 'marketing/css/lead_detail.css' %}">
+<link rel="stylesheet" href="{% static 'assets/css/fonts.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="detail-container">
+        <div class="detail-header">
+            <h2>جزئیات سرنخ</h2>
+            <div class="action-buttons">
+                <a href="{% url 'marketing:lead_update' lead.pk %}" class="btn-edit">
+                    <i class="fas fa-edit"></i> ویرایش
+                </a>
+                <a href="{% url 'marketing:lead_delete' lead.pk %}" class="btn-delete" onclick="return confirm('آیا از حذف این سرنخ اطمینان دارید؟')">
+                    <i class="fas fa-trash"></i> حذف
+                </a>
+                <a href="{% url 'marketing:lead_list' %}" class="btn-back">
+                    <i class="fas fa-arrow-right"></i> بازگشت
+                </a>
+            </div>
+        </div>
+
+        <div class="detail-content">
+            <div class="detail-section">
+                <h3>اطلاعات شخصی</h3>
+                <div class="detail-grid">
+                    <div class="detail-item">
+                        <span class="label">نام:</span>
+                        <span class="value">{{ lead.first_name }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="label">نام خانوادگی:</span>
+                        <span class="value">{{ lead.last_name }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="label">کد ملی:</span>
+                        <span class="value">{{ lead.mellicode }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="label">تلفن همراه:</span>
+                        <span class="value">{{ lead.phone_number }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="label">شماره ثابت:</span>
+                        <span class="value">{{ lead.phone }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="label">شهر:</span>
+                        <span class="value">{{ lead.city }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="detail-section">
+                <h3>اطلاعات درخواست</h3>
+                <div class="detail-grid">
+                    <div class="detail-item">
+                        <span class="label">منبع:</span>
+                        <span class="value">{{ lead.get_source_display }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="label">تاریخ ثبت:</span>
+                        <span class="value">{{ lead.created_at|date:"Y/m/d" }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="detail-section">
+                <h3>کالاهای درخواستی</h3>
+                <div class="products-list">
+                    {% if lead.requested_products.all %}
+                        {% for product in lead.requested_products.all %}
+                        <div class="product-item">
+                            <span class="product-name">{{ product.name }}</span>
+                            <span class="product-code">کد: {{ product.code }}</span>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="no-data">کالایی انتخاب نشده است</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="detail-section">
+                <h3>تگ‌ها</h3>
+                <div class="tags-list">
+                    {% if lead.tags.all %}
+                        {% for tag in lead.tags.all %}
+                        <span class="tag">{{ tag.name }}</span>
+                        {% endfor %}
+                    {% else %}
+                        <p class="no-data">تگی انتخاب نشده است</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,12 +1,12 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
-from .forms import LeadForm
-from .models import Lead
+from .forms import LeadForm, ProductForm
+from .models import Lead, Product
 
 
 @login_required
 def lead_list(request):
-    leads = Lead.object.all().ordering('created_at')
+    leads = Lead.objects.all().order_by('created_at')
     return render(request, 'marketing/lead_list.html', {'leads':leads})
 
 # ------------------------------------------
@@ -53,3 +53,16 @@ def lead_delete(request, pk):
     return redirect('marketing:lead_list')
 
 # -------------------------------------------
+
+@login_required
+def product_create(request):
+    if request.method == 'POST':
+        form = ProductForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('marketing:lead_list')
+        else:
+            print('ProductForm errors:', form.errors)
+    else:
+        form = ProductForm()
+    return render(request, 'marketing/product_form.html', {'form': form})

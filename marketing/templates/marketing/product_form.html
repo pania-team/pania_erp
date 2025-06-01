@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'marketing/css/marketing.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        {% if form.instance.pk %}
+                            ویرایش کالا
+                        {% else %}
+                            ایجاد کالای جدید
+                        {% endif %}
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <form method="post" class="form">
+                        {% csrf_token %}
+                        
+                        {% if messages %}
+                        <div class="messages">
+                            {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }}">
+                                {{ message }}
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    {{ form.type.label_tag }}
+                                    {{ form.type }}
+                                    {% if form.type.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.type.errors }}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    {{ form.brand.label_tag }}
+                                    {{ form.brand }}
+                                    {% if form.brand.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.brand.errors }}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    {{ form.model_name.label_tag }}
+                                    {{ form.model_name }}
+                                    {% if form.model_name.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.model_name.errors }}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mt-3">
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save"></i>
+                                    {% if form.instance.pk %}
+                                        بروزرسانی
+                                    {% else %}
+                                        ذخیره
+                                    {% endif %}
+                                </button>
+                                <a href="{% url 'marketing:lead_list' %}" class="btn btn-secondary">
+                                    <i class="fas fa-times"></i>
+                                    انصراف
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+    $(document).ready(function() {
+        // Initialize any necessary JavaScript components here
+    });
+</script>
+{% endblock %} 

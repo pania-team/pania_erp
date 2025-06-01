@@ -1,1 +1,71 @@
 {% extends 'base.html' %}
+{% load static %}
+{% load jformat %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'marketing/css/lead.css' %}">
+<link rel="stylesheet" href="{% static 'assets/css/fonts.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="header">
+        <h2>لیست لیدها</h2>
+        <a href="{% url 'marketing:lead_create' %}" class="btn-create">
+            <i class="fas fa-plus"></i> ایجاد لید جدید
+        </a>
+    </div>
+
+    {% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+        <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="table-container">
+        <table class="lead-table">
+            <thead>
+                <tr>
+                    <th>نام و نام خانوادگی</th>
+                    <th>تلفن همراه</th>
+                    <th>منبع</th>
+                    <th>شهر</th>
+                    <th>تاریخ ثبت</th>
+                    <th>عملیات</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for lead in leads %}
+                <tr>
+                    <td>{{ lead.first_name }} {{ lead.last_name }}</td>
+                    <td>{{ lead.phone_number }}</td>
+                    <td>{{ lead.get_source_display }}</td>
+                    <td>{{ lead.city }}</td>
+                    <td>{{ lead.created_at|jformat:"%Y/%m/%d" }}</td>
+                    <td class="actions">
+                        <a href="{% url 'marketing:lead_detail' lead.pk %}" class="btn-view" title="مشاهده">
+                            <i class="fas fa-eye"></i>
+                        </a>
+                        <a href="{% url 'marketing:lead_update' lead.pk %}" class="btn-edit" title="ویرایش">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <a href="{% url 'marketing:lead_delete' lead.pk %}" class="btn-delete" title="حذف">
+                            <i class="fas fa-trash"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center">هیچ لیدی یافت نشد.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
