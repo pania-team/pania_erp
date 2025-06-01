@@ -8,12 +8,16 @@ from accounts.models import User
 from django.db.models import Sum
 import jdatetime
 from .forms import DailyLeaveRequestForm, HourlyLeaveRequestForm
+from django.utils import timezone
 
 
 
 
 
 
+
+
+# -----------------------------
 
 @login_required
 def meeting_list(request):
@@ -314,7 +318,7 @@ def task_delete(request, pk):
     messages.success(request, 'تسک با موفقیت حذف شد.')
     return redirect('taskflow:task_list')
 
-
+# -----------------------------------
 @login_required
 def get_project_meetings(request):
     project_id = request.GET.get('project_id')
@@ -330,7 +334,7 @@ def project_tasks_view(request, pk):
     tasks = Task.objects.filter(project=project)
     return render(request, 'taskflow/project_tasks.html', {'project': project, 'tasks': tasks})
 
-# ======================================
+# ============================داشبورد  گزارش روزانه   ==========
 
 @login_required
 def daily_report_list(request):
@@ -402,51 +406,86 @@ def daily_report_create(request):
         'user': request.user,
     })
 
-# ---------------------------------------------
+# ===================== داشبورد مرخصی ==========================
+
 
 @login_required
 def leave_dashboard(request):
-    leaves = LeaveRequest.objects.filter(user=request.user)
-
+    leaves = LeaveRequest.objects.filter(user=request.user, approved_by_supervisor=True)
+    # جمع مرخصی‌ها
     hourly_leaves = leaves.filter(leave_type__in=['hourly_leave', 'hourly_mission'])
-    total_hours = sum([l.duration_hours() or 0 for l in hourly_leaves])
-
-    daily_leaves = leaves.filter(leave_type__in=['daily_leave', 'daily_mission'])
-    total_days = daily_leaves.count()
+    hourly_leave_total = sum([l.duration_hours() or 0 for l in hourly_leaves.filter(leave_type='hourly_leave')])
+    hourly_mission_total = sum([l.duration_hours() or 0 for l in hourly_leaves.filter(leave_type='hourly_mission')])
+    daily_leave_total = leaves.filter(leave_type='daily_leave').count()
+    daily_mission_total = leaves.filter(leave_type='daily_mission').count()
 
     daily_form = DailyLeaveRequestForm()
     hourly_form = HourlyLeaveRequestForm()
 
     if request.method == 'POST':
         leave_type = request.POST.get('leave_type', '')
-
+        post_data = request.POST.copy()
+        # تبدیل تاریخ جلالی به jdatetime.date
+        jalali_date_str = post_data.get('leave_date')
+        if jalali_date_str:
+            try:
+                jalali_date = jdatetime.datetime.strptime(jalali_date_str, '%Y/%m/%d').date()
+                post_data['leave_date'] = jalali_date
+            except ValueError:
+                messages.error(request, 'تاریخ وارد شده نامعتبر است.')
+                return redirect('taskflow:leave_dashboard')
+        # بررسی نوع مرخصی
         if leave_type in ['daily_leave', 'daily_mission']:
-            daily_form = DailyLeaveRequestForm(request.POST)
+            daily_form = DailyLeaveRequestForm(post_data)
             if daily_form.is_valid():
                 leave_request = daily_form.save(commit=False)
                 leave_request.user = request.user
                 leave_request.save()
-                messages.success(request, 'درخواست مرخصی روزانه با موفقیت ثبت شد.')
+                messages.success(request, 'درخواست مرخصی روزانه ثبت شد.')
                 return redirect('taskflow:leave_dashboard')
-            else:
-                print('DailyLeaveRequestForm errors:', daily_form.errors)
-
         elif leave_type in ['hourly_leave', 'hourly_mission']:
-            hourly_form = HourlyLeaveRequestForm(request.POST)
+            hourly_form = HourlyLeaveRequestForm(post_data)
             if hourly_form.is_valid():
                 leave_request = hourly_form.save(commit=False)
                 leave_request.user = request.user
                 leave_request.save()
-                messages.success(request, 'درخواست مرخصی ساعتی با موفقیت ثبت شد.')
+                messages.success(request, 'درخواست مرخصی ساعتی ثبت شد.')
                 return redirect('taskflow:leave_dashboard')
-            else:
-                print('HourlyLeaveRequestForm errors:', hourly_form.errors)
+        else:
+            messages.error(request, 'نوع مرخصی نامعتبر است.')
 
-    return render(request, 'taskflow/leave_dashboard.html', {
+    context = {
         'leaves': leaves,
-        'total_hours': total_hours,
-        'total_days': total_days,
+        'hourly_leave_total': hourly_leave_total,
+        'hourly_mission_total': hourly_mission_total,
+        'daily_leave_total': daily_leave_total,
+        'daily_mission_total': daily_mission_total,
         'daily_form': daily_form,
         'hourly_form': hourly_form,
-    })
+    }
 
+    return render(request, 'taskflow/leave_dashboard.html', context)
+
+# ----------------------------------------
+
+@login_required
+def leave_approval_list(request):
+    leave_requests = LeaveRequest.objects.filter(
+        supervisor=request.user,
+        approved_by_supervisor__isnull=True  # فقط مواردی که هنوز تصمیمی نگرفته شده‌اند
+    ).order_by('-leave_date')
+    if request.method == "POST":
+        for leave in leave_requests:
+            decision = request.POST.get(f'decision_{leave.id}')
+            if decision == 'approve':
+                leave.approved_by_supervisor = True
+                leave.approved_at = timezone.now()
+                leave.save()
+            elif decision == 'reject':
+                leave.approved_by_supervisor = False
+                leave.approved_at = timezone.now()
+                leave.save()
+        return redirect('taskflow:leave_approval_list')
+    return render(request, 'taskflow/leave_approval_list.html', {'leave_requests': leave_requests})
+
+# ---------------------------------------------

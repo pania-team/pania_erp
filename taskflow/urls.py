@@ -34,4 +34,5 @@ urlpatterns = [
     path('employee_report_list/', views.employee_report_list, name='employee_report_list'),
     # Leave Url
     path('leave-dashboard/', views.leave_dashboard, name='leave_dashboard'),
+    path('leave_approval_list/', views.leave_approval_list, name='leave_approval_list'),
 ]

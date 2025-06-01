@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load jformat %}
+{% load humanize %}
+
+{% block css %}
+<link type="text/css" rel="stylesheet" href="{% static 'assets/css/jalalidatepicker.min.css' %}" />
+<link rel="stylesheet" href="{% static 'taskflow/css/leave_approval_list.css' %}">
+<link rel="stylesheet" href="{% static 'assets/css/fonts.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+{% endblock %}
+
+{% block content %}
+<div class="projects-page">
+  <div class="projects-title-row">
+    <h2 class="projects-title">مرخصی‌های نیازمند تایید شما</h2>
+    <a href="{% url 'taskflow:leave_dashboard' %}" class="btn btn-primary">بازگشت</a>
+    <input type="text" id="leave-search" placeholder="جستجو در مرخصی‌ها ..." class="search-box">
+  </div>
+
+  <form method="post">
+    {% csrf_token %}
+    <div class="main-content">
+      <div class="projects-list">
+        {% for leave in leave_requests %}
+        <div class="project-card leave-item">
+          <div class="leave-info">
+            <strong>{{ leave.user.get_full_name }}</strong>
+            {{ leave.user.l_name }} {{ leave.user.f_name }} -
+            {{ leave.get_leave_type_display }} در تاریخ {{ leave.leave_date|jformat:"%Y/%m/%d" }}
+            {% if leave.start_time and leave.end_time %}
+              (از ساعت {{ leave.start_time }} تا {{ leave.end_time }})
+            {% endif %}
+            <br>
+            <small class="text-muted">{{ leave.description }}</small>
+          </div>
+
+          <div class="approval-options" style="margin-top: 10px;">
+            <label style="margin-right: 15px;">
+              <input type="radio" name="decision_{{ leave.id }}" value="approve"> تایید
+            </label>
+            <label>
+              <input type="radio" name="decision_{{ leave.id }}" value="reject"> رد
+            </label>
+          </div>
+        </div>
+        {% empty %}
+        <p>هیچ درخواستی برای تایید وجود ندارد.</p>
+        {% endfor %}
+      </div>
+    </div>
+
+    {% if leave_requests %}
+    <div style="text-align:center; margin-top: 20px;">
+      <button type="submit" class="btn btn-success">ثبت تصمیم‌</button>
+    </div>
+    {% endif %}
+  </form>
+</div>
+{% endblock %}
+
+{% block js %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function() {
+    // جستجو در لیست مرخصی‌ها
+    $('#leave-search').on('input', function() {
+        var value = $(this).val().toLowerCase();
+        $('.leave-item').each(function() {
+            $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+        });
+    });
+});
+</script>
+{% endblock %}

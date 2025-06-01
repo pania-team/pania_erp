@@ -6,15 +6,20 @@
 <link rel="stylesheet" href="{% static 'taskflow/css/leave_dashboard.css' %}">
 <link rel="stylesheet" href="{% static 'assets/css/fonts.css' %}">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 {% endblock %}
 
 {% block content %}
 <div class="container">
+<div class="header-actions">
+    <h3>ثبت مرخصی/ ماموریت </h3>
+    <a href="{% url 'taskflow:leave_approval_list' %}" class="btn btn-primary">+ تایید مرخصی پرسنل شما </a>
+</div>
 
-    <h3>ثبت مرخصی و ماموریت پرسنل</h3>
     <div class="form-wrapper">
         <div class="form-box">
-            <h4>مرخصی روزانه</h4>
+
             <form method="post" action="">
                 {% csrf_token %}
                 {{ daily_form.as_p }}
@@ -22,7 +27,7 @@
             </form>
         </div>
         <div class="form-box">
-            <h4>مرخصی ساعتی</h4>
+
             <form method="post" action="">
                 {% csrf_token %}
                 {{ hourly_form.as_p }}
@@ -32,10 +37,10 @@
     </div>
 
     <h3>داشبورد مرخصی‌ {{ user_name }}</h3>
-    <p><strong>جمع مرخصی/ماموریت ساعتی:</strong> {{ total_hours|floatformat:1 }} ساعت</p>
-
-    <p><strong>جمع مرخصی/ماموریت روزانه:</strong> {{ total_days }} روز</p>
-
+    <p><strong>جمع مرخصی روزانه:</strong> {{ daily_leave_total }} روز</p>
+    <p><strong>جمع مرخصی ساعتی:</strong> {{ hourly_leave_total|floatformat:1 }} ساعت</p>
+    <p><strong>جمع ماموریت روزانه:</strong> {{ daily_mission_total }} روز</p>
+    <p><strong>جمع ماموریت ساعتی:</strong> {{ hourly_mission_total|floatformat:1 }} ساعت</p>
     <h4>مرخصی/ماموریت روزانه</h4>
     <div class="table-container">
     <table class="table-daily">
@@ -120,4 +125,49 @@ function checkDuration() {
     }
 }
 </script>
+
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const timeInputs = document.querySelectorAll('.timepicker');
+
+  timeInputs.forEach(function(input) {
+    // اعمال flatpickr
+    flatpickr(input, {
+      enableTime: true,
+      noCalendar: true,
+      time_24hr: true,
+      dateFormat: 'H:i',
+      locale: 'fa'
+    });
+
+    // جلوگیری از وارد کردن بیش از 5 کاراکتر با فرمت HH:mm
+    input.addEventListener('input', function (e) {
+      let value = input.value.replace(/[^\d:]/g, '');  // فقط اعداد و ":" مجاز هستند
+
+      // جلوگیری از بیش از یک ":"
+      const parts = value.split(':');
+      if (parts.length > 2) {
+        value = parts[0] + ':' + parts[1];
+      }
+
+      // محدودیت هر قسمت به 2 رقم
+      if (parts[0] && parts[0].length > 2) {
+        parts[0] = parts[0].slice(0, 2);
+      }
+      if (parts[1] && parts[1].length > 2) {
+        parts[1] = parts[1].slice(0, 2);
+      }
+
+      // بازسازی مقدار ورودی
+      input.value = parts.join(':');
+    });
+  });
+});
+</script>
+
+
+
 {% endblock %}

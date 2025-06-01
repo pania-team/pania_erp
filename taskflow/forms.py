@@ -325,20 +325,20 @@ class DailyLeaveRequestForm(forms.ModelForm):
         widgets = {
             'leave_type': forms.Select(attrs={
                 'class': 'form-control',
-                'style': 'font-family: Vazirmatn, sans-serif; font-size: 12px;',
+                'style': 'font-family: Vazirmatn, sans-serif; font-size: 13px;',
             }),
             'leave_date': forms.TextInput(attrs={
                 'data-jdp': 'true',
                 'class': 'form-control',
                 'required': True,
-                'placeholder': 'تاریخ مرخصی یا ماموریت',
-                'style': 'font-family: Vazirmatn, sans-serif; font-size: 11px',
+                'placeholder': 'تاریخ ',
+                'style': 'font-family: Vazirmatn, sans-serif; font-size: 13px',
                 'autocomplete': 'off',
             }),
             'description': forms.TextInput(attrs={
                 'class': 'form-control',
-                'placeholder': 'شرح مرخصی یا ماموریت',
-                'style': 'font-family: Vazirmatn, sans-serif; font-size: 11px',
+                'placeholder': 'شرح مرخصی/ماموریت',
+                'style': 'font-family: Vazirmatn, sans-serif; font-size: 13px',
             }),
         }
         labels = {
@@ -365,32 +365,32 @@ class HourlyLeaveRequestForm(forms.ModelForm):
         widgets = {
             'leave_type': forms.Select(attrs={
                 'class': 'form-control',
-                'style': 'font-family: Vazirmatn, sans-serif; font-size: 12px;',
+                'style': 'font-family: Vazirmatn, sans-serif; font-size: 13px;',
             }),
             'leave_date': forms.TextInput(attrs={
                 'data-jdp': 'true',
                 'class': 'form-control',
                 'required': True,
-                'placeholder': 'تاریخ مرخصی یا ماموریت',
-                'style': 'font-family: Vazirmatn, sans-serif; font-size: 11px',
+                'placeholder': 'تاریخ',
+                'style': 'font-family: Vazirmatn, sans-serif; font-size: 13px',
                 'autocomplete': 'off',
             }),
-            'start_time': forms.TimeInput(attrs={
+            'start_time': forms.TimeInput(format='%H:%M',attrs={
                 'type': 'time',
-                'class': 'form-control',
-                'placeholder': 'ساعت شروع',
-                'style': 'font-family: Vazirmatn, sans-serif; font-size: 11px',
+                'class': 'form-control timepicker',
+                'placeholder': ' ساعت شروع',
+                'style': 'font-family: Vazirmatn, sans-serif; font-size: 14px',
             }),
-            'end_time': forms.TimeInput(attrs={
+            'end_time': forms.TimeInput(format='%H:%M',attrs={
                 'type': 'time',
-                'class': 'form-control',
+                'class': 'form-control timepicker',
                 'placeholder': 'ساعت پایان',
-                'style': 'font-family: Vazirmatn, sans-serif; font-size: 11px',
+                'style': 'font-family: Vazirmatn, sans-serif; font-size: 14px',
             }),
             'description': forms.TextInput(attrs={
                 'class': 'form-control',
-                'placeholder': 'شرح مرخصی یا ماموریت',
-                'style': 'font-family: Vazirmatn, sans-serif; font-size: 11px',
+                'placeholder': 'شرح مرخصی/ماموریت',
+                'style': 'font-family: Vazirmatn, sans-serif; font-size: 13px',
             }),
         }
         labels = {
