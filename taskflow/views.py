@@ -9,6 +9,7 @@ from django.db.models import Sum
 import jdatetime
 from .forms import DailyLeaveRequestForm, HourlyLeaveRequestForm
 from django.utils import timezone
+from django.http import Http404
 
 
 
@@ -65,7 +66,7 @@ def meeting_create(request):
         if project:
             initial['participants'] = project.members.all()
         form = MeetingForm(initial=initial)
-    return render(request, 'taskflow/meeting_form.html', {'form': form})
+    return render(request, 'taskflow/meeting_create.html', {'form': form})
 
 
 
@@ -87,7 +88,7 @@ def meeting_update(request, pk):
     else:
         form = MeetingForm(instance=meeting)
     
-    return render(request, 'taskflow/meeting_form.html', {
+    return render(request, 'taskflow/meeting_create.html', {
         'form': form,
         'edit_mode': True,
         'meeting': meeting
@@ -122,30 +123,40 @@ def project_list(request):
 import jdatetime
 @login_required
 def project_detail(request, pk):
-    project = get_object_or_404(Project, pk=pk, members=request.user)
-    meetings = Meeting.objects.filter(project=project)
-    meetings_with_tasks = []
-    for meeting in meetings:
-        tasks = Task.objects.filter(meeting=meeting, project=project)
-        meetings_with_tasks.append({
-            'meeting': meeting,
-            'tasks': tasks
-        })
+    try:
+        project = Project.objects.get(pk=pk)
+        # Check if user is superuser, project manager, or project member
+        if not (request.user.is_superuser or 
+                project.manager == request.user or 
+                request.user in project.members.all()):
+            return render(request, 'taskflow/access_denied.html')
+            
+        meetings = Meeting.objects.filter(project=project)
+        meetings_with_tasks = []
+        for meeting in meetings:
+            tasks = Task.objects.filter(meeting=meeting, project=project)
+            meetings_with_tasks.append({
+                'meeting': meeting,
+                'tasks': tasks
+            })
 
         # تبدیل تاریخ شروع و پایان پروژه به جلالی
-    jalali_start_date = None
-    if project.start_date:
-        jalali_start_date = jdatetime.date.fromgregorian(date=project.start_date).strftime('%Y/%m/%d')
+        jalali_start_date = None
+        if project.start_date:
+            jalali_start_date = jdatetime.date.fromgregorian(date=project.start_date).strftime('%Y/%m/%d')
 
-    jalali_end_date = None
-    if project.end_date:
-        jalali_end_date = jdatetime.date.fromgregorian(date=project.end_date).strftime('%Y/%m/%d')
-    return render(request, 'taskflow/project_detail.html', {
-        'project': project,
-        'meetings_with_tasks': meetings_with_tasks,
-        'jalali_start_date': jalali_start_date,
-        'jalali_end_date': jalali_end_date,
-    })
+        jalali_end_date = None
+        if project.end_date:
+            jalali_end_date = jdatetime.date.fromgregorian(date=project.end_date).strftime('%Y/%m/%d')
+            
+        return render(request, 'taskflow/project_detail.html', {
+            'project': project,
+            'meetings_with_tasks': meetings_with_tasks,
+            'jalali_start_date': jalali_start_date,
+            'jalali_end_date': jalali_end_date,
+        })
+    except Project.DoesNotExist:
+        raise Http404("پروژه مورد نظر یافت نشد.")
 
 
 
@@ -166,7 +177,7 @@ def project_create(request):
     else:
         form = ProjectForm()
     
-    return render(request, 'taskflow/project_form.html', {'form': form})
+    return render(request, 'taskflow/project_create.html', {'form': form})
 
 
 
@@ -174,7 +185,13 @@ def project_create(request):
 # --------------------------------------
 @login_required
 def project_update(request, pk):
-    project = get_object_or_404(Project, pk=pk, members=request.user)
+    project = get_object_or_404(Project, pk=pk)
+    # Check if user is superuser, project manager, or project member
+    if not (request.user.is_superuser or 
+            project.manager == request.user or 
+            request.user in project.members.all()):
+        return render(request, 'taskflow/access_denied.html')
+        
     if request.method == 'POST':
         form = ProjectForm(request.POST, instance=project)
         if form.is_valid():
@@ -186,7 +203,7 @@ def project_update(request, pk):
     else:
         form = ProjectForm(instance=project)
     
-    return render(request, 'taskflow/project_form.html', {
+    return render(request, 'taskflow/project_create.html', {
         'form': form,
         'edit_mode': True,
         'project': project
@@ -197,7 +214,13 @@ def project_update(request, pk):
 # ----------------------------------
 @login_required
 def project_delete(request, pk):
-    project = get_object_or_404(Project, pk=pk, members=request.user)
+    project = get_object_or_404(Project, pk=pk)
+    # Check if user is superuser, project manager, or project member
+    if not (request.user.is_superuser or 
+            project.manager == request.user or 
+            request.user in project.members.all()):
+        return render(request, 'taskflow/access_denied.html')
+        
     project.delete()
     messages.success(request, 'پروژه با موفقیت حذف شد.')
     return redirect('taskflow:project_list')
@@ -272,7 +295,7 @@ def task_create(request):
         # form.fields.pop('project', None)
         # form.fields.pop('meeting', None)
     
-    return render(request, 'taskflow/task_form.html', {'form': form})
+    return render(request, 'taskflow/task_create.html', {'form': form})
 
 
 
@@ -299,14 +322,14 @@ def task_update(request, pk):
         else:
             print('TaskForm errors:', form.errors)
             if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-                return render(request, 'taskflow/task_form.html', {'form': form, 'edit_mode': True, 'task': task})
+                return render(request, 'taskflow/task_create.html', {'form': form, 'edit_mode': True, 'task': task})
     else:
         form = TaskForm(instance=task)
         # حذف فیلدها از فرم
         form.fields.pop('project', None)
         form.fields.pop('meeting', None)
     
-    return render(request, 'taskflow/task_form.html', {'form': form, 'edit_mode': True, 'task': task})
+    return render(request, 'taskflow/task_create.html', {'form': form, 'edit_mode': True, 'task': task})
 
 
 

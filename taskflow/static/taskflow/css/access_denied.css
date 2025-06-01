@@ -1,0 +1,44 @@
+.access-denied-container {
+    max-width: 600px;
+    top: 0;
+    margin: 4rem auto;
+    text-align: center;
+    padding: 2rem;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+}
+
+.access-denied-icon {
+    font-size: 4rem;
+    color: #e74c3c;
+    margin-bottom: 1.5rem;
+}
+
+.access-denied-title {
+    font-size: 1.8rem;
+    color: #2c3e50;
+    margin-bottom: 1rem;
+}
+
+.access-denied-message {
+    color: #7f8c8d;
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+    line-height: 1.6;
+}
+
+.back-button {
+    display: inline-block;
+    padding: 0.8rem 1.5rem;
+    background: #3498db;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    transition: background 0.3s ease;
+}
+
+.back-button:hover {
+    background: #2980b9;
+    color: white;
+}
