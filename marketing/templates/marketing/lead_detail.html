@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
-
+{% load jformat %}
 {% block css %}
 <link rel="stylesheet" href="{% static 'marketing/css/lead_detail.css' %}">
 <link rel="stylesheet" href="{% static 'assets/css/fonts.css' %}">
@@ -10,20 +10,8 @@
 <div class="container">
     <div class="detail-container">
         <div class="detail-header">
-            <h2>جزئیات سرنخ</h2>
-            <div class="action-buttons">
-                <a href="{% url 'marketing:lead_update' lead.pk %}" class="btn-edit">
-                    <i class="fas fa-edit"></i> ویرایش
-                </a>
-                <a href="{% url 'marketing:lead_delete' lead.pk %}" class="btn-delete" onclick="return confirm('آیا از حذف این سرنخ اطمینان دارید؟')">
-                    <i class="fas fa-trash"></i> حذف
-                </a>
-                <a href="{% url 'marketing:lead_list' %}" class="btn-back">
-                    <i class="fas fa-arrow-right"></i> بازگشت
-                </a>
-            </div>
+            <h2>جزئیات لید</h2>
         </div>
-
         <div class="detail-content">
             <div class="detail-section">
                 <h3>اطلاعات شخصی</h3>
@@ -64,7 +52,7 @@
                     </div>
                     <div class="detail-item">
                         <span class="label">تاریخ ثبت:</span>
-                        <span class="value">{{ lead.created_at|date:"Y/m/d" }}</span>
+                        <span class="value">{{ lead.created_at|jformat:"%Y/%m/%d" }}</span>
                     </div>
                 </div>
             </div>
@@ -72,16 +60,17 @@
             <div class="detail-section">
                 <h3>کالاهای درخواستی</h3>
                 <div class="products-list">
-                    {% if lead.requested_products.all %}
-                        {% for product in lead.requested_products.all %}
+                    <!-- <div style="color: #d32f2f; font-size: 0.95rem; margin-bottom: 10px;">
+                        [debug] تعداد کالاهای درخواستی: {{ lead.requested_products.all|length }}<br>
+                        [debug] لیست کالاها: {{ lead.requested_products.all }}
+                    </div> -->
+                    {% for product in lead.requested_products.all %}
                         <div class="product-item">
-                            <span class="product-name">{{ product.name }}</span>
-                            <span class="product-code">کد: {{ product.code }}</span>
+                            <span class="product-name" style="color: #222;">{{ product.name }} {{ product }}</span>
                         </div>
-                        {% endfor %}
-                    {% else %}
+                    {% empty %}
                         <p class="no-data">کالایی انتخاب نشده است</p>
-                    {% endif %}
+                    {% endfor %}
                 </div>
             </div>
 
@@ -96,6 +85,18 @@
                         <p class="no-data">تگی انتخاب نشده است</p>
                     {% endif %}
                 </div>
+            </div>
+
+            <div class="action-buttons" style="margin-top: 2.5rem; justify-content: center;">
+                <a href="{% url 'marketing:lead_update' lead.pk %}" class="btn-edit">
+                    <i class="fas fa-edit"></i> ویرایش
+                </a>
+                <a href="{% url 'marketing:lead_delete' lead.pk %}" class="btn-delete" onclick="return confirm('آیا از حذف این سرنخ اطمینان دارید؟')">
+                    <i class="fas fa-trash"></i> حذف
+                </a>
+                <a href="{% url 'marketing:lead_list' %}" class="btn-back">
+                    <i class="fas fa-arrow-right"></i> بازگشت
+                </a>
             </div>
         </div>
     </div>
