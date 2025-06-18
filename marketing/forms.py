@@ -35,7 +35,7 @@ class LeadForm(forms.ModelForm):
     class Meta:
         model = Lead
         fields = ['first_name', 'last_name', 'mellicode', 'phone', 'phone_number', 
-                 'source', 'city', 'requested_products', 'tags']
+                 'source', 'city', 'requested_products', 'tags', 'company']
         widgets = {
             'first_name': forms.TextInput(attrs={
                 'class': 'form-control',
@@ -80,6 +80,10 @@ class LeadForm(forms.ModelForm):
                 'class': 'form-control select2',
                 'style': 'font-family: Vazirmatn, sans-serif; font-size: 11px'
             }),
+            'company': forms.Select(attrs={
+                'class': 'form-control',
+                'style': 'font-family: Vazirmatn, sans-serif; font-size: 11px'
+            }),
         }
         labels = {
             'first_name': '',
@@ -91,6 +95,7 @@ class LeadForm(forms.ModelForm):
             'city': '',
             'requested_products': '',
             'tags': '',
+            'company': '',
         }
 
     def __init__(self, *args, **kwargs):
@@ -102,7 +107,7 @@ class LeadForm(forms.ModelForm):
         self.fields['tags'].widget.attrs.update({
             'data-placeholder': 'تگ‌ها را انتخاب کنید'
         })
-        
+
         # Check if there are any products
         if not Product.objects.exists():
             self.fields['requested_products'].widget.attrs.update({

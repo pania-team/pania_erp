@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from .forms import LeadForm, ProductForm
-from .models import Lead, Product, Tag
+from .models import Lead, Product, Tag, Company
 
 
 @login_required
@@ -101,6 +101,34 @@ def tag_create(request):
         return JsonResponse({
             'success': False,
             'error': 'نام تگ الزامی است'
+        })
+    return JsonResponse({
+        'success': False,
+        'error': 'متد درخواست نامعتبر است'
+    })
+
+
+def company_create(request):
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        if name:
+            try:
+                company = Company.objects.create(name=name)
+                return JsonResponse({
+                    'success': True,
+                    'company': {
+                        'id': company.id,
+                        'text': company.name
+                    }
+                })
+            except Exception as e:
+                return JsonResponse({
+                    'success': False,
+                    'error': str(e)
+                })
+        return JsonResponse({
+            'success': False,
+            'error': 'نام شرکت الزامی است'
         })
     return JsonResponse({
         'success': False,

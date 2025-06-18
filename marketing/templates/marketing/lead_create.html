@@ -55,6 +55,19 @@
                 {{ form.source }}
                 {% if form.source.errors %}<div class="error-message">{{ form.source.errors }}</div>{% endif %}
             </div>
+
+
+            <div class="form-group">
+                <div class="label-container">
+                    <label for="{{ form.company.id_for_label }}">شرکت</label>
+                    <button type="button" class="create-product-btn" onclick="openCompanyModal()"><i class="fas fa-plus"></i></button>
+                </div>
+                {{ form.company }}
+                {% if form.company.errors %}<div class="error-message">{{ form.company.errors }}</div>{% endif %}
+            </div>
+
+
+
             <div class="form-group">
                 <div class="label-container">
                     <label for="{{ form.requested_products.id_for_label }}">کالاهای درخواستی</label>
@@ -122,6 +135,23 @@
         </form>
     </div>
 </div>
+
+<!-- Company Modal -->
+<div id="companyModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h3>ایجاد شرکت جدید</h3>
+        <form id="newCompanyForm" class="modal-form">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="company_name">نام شرکت</label>
+                <input type="text" name="name" id="company_name" required>
+            </div>
+            <button type="submit">ذخیره</button>
+        </form>
+    </div>
+</div>
+
 {% endblock %}
 
 {% block js %}
@@ -130,18 +160,24 @@
     // Modal functionality (unchanged)
     var productModal = document.getElementById("productModal");
     var tagModal = document.getElementById("tagModal");
+    var companyModal = document.getElementById("companyModal");
     var closeButtons = document.getElementsByClassName("close");
+
     function openProductModal() { productModal.style.display = "block"; }
     function openTagModal() { tagModal.style.display = "block"; }
+    function openCompanyModal() { companyModal.style.display = "block"; }
+
     for (var i = 0; i < closeButtons.length; i++) {
         closeButtons[i].onclick = function() {
             productModal.style.display = "none";
             tagModal.style.display = "none";
+            companyModal.style.display = "none";
         }
     }
     window.onclick = function(event) {
         if (event.target == productModal) { productModal.style.display = "none"; }
         if (event.target == tagModal) { tagModal.style.display = "none"; }
+        if (event.target == companyModal) {companyModal.style.display = "none";}
     }
     // AJAX for product and tag creation (unchanged)
     $('#newProductForm').on('submit', function(e) {
@@ -163,6 +199,26 @@
             error: function() { alert('خطا در ارتباط با سرور'); }
         });
     });
+    $('#newCompanyForm').on('submit', function(e) {
+        e.preventDefault();
+        $.ajax({
+            url: '{% url "marketing:company_create" %}',
+            type: 'POST',
+            data: $(this).serialize(),
+            success: function(response) {
+                if (response.success) {
+                    var newOption = new Option(response.company.text, response.company.id, true, true);
+                    $('#id_company').append(newOption);
+                    companyModal.style.display = "none";
+                    $('#newCompanyForm')[0].reset();
+                } else {
+                    alert('خطا در ایجاد شرکت: ' + response.error);
+                }
+            },
+            error: function() { alert('خطا در ارتباط با سرور'); }
+        });
+    });
+
     $('#newTagForm').on('submit', function(e) {
         e.preventDefault();
         $.ajax({

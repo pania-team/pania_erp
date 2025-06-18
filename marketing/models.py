@@ -1,7 +1,12 @@
 from django.db import models
 import django_jalali.db.models as jmodels
 
+# -----------------------------------
+class Company(models.Model):
+    name = models.CharField(max_length=50, unique=True,verbose_name='نام شرکت')
 
+    def __str__(self):
+        return self.name
 
 
 # ------------------------------------
@@ -36,6 +41,7 @@ class Lead(models.Model):
     source = models.CharField(max_length=50,choices=SOURCE_CHOICES, blank=True,null=True,verbose_name="منبع")
     city = models.CharField(max_length=50, verbose_name='شهر', null=True, blank=True)
     tags = models.ManyToManyField('Tag', blank=True)
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, verbose_name='نام شرکت', blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
